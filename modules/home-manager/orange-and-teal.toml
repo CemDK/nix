@@ -1,0 +1,32 @@
+# Default colors
+[colors.primary]
+background = "#062027" # Darker teal background
+#background = "#103437" # Darker teal background
+foreground = "#93a1a1" # Softer light cyan for general text
+
+# Colors the cursor will use if `custom_cursor_colors` is true
+[colors.cursor]
+text = "#002b36"
+cursor = "#839496"
+
+[colors.normal]
+#black = "#002b36"   # Dark teal (background)
+black = "#005F60"   # Dark teal (background)
+red = "#fd5901"     # Red (tomato)
+green = "#8ec07c"   # Green
+yellow = "#f78104"  # Yellow
+blue = "#268bd2"    # Teal blue
+magenta = "#a277ff" # Light magenta
+cyan = "#2aa198"    # Softer teal
+white = "#93a1a1"   # Softer light gray
+
+[colors.bright]
+black = "#005F60"   # Darker teal gray
+red = "#ff4500"     # Bright red (orange red)
+green = "#b8bb26"   # Bright green
+yellow = "#fe8019"  # Bright yellow (orange)
+blue = "#83a598"    # Teal blue
+magenta = "#b16286" # Bright magenta
+cyan = "#689d6a"    # Teal
+white = "#c5c8c6"   # Light gray
+
