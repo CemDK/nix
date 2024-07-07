@@ -1,7 +1,6 @@
 # Default colors
 [colors.primary]
 background = "#062027" # Darker teal background
-#background = "#103437" # Darker teal background
 foreground = "#93a1a1" # Softer light cyan for general text
 
 # Colors the cursor will use if `custom_cursor_colors` is true
@@ -14,7 +13,7 @@ cursor = "#839496"
 black = "#005F60"   # Dark teal (background)
 red = "#fd5901"     # Red (tomato)
 green = "#8ec07c"   # Green
-yellow = "#f78104"  # Yellow
+yellow = "#f78104"  # Changed to an orange-ish tone
 blue = "#268bd2"    # Teal blue
 magenta = "#a277ff" # Light magenta
 cyan = "#2aa198"    # Softer teal
