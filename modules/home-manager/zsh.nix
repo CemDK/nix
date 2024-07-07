@@ -7,8 +7,8 @@
     syntaxHighlighting.enable = true;
     dotDir = ".config/zsh";
     shellAliases = {
-      nixrebuild = "darwin-rebuild build --flake ~/.config/nix-darwin/.#CemDK-MBP";
-      nixswitch = "nix run nix-darwin -- switch --flake ~/.config/nix-darwin";
+      nixrebuild = "darwin-rebuild build --flake ~/.config/nix/.#CemDK-MBP";
+      nixswitch = "nix run nix-darwin -- switch --flake ~/.config/nix";
       nixup = "pushd ~/src/system-config; nix flake update; nixswitch; popd";
       cat = "bat";
       l = "ll";
@@ -18,7 +18,7 @@
 
     initExtra = ''
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-      source ${./.p10k-rainbow.zsh}
+      source ${./dotfiles/.p10k-rainbow.zsh}
 
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
       SAVEHIST=10000
