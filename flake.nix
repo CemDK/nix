@@ -9,14 +9,9 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, home-manager, nixpkgs }:
-  let
-    system = "x86_64-darwin"; # or "aarch64-darwin" if you're on Apple Silicon
-  in
-
-  {
+  outputs = inputs@{ self, nix-darwin, home-manager, nixpkgs }: {
     darwinConfigurations."CemDK-MBP" = nix-darwin.lib.darwinSystem {
-      inherit system;
+      system = "x86_64-darwin"; # or "aarch64-darwin" if you're on Apple Silicon
       modules = [ 
         ({ pkgs, ... }: import ./darwin-configuration.nix {inherit pkgs self ;})
         home-manager.darwinModules.home-manager {
