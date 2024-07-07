@@ -49,14 +49,17 @@
 
       fonts.packages = [ (pkgs.nerdfonts.override { fonts = ["Meslo"];})];
 
-      nix.extraOptions = ''
-        experimental-features = nix-command flakes
-      '';
-
       # STANDARD SETTINGS
       services.nix-daemon.enable = true;
       # nix.package = pkgs.nix;
       nix.settings.experimental-features = "nix-command flakes";
+
+      # IMPORTANT: Do not disable zsh here!
+      # If you find yourself here after your shell does not find the nix command 
+      # add the following to your .zshrc and exex zsh so you can rebuild/switch after
+      # if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+      # . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+      # fi
       # Create /etc/zshrc that loads the nix-darwin environment.
       programs.zsh.enable = true;
       programs.zsh.enableCompletion = true;
