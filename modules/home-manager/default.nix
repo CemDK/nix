@@ -3,6 +3,7 @@
 {
   imports = [
     ./alacritty.nix
+    ./fzf.nix
     ./eza.nix
     ./vim.nix
     ./zsh.nix
