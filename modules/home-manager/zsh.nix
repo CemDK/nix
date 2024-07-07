@@ -14,6 +14,7 @@
       l = "ll";
       lt = "ll --tree";
       cd = "z";
+      vif = "vi $(fzf --preview=\"bat --color=alaways {}\")";
     };
 
     initExtra = ''
