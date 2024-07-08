@@ -12,7 +12,9 @@
   home.stateVersion = "24.05";
   
   home.packages = with pkgs; [
+    fd
     less
+    tree
   ];
 
   home.sessionVariables = {

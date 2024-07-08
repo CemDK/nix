@@ -3,13 +3,14 @@
 {
   environment.systemPackages = with pkgs; [
     bat
+    gh
     go
     htop
-    gh
     neofetch
-    tmux
-    yazi
     obsidian
+    tmux
     vscode
+    yazi
   ];
+
 }
