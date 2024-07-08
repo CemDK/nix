@@ -6,16 +6,7 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     dotDir = ".config/zsh";
-    shellAliases = {
-      nixrebuild = "darwin-rebuild build --flake ~/.config/nix/.#CemDK-MBP";
-      nixswitch = "nix run nix-darwin -- switch --flake ~/.config/nix";
-      nixup = "pushd ~/src/system-config; nix flake update; nixswitch; popd";
-      cat = "bat";
-      l = "ll";
-      lt = "ll --tree";
-      cd = "z";
-      vif = "vi $(fzf --preview=\"bat --color=alaways {}\")";
-    };
+    shellAliases = import ./aliases.nix;
 
     initExtra = ''
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
