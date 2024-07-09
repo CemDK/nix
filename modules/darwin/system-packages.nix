@@ -8,6 +8,7 @@
     htop
     neofetch
     obsidian
+    raycast
     tmux
     vscode
     yazi
