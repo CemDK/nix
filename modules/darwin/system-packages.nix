@@ -2,15 +2,20 @@
 
 {
   environment.systemPackages = with pkgs; [
+    alt-tab-macos
     bat
     gh
     go
     htop
+    hidden-bar
     neofetch
+    neovim
     obsidian
     raycast
+    #rectangle
     tmux
     vscode
+    yabai
     yazi
   ];
 
