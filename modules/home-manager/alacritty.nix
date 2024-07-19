@@ -13,7 +13,7 @@
 
       decorations = "Buttonless";
 
-      opacity = 0.9;
+      opacity = 0.75;
       blur = true;
       option_as_alt = "Both";
     };
