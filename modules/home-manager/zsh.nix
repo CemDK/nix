@@ -28,7 +28,12 @@
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${./dotfiles/.p10k-rainbow.zsh}
 
-      eval "$(/opt/homebrew/bin/brew shellenv)"
+      # eval for homebrew depending on machine type (Apple Silicon/Intel)
+      if [[ $(uname -m) == 'arm64' ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
+      else
+          eval "$(/usr/local/bin/brew shellenv)"
+      fi
       eval "$(zoxide init zsh)"
 
       bindkey "^P" history-beginning-search-backward
