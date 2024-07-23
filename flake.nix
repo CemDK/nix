@@ -9,22 +9,40 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, home-manager, nixpkgs }: {
-    darwinConfigurations."CemDK-MBP" = nix-darwin.lib.darwinSystem {
-      system = "x86_64-darwin"; # or "aarch64-darwin" if you're on Apple Silicon
-      modules = [ 
-        ({ pkgs, ... }: import ./darwin-configuration.nix {inherit pkgs self ;})
-        home-manager.darwinModules.home-manager {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users.cem = import ./users/cem/home.nix;
-          };
-        }
-      ];
-    };
+  outputs = inputs@{ self, nix-darwin, home-manager, nixpkgs }: 
+  let
+    mkDarwinConfig = { system, host, user, home }: 
+      nix-darwin.lib.darwinSystem {
+        inherit system;
+        specialArgs = { inherit host user home; };
+        modules = [ 
+          ({ pkgs, ... }: import ./darwin-configuration.nix {inherit pkgs self system user home;})
+          home-manager.darwinModules.home-manager {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              extraSpecialArgs = {inherit user home;};
+              users.${user} = import ./users/${user}/home.nix {inherit user home;};
+            };
+          }
+        ];
+      };
+  in
+  {
+    darwinConfigurations = {
+      "CemDK-MBP" = mkDarwinConfig {
+        system = "x86_64-darwin";
+        host = "CemDK-MBP";
+        user = "cem";
+        home = "/Users/cem";
+      };
 
-    # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."CemDK-MBP".pkgs;
+      "default" = mkDarwinConfig {
+        system = "aarch64-darwin";
+        host = "default";
+        user = "kaba03";
+        home = "/Users/kaba03";
+      };
+    };
   };
 }

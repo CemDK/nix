@@ -1,4 +1,4 @@
-{ pkgs, self, ... }:
+{ pkgs, self, system, user, home, ... }:
 
 {
   imports = [
@@ -23,13 +23,13 @@
   system.stateVersion = 4;
 
   # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = "x86_64-darwin";
+  nixpkgs.hostPlatform = system;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # User configuration
-  users.users.cem.home = "/Users/cem";
+  users.users.${user}.home = "${home}";
 
   # Environment configuration
   environment = {
