@@ -22,7 +22,7 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               extraSpecialArgs = {inherit user home;};
-              users.${user} = import ./users/${user}/home.nix {inherit user home;};
+              users.${user} = ({pkgs, ...}: import ./users/${user}/home.nix {inherit pkgs user home ;});
             };
           }
         ];
