@@ -19,11 +19,9 @@
     };
 
     historySubstringSearch = {
-        # bindkey "^[[A" history-beginning-search-backward
-        # bindkey "^[[B" history-beginning-search-forward
         enable = true;
-        searchUpKey = [ "^[[A" "^P"];
-        searchDownKey = [ "^[[B" "^N"];
+        searchUpKey = [ "^[[A" ];
+        searchDownKey = [ "^[[B" ];
     };
 
     initExtra = ''
@@ -33,6 +31,10 @@
       eval "$(/opt/homebrew/bin/brew shellenv)"
       eval "$(zoxide init zsh)"
 
+      bindkey "^P" history-beginning-search-backward
+      bindkey "^N" history-beginning-search-forward
+      bindkey '^ ' autosuggest-accept
+  
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       setopt hist_verify
