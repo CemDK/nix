@@ -11,8 +11,11 @@
     neofetch
     neovim
     obsidian
+    opentofu
     raycast
-    #rectangle
+    rectangle
+    # stats
+    terragrunt
     tmux
     vscode
     yabai
