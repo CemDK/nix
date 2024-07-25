@@ -8,8 +8,9 @@
   la = "lla";
   lt = "ll --tree";
   cd = "z";
-  vif = "vi $(fzf --preview=\"bat --color=always {}\")";
-  cdf = "cd $(fd --type directory | fzf --preview \"eza --tree --colour=always {}\")";
+  vif = "vi $(fzf --preview='bat --color=always {}' --preview-window=70%,top)";
+  cdf = "cd $(fd --type directory | fzf --preview-window=70%,top --preview \"eza --tree --colour=always {}\")";
+  cfile = "cat $(fzf) | pbcopy";
 
   tadev = "ENV=dev terragrunt apply";
   tddev = "ENV=dev terragrunt destroy";
