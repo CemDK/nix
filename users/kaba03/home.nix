@@ -22,6 +22,5 @@
     kubernetes-helm
     kubectl
     kubevela
-    ripgrep
   ];
 }

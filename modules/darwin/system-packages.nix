@@ -14,6 +14,7 @@
     opentofu
     raycast
     rectangle
+    ripgrep
     # stats
     terragrunt
     tmux
