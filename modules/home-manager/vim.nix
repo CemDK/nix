@@ -18,6 +18,8 @@ in
     extraConfig = ''
       ${baseConfig}
       ${fzfConfig}
+      set termguicolors
+      colorscheme orange_and_teal
     '';
   };
 }
