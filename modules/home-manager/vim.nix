@@ -1,17 +1,23 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+let
+  baseConfig = builtins.readFile ./vim/base.vim;
+  fzfConfig = builtins.readFile ./vim/fzf.vim;
+in
+{
   programs.vim = {
     enable = true;
+    plugins = with pkgs.vimPlugins; [
+      colorizer
+      fzf-vim
+      fzfWrapper
+      vim-fugitive
+      vim-polyglot
+      vim-sensible
+      vim-terraform
+    ];
     extraConfig = ''
-      set autoindent
-      set expandtab
-      set number
-      set shiftwidth=4
-      set smartindent
-      set softtabstop=4
-      set tabstop=4
-      set cursorline
-      set cursorlineopt=number
+      ${baseConfig}
+      ${fzfConfig}
     '';
-    plugins = [pkgs.vimPlugins.colorizer];
   };
-} 
+}
