@@ -1,3 +1,4 @@
+set nocompatible
 set autoindent
 set expandtab
 set number
