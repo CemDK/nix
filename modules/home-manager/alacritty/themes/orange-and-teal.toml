@@ -1,31 +1,39 @@
 # Default colors
 [colors.primary]
-background = "#062027" # Darker teal background
-foreground = "#93a1a1" # Softer light cyan for general text
+background = "#062027" # Dark teal background
+foreground = "#93a1a1" # Lighter medium gray
 
 # Colors the cursor will use if `custom_cursor_colors` is true
 [colors.cursor]
-text = "#002b36"
-cursor = "#839496"
+text    = "#002b36"
+cursor  = "#839496"
 
 [colors.normal]
-#black = "#002b36"   # Dark teal (background)
-black = "#005F60"   # Dark teal (background)
-red = "#fd5901"     # Red (tomato)
-green = "#8ec07c"   # Green
-yellow = "#f78104"  # Changed to an orange-ish tone
-blue = "#268bd2"    # Teal blue
-magenta = "#a277ff" # Light magenta
-cyan = "#2aa198"    # Softer teal
-white = "#93a1a1"   # Softer light gray
+black   = "#005F60"   # Dark teal (not really black)
+red     = "#ff4500"   # Bright orange-red (tomato)
+green   = "#8ec07c"   # Muted sage green
+yellow  = "#f78104"   # Bright orange
+blue    = "#268bd2"   # Bright blue (not teal)
+magenta = "#a277ff"   # Light purple
+cyan    = "#2aa198"   # Dark cyan
+white   = "#a6b2b2"   # Light grayish cyan
 
 [colors.bright]
-black = "#005F60"   # Darker teal gray
-red = "#ff4500"     # Bright red (orange red)
-green = "#b8bb26"   # Bright green
-yellow = "#fe8019"  # Bright yellow (orange)
-blue = "#83a598"    # Teal blue
-magenta = "#b16286" # Bright magenta
-cyan = "#689d6a"    # Teal
-white = "#c5c8c6"   # Light gray
+black   = "#003c3d"   # Darker teal (still not black)
+red     = "#ff7f50"   # Light coral
+green   = "#a9d196"   # Light sage green
+yellow  = "#ffa940"   # Light orange
+blue    = "#5eafed"   # Light blue
+magenta = "#c4a6ff"   # Very light purple
+cyan    = "#4ec2b8"   # Light cyan
+white   = "#7a8787"   # Medium gray
 
+[colors.dim]
+black   = "#002F30"   # Even darker teal
+red     = "#CC3700"   # Darker orange-red
+green   = "#6F9A62"   # Darker sage green
+yellow  = "#C46503"   # Darker orange
+blue    = "#1E6EA8"   # Darker blue
+magenta = "#815FCC"   # Darker purple
+cyan    = "#1F7A72"   # Darker cyan
+white   = "#849494"   # Darker grayish cyan
