@@ -9,7 +9,7 @@
     shellAliases = import ./aliases.nix;
     history = {
         path = "$HOME/.config/zsh/.zsh_history";
-        ignorePatterns = [ "cd" "cd *" "pwd" "ls *" "l" "la" "ll" "lla" "lt" "exit"];
+        ignorePatterns = [ "cd" "cd *" "clear" "pwd" "ls" "ls *" "l" "la" "ll" "lla" "lt" "exit" "vi" "vif" "vim"];
         save = 10001;
         size = 10000;
         share = true;
