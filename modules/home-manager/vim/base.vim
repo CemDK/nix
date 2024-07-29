@@ -9,6 +9,7 @@ set tabstop=4
 set cursorline
 set cursorlineopt=number
 set noremap
+set nowrap
 
 let g:terraform_binary_path='tofu'
 let g:terraform_fmt_on_save=1
