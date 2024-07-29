@@ -241,6 +241,18 @@ if (has('termguicolors') && &termguicolors) || has('gui_running')
   " call s:hi('nixIfExpr',             s:magenta,  'NONE',    'NONE')
   " call s:hi('nixAssertExpr',                   s:magenta,  'NONE',    'NONE')
 
+  " HCL
+  " ---
+  call s:hi('hclAttributeAssignment',    s:red,     'NONE',    'NONE')
+  call s:hi('hclBlockBody',              s:magenta, 'NONE',    'NONE')
+  call s:hi('hclConditional',            s:red,     'NONE',    'NONE')
+  call s:hi('hclRepeat',                 s:red,     'NONE',    'NONE')
+  call s:hi('hclStringInterp',           s:red,     'NONE',    'NONE')
+  call s:hi('hclValueString',            s:orange,  'NONE',    'NONE')
+
+  call s:hi('terraType',                 s:green,    'NONE',    'NONE')
+  " call s:hi('terraKeyword',              s:red,    'NONE',    'NONE')
+
   " Link highlight groups
   hi! link ColorColumn  CursorLine
   hi! link Conceal      Normal
