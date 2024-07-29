@@ -15,6 +15,7 @@
     raycast
     rectangle
     ripgrep
+    skhd
     # stats
     terragrunt
     tmux
