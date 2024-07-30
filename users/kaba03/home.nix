@@ -14,6 +14,7 @@
   home.file.".config/skhd/skhdrc".source = ../../modules/home-manager/dotfiles/skhdrc;
   home.file.".config/yabai/yabairc".source = ../../modules/home-manager/dotfiles/yabairc;
   home.file.".config/tmux/tmux.conf".source = ../../modules/home-manager/dotfiles/tmux/tmux.conf;
+  home.file.".vim/colors/orange_and_teal.vim".source = ../../modules/home-manager/vim/orange_and_teal.vim;
 
   home.packages = with pkgs; [
     cloudfoundry-cli
@@ -23,5 +24,6 @@
     kubernetes-helm
     kubectl
     kubevela
+    vault
   ];
 }
