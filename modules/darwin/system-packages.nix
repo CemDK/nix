@@ -15,8 +15,9 @@
     raycast
     rectangle
     ripgrep
+    rustup
     skhd
-    # stats
+    stats
     terragrunt
     tmux
     vscode
