@@ -9,7 +9,6 @@
     htop
     hidden-bar
     neofetch
-    neovim
     obsidian
     opentofu
     raycast
