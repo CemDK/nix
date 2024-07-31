@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  baseConfig = builtins.readFile ./vim/base.vim;
-  fzfConfig = builtins.readFile ./vim/fzf.vim;
+  baseConfig = builtins.readFile ./dotfiles/vim/base.vim;
+  fzfConfig = builtins.readFile ./dotfiles/vim/fzf.vim;
 in
 {
   programs.vim = {

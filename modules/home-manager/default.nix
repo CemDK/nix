@@ -1,4 +1,4 @@
- { pkgs, ... }:
+ { pkgs, config, home, ... }:
 
 {
   imports = [
@@ -20,5 +20,4 @@
     CLICOLOR = 1;
     EDITOR = "nvim";
   };
-
 } 
