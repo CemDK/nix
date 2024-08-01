@@ -19,6 +19,7 @@
     stats
     terragrunt
     tmux
+    tree-sitter
     vscode
     yabai
     yazi
