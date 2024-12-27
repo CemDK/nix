@@ -3,7 +3,7 @@
 
   programs.alacritty.enable = true;
   programs.alacritty.settings = {
-    import = ["~/.config/alacritty/themes/orange-and-teal.toml"];
+    general.import = ["~/.config/alacritty/themes/orange-and-teal.toml"];
     env = {
        TERM = "xterm-256color";
     };
