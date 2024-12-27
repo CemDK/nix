@@ -35,36 +35,22 @@
       mapleader = " ";
     };
 
-    keymaps = [
-      # fzf-lua
-      {
-        action = "<cmd> Buffers<CR>";
-        key = "<leader>b";
-      }
-      {
-        action = "<cmd> Files<CR>";
-        key = "<leader>f";
-      }
-      {
-        action = "<cmd> History<CR>";
-        key = "<leader>h";
-      }
-      {
-        action = "<cmd> GFiles<CR>";
-        key = "<leader>g";
-      }
-      {
-        action = "<cmd> GFiles?<CR>";
-        key = "<leader>G";
-      }
-      {
-        action = "<cmd> Rg<CR><CR>";
-        key = "<leader>r";
-      }
-    ];
-    
+    keymaps = import ./keymaps.nix;
+
     plugins = {
       lightline.enable = true;
+      lsp = {
+          enable = true;
+          servers.rust_analyzer = {
+              enable = true;
+              installRustc = true;
+              installCargo = true;
+          };
+      };
+      cmp = {
+          enable = true;
+          autoEnableSources = true;
+      };
       treesitter = {
         enable = true;
         nodejsPackage = null;

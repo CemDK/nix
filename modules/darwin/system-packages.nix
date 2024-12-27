@@ -20,7 +20,7 @@
     terragrunt
     tmux
     tree-sitter
-    vscode
+    vim
     yabai
     yazi
   ];

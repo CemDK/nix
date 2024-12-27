@@ -5,7 +5,7 @@ let
 in
 {
   programs.vim = {
-    enable = true;
+    enable = false;
     plugins = with pkgs.vimPlugins; [
       colorizer
       fzf-vim

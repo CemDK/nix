@@ -34,6 +34,5 @@
   # Environment configuration
   environment = {
     shells = [ pkgs.bash pkgs.zsh ];
-    loginShell = pkgs.zsh;
   };
 }
