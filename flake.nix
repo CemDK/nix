@@ -18,7 +18,7 @@
         inherit system;
         specialArgs = { inherit host user home; };
         modules = [ 
-          ({ pkgs, ... }: import ./darwin-configuration.nix {inherit pkgs self system user home;})
+          ({ pkgs, config, ... }: import ./darwin-configuration.nix {inherit pkgs self system user home;})
 
           home-manager.darwinModules.home-manager {
             home-manager = {
@@ -36,6 +36,7 @@
           }
         ];
       };
+
   in
   {
     darwinConfigurations = {
