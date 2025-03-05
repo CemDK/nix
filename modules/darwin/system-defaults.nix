@@ -12,5 +12,10 @@
     trackpad.TrackpadThreeFingerTapGesture = 2;
     NSGlobalDomain.InitialKeyRepeat = 14;
     NSGlobalDomain.KeyRepeat = 2;
+    CustomUserPreferences = {
+        "com.microsoft.VSCode" = {
+            ApplePressAndHoldEnabled = false;
+        };
+    };
   };
 }
