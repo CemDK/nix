@@ -1,7 +1,8 @@
 {
   nixrebuild = "darwin-rebuild build --flake ~/.config/nix/.#$(scutil --get ComputerName)";
   #nixswitch = "nix run nix-darwin -- switch --flake ~/.config/nix/.#$(hostname)";
-  nixswitch = "darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName)";
+  nixswitch = "darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName) && activate-settings";
+  activate-settings = "/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u";
   nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
   cat = "bat";
   l = "ll";
