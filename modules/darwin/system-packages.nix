@@ -8,6 +8,7 @@
         go
         htop
         hidden-bar
+        jq
         mkalias
         neofetch
         obsidian
