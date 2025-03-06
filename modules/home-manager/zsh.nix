@@ -80,6 +80,12 @@
       bindkey "^N" history-beginning-search-forward
       bindkey '^ ' autosuggest-accept
 
+      # Arrow keys
+      bindkey '^[[1;5A' up-line-or-history
+      bindkey '^[[1;5B' down-line-or-history
+      bindkey '^[[1;5D' backward-word
+      bindkey '^[[1;5C' forward-word
+
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       setopt hist_verify
