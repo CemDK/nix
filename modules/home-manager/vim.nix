@@ -2,8 +2,7 @@
 let
   baseConfig = builtins.readFile ./dotfiles/vim/base.vim;
   fzfConfig = builtins.readFile ./dotfiles/vim/fzf.vim;
-in
-{
+in {
   programs.vim = {
     enable = false;
     plugins = with pkgs.vimPlugins; [

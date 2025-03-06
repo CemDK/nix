@@ -32,9 +32,7 @@
   users.users.${user}.home = "${home}";
 
   # Environment configuration
-  environment = {
-    shells = [ pkgs.bash pkgs.zsh ];
-  };
+  environment = { shells = [ pkgs.bash pkgs.zsh ]; };
 
   # Make ths OS check for new settings and apply them after nixswitch/nixrebuild, instead of next login
   system.activationScripts.postActivation.text = ''

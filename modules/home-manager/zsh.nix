@@ -8,20 +8,36 @@
     dotDir = ".config/zsh";
     shellAliases = import ./aliases.nix;
     history = {
-        path = "$HOME/.config/zsh/.zsh_history";
-        ignorePatterns = [ "cd" "cd *" "clear" "pwd" "ls" "ls *" "l" "la" "ll" "lla" "lt" "exit" "vi" "vif" "vim"];
-        save = 10001;
-        size = 10000;
-        share = true;
+      path = "$HOME/.config/zsh/.zsh_history";
+      ignorePatterns = [
+        "cd"
+        "cd *"
+        "clear"
+        "pwd"
+        "ls"
+        "ls *"
+        "l"
+        "la"
+        "ll"
+        "lla"
+        "lt"
+        "exit"
+        "vi"
+        "vif"
+        "vim"
+      ];
+      save = 10001;
+      size = 10000;
+      share = true;
 
-        expireDuplicatesFirst = true;
-        ignoreDups = true;
+      expireDuplicatesFirst = true;
+      ignoreDups = true;
     };
 
     historySubstringSearch = {
-        enable = true;
-        searchUpKey = [ "^[[A" ];
-        searchDownKey = [ "^[[B" ];
+      enable = true;
+      searchUpKey = [ "^[[A" ];
+      searchDownKey = [ "^[[B" ];
     };
 
     initExtra = ''
@@ -53,7 +69,7 @@
       bindkey "^P" history-beginning-search-backward
       bindkey "^N" history-beginning-search-forward
       bindkey '^ ' autosuggest-accept
-  
+
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       setopt hist_verify
