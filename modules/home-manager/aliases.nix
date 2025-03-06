@@ -4,8 +4,12 @@
   '';
 
   #nixswitch = "nix run nix-darwin -- switch --flake ~/.config/nix/.#$(hostname)";
+  # nixswitch = ''
+  #   darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName) && activate-settings
+  # '';
+
   nixswitch = ''
-    darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName) && activate-settings
+    nix run nixpkgs#home-manager --extra-experimental-features "nix-command flakes" -- switch --flake .#$(whoami)@$(hostname)
   '';
 
   activate-settings = ''

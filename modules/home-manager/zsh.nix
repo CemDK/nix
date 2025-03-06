@@ -5,6 +5,10 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    # oh-my-zsh = {
+    #   enable = true;
+    #   plugins = ["git" "docker" "aws"];
+    # };
     dotDir = ".config/zsh";
     shellAliases = import ./aliases.nix;
     history = {
