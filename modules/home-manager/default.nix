@@ -2,10 +2,7 @@
 
 {
   # Common across all machines and users
-  imports = [
-    # ./git.nix
-    ./zsh.nix
-  ];
+  imports = [ ./eza.nix ./fzf.nix ./vim.nix ./zsh.nix ];
 
   home.stateVersion = "21.11";
 
