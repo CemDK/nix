@@ -1,6 +1,8 @@
 { pkgs, config, ... }:
 
 {
+  fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
+
   environment.systemPackages = with pkgs; [
     alt-tab-macos
     bat

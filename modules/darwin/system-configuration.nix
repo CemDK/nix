@@ -1,11 +1,7 @@
 { pkgs, self, system, user, home, ... }:
 
 {
-  imports = [
-    ./modules/darwin/system-packages.nix
-    ./modules/darwin/system-defaults.nix
-    ./modules/darwin/fonts.nix
-  ];
+  imports = [ ./system-packages.nix ./system-defaults.nix ];
 
   # STANDARD SETTINGS
   # services.nix-daemon.enable = true;
@@ -24,9 +20,6 @@
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   # User configuration
   users.users.${user}.home = "${home}";

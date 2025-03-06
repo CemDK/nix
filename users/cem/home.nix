@@ -3,11 +3,11 @@
 {
   imports = [ ../../modules/home-manager ];
 
-  # User-specific configurations
-  home.username = user;
-  home.homeDirectory = home;
+  home = {
+    username = user;
+    homeDirectory = home;
+  };
 
-  # User-specific files
   home.file = {
     ".config/.p10k-rainbow.zsh".source =
       ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
@@ -20,9 +20,5 @@
       ../../modules/home-manager/dotfiles/vim/orange_and_teal.vim;
   };
 
-  home.packages = with pkgs;
-    [
-      #awscli2
-      #xquartz
-    ];
+  home.packages = with pkgs; [ ];
 }

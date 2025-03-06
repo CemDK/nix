@@ -1,14 +1,35 @@
-{ pkgs, config, home, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  imports = [ ./alacritty.nix ./fzf.nix ./eza.nix ./vim.nix ./zsh.nix ];
+  # Common across all machines and users
+  imports = [
+    # ./git.nix
+    ./zsh.nix
+    ./eza.nix
+    ./neovim.nix
+  ];
 
-  home.stateVersion = "24.05";
+  nixpkgs.config.allowUnfree = true;
+  home.stateVersion = "21.11";
 
-  home.packages = with pkgs; [ fd tree ];
+  home.packages = with pkgs; [
+    bat
+    curl
+    fd
+    fzf
+    git
+    htop
+    jq
+    neofetch
+    nixfmt-classic
+    ripgrep
+    tmux
+    wget
+    zsh
+  ];
 
-  home.sessionVariables = {
-    CLICOLOR = 1;
-    EDITOR = "nvim";
+  programs = {
+    # home-manager.enable = true;
+    git.enable = true;
   };
 }
