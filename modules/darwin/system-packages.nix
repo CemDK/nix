@@ -1,31 +1,34 @@
 { pkgs, config, ... }:
 
 {
-    environment.systemPackages = with pkgs; [
-        alt-tab-macos
-        bat
-        gh
-        go
-        htop
-        hidden-bar
-        jq
+	environment.systemPackages = with pkgs; [
+		alt-tab-macos
+		bat
+		gh
+		go
+		htop
+		hidden-bar
+		jq
         mkalias
-        neofetch
-        obsidian
-        opentofu
-        raycast
-        rectangle
-        ripgrep
-        rustup
-        skhd
-        stats
-        terragrunt
-        tmux
-        tree-sitter
-        vim
-        yabai
-        yazi
-    ];
+		neofetch
+		nodejs_23
+		obsidian
+		opentofu
+        podman
+        podman-desktop
+		raycast
+		rectangle
+		ripgrep
+		rustup
+		skhd
+		stats
+		terragrunt
+		tmux
+		tree-sitter
+		vim
+		yabai
+		yazi
+	];
 
     system.activationScripts.applications.text = let
         env = pkgs.buildEnv {
