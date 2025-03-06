@@ -11,14 +11,17 @@
     curl
     fd
     fzf
+    gh
     git
     htop
     jq
     neofetch
     nixfmt-classic
     ripgrep
+    rustup
     tmux
     wget
+    vim
     zsh
   ];
 

@@ -1,5 +1,6 @@
 {
   nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
+  nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
   cat = "bat";
   l = "ll";
   la = "lla";

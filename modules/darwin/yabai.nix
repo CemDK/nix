@@ -2,10 +2,6 @@
   services.yabai = {
     enable = true;
     config = {
-      external_bar = "all:39:0";
-      layout = "stack";
-      auto_balance = "off";
-
       mouse_modifier = "alt";
       # set modifier + right-click drag to resize window (default: resize)
       mouse_action2 = "resize";
@@ -13,11 +9,11 @@
       mouse_action1 = "move";
 
       # gaps
-      top_padding = 15;
-      bottom_padding = 15;
-      left_padding = 15;
-      right_padding = 15;
-      window_gap = 15;
+      top_padding = 10;
+      bottom_padding = 10;
+      left_padding = 10;
+      right_padding = 10;
+      window_gap = 10;
     };
     extraConfig = ''
       # bsp, stack or float
@@ -48,6 +44,7 @@
       # assign apps to spaces
       yabai -m rule --add app="Firefox" space=firefox
       yabai -m rule --add app="Alacritty" space=terminal
+      yabai -m rule --add title="Alacritty" space=terminal
       yabai -m rule --add app="VSCode" space=code
       yabai -m rule --add app="Visual Studio Code" space=code
       yabai -m rule --add app="Slack" space=chat

@@ -4,24 +4,12 @@
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   environment.systemPackages = with pkgs; [
-    bat
-    gh
-    htop
     hidden-bar
-    jq
     mkalias
-    neofetch
-    nixfmt-classic
     nodejs_23
     obsidian
     raycast
-    ripgrep
-    rustup
-    skhd
     stats
-    tmux
-    vim
-    yabai
   ];
 
   system.activationScripts.applications.text = let
