@@ -80,8 +80,10 @@
     in {
       # Darwin configurations (macOS)
       darwinConfigurations = {
-        "CemDK-MBP" = mkDarwinConfig {
+        "cem@CemDK-MBP" = mkDarwinConfig {
           system = "x86_64-darwin";
+          user = "cem";
+          host = "CemDK-MBP";
           userHost = "cem@CemDK-MBP";
           home = "/Users/cem";
         };

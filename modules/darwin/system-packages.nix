@@ -4,10 +4,8 @@
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   environment.systemPackages = with pkgs; [
-    alt-tab-macos
     bat
     gh
-    go
     htop
     hidden-bar
     jq
@@ -16,21 +14,14 @@
     nixfmt-classic
     nodejs_23
     obsidian
-    opentofu
-    podman
-    podman-desktop
     raycast
-    rectangle
     ripgrep
     rustup
     skhd
     stats
-    terragrunt
     tmux
-    tree-sitter
     vim
     yabai
-    yazi
   ];
 
   system.activationScripts.applications.text = let
