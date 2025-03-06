@@ -38,5 +38,12 @@
     kubernetes-helm
     kubectl
     kubevela
+
+    alt-tab-macos
+    go
+    opentofu
+    podman
+    podman-desktop
+    terragrunt
   ];
 }

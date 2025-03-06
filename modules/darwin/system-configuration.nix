@@ -21,6 +21,9 @@
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;
 
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
   # User configuration
   users.users.${user}.home = "${home}";
 
