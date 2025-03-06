@@ -48,13 +48,16 @@
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${./dotfiles/.p10k-rainbow.zsh}
 
-      # eval for homebrew depending on machine type (Apple Silicon/Intel)
-      if [[ $(uname) == 'Darwin' ]]; then
-        if [[ $(uname -m) == 'arm64' ]]; then
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+      if [[ $(uname) == "Darwin" ]]; then
+        alis activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
+        alias nixswitch="darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName) && activate-settings"
+        if [[ $(uname -m) == "arm64" ]]; then
+          eval "$(/opt/homebrew/bin/brew shellenv)"
         else
-            eval "$(/usr/local/bin/brew shellenv)"
+          eval "$(/usr/local/bin/brew shellenv)"
         fi
+      else
+        alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
       fi
 
       eval "$(zoxide init zsh)"
