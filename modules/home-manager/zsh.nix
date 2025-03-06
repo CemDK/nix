@@ -49,11 +49,14 @@
       source ${./dotfiles/.p10k-rainbow.zsh}
 
       # eval for homebrew depending on machine type (Apple Silicon/Intel)
-      if [[ $(uname -m) == 'arm64' ]]; then
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-      else
-          eval "$(/usr/local/bin/brew shellenv)"
+      if [[ $(uname) == 'Darwin' ]]; then
+        if [[ $(uname -m) == 'arm64' ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
       fi
+
       eval "$(zoxide init zsh)"
       # >>> conda initialize >>>
       # !! Contents within this block are managed by 'conda init' !!

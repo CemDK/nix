@@ -5,11 +5,8 @@
   imports = [
     # ./git.nix
     ./zsh.nix
-    ./eza.nix
-    #./neovim.nix
   ];
 
-    #nixpkgs.config.allowUnfree = true;
   home.stateVersion = "21.11";
 
   home.packages = with pkgs; [
@@ -21,7 +18,6 @@
     htop
     jq
     neofetch
-    neovim
     nixfmt-classic
     ripgrep
     tmux

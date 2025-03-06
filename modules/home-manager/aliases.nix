@@ -9,7 +9,9 @@
   # '';
 
   nixswitch = ''
+    pushd $HOME/.config/nix;
     nix run nixpkgs#home-manager --extra-experimental-features "nix-command flakes" -- switch --flake .#$(whoami)@$(hostname)
+    popd
   '';
 
   activate-settings = ''
