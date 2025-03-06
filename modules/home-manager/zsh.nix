@@ -49,8 +49,8 @@
       source ${./dotfiles/.p10k-rainbow.zsh}
 
       if [[ $(uname) == "Darwin" ]]; then
-        alis activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
-        alias nixswitch="darwin-rebuild switch --flake ~/.config/nix/.#$(scutil --get ComputerName) && activate-settings"
+        alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
+        alias nixswitch="darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s) && activate-settings"
         if [[ $(uname -m) == "arm64" ]]; then
           eval "$(/opt/homebrew/bin/brew shellenv)"
         else
