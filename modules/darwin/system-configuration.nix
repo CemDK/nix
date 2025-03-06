@@ -1,7 +1,8 @@
 { pkgs, self, system, user, home, ... }:
 
 {
-  imports = [ ./system-packages.nix ./system-defaults.nix ];
+  imports =
+    [ ./system-packages.nix ./system-defaults.nix ./skhd.nix ./yabai.nix ];
 
   # STANDARD SETTINGS
   # services.nix-daemon.enable = true;
@@ -30,5 +31,16 @@
   # Environment configuration
   environment = { shells = [ pkgs.bash pkgs.zsh ]; };
 
-  security = { pam.enableSudoTouchIdAuth = true; };
+  security.pam.services.sudo_local.touchIdAuth = true;
+
+  # Garbage collect once a week
+  nix.gc = {
+    automatic = true;
+    interval = {
+      Weekday = 0;
+      Hour = 0;
+      Minute = 0;
+    };
+    options = "--delete-older-than 30d";
+  };
 }
