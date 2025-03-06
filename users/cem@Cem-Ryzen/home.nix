@@ -29,8 +29,5 @@
       ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
   };
 
-  home.packages = with pkgs;
-    [
-      # add user specific packages here
-    ];
+  home.packages = with pkgs; [ ];
 }
