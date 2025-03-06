@@ -1,8 +1,7 @@
-{ self, pkgs, ... }:
-{
+{ self, pkgs, ... }: {
   config = {
     enable = true;
-    
+
     opts = {
       inccommand = "split";
 
@@ -31,25 +30,23 @@
       termguicolors = true;
     };
 
-    globals = {
-      mapleader = " ";
-    };
+    globals = { mapleader = " "; };
 
     keymaps = import ./keymaps.nix;
 
     plugins = {
       lightline.enable = true;
       lsp = {
+        enable = true;
+        servers.rust_analyzer = {
           enable = true;
-          servers.rust_analyzer = {
-              enable = true;
-              installRustc = true;
-              installCargo = true;
-          };
+          installRustc = true;
+          installCargo = true;
+        };
       };
       cmp = {
-          enable = true;
-          autoEnableSources = true;
+        enable = true;
+        autoEnableSources = true;
       };
       treesitter = {
         enable = true;
@@ -76,38 +73,37 @@
         };
       };
     };
-    
+
     colorscheme = "solarized";
 
     extraPlugins = with pkgs.vimPlugins; [
       {
         plugin = comment-nvim;
-        config = ''lua require("Comment").setup()''; 
+        config = ''lua require("Comment").setup()'';
       }
       {
         plugin = fzf-lua;
-        config = ''lua require("fzf-lua").setup({"fzf-vim"})''; 
+        config = ''lua require("fzf-lua").setup({"fzf-vim"})'';
       }
       (pkgs.vimUtils.buildVimPlugin {
         name = "oat-nvim";
         src = pkgs.fetchFromGitHub {
-            owner = "CemDK";
-            repo = "oat.nvim";
-            rev = "b6c501bf93db1de8eb5febf1013fd32023bcaa9f";
-            hash = "sha256-lAN0hRpyloNZlft1ht8A7MNdanxJLi0RXWThobZO2Hg=";
+          owner = "CemDK";
+          repo = "oat.nvim";
+          rev = "b6c501bf93db1de8eb5febf1013fd32023bcaa9f";
+          hash = "sha256-lAN0hRpyloNZlft1ht8A7MNdanxJLi0RXWThobZO2Hg=";
         };
       })
     ];
 
     extraConfigLuaPre = ''
-        require('solarized').setup({ 
-          transparent = true, 
-          palette = 'solarized' 
-        })
-      '';
+      require('solarized').setup({ 
+        transparent = true, 
+        palette = 'solarized' 
+      })
+    '';
 
-    extraConfigLuaPost = ''
-      '';
+    extraConfigLuaPost = "";
 
   };
 }

@@ -3,10 +3,8 @@
 
   programs.alacritty.enable = true;
   programs.alacritty.settings = {
-    general.import = ["~/.config/alacritty/themes/orange-and-teal.toml"];
-    env = {
-       TERM = "xterm-256color";
-    };
+    general.import = [ "~/.config/alacritty/themes/orange-and-teal.toml" ];
+    env = { TERM = "xterm-256color"; };
     window = {
       padding.x = 10;
       padding.y = 10;
@@ -22,8 +20,8 @@
       size = 14;
     };
     #window.dimensions = {
-      #lines = 80;
-      #columns = 150;
+    #lines = 80;
+    #columns = 150;
     #};
 
   };
