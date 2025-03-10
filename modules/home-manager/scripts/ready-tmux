@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "runnig ready-tmux"
+if [[ -x ./.ready-tmux ]]; then
+	echo "executing ./.ready-tmux"
+	./.ready-tmux
+elif [[ -x ~/.ready-tmux ]]; then
+	echo "executing ~/.ready-tmux"
+	~/.ready-tmux
+else
+	echo "no .ready-tmux found"
+fi
