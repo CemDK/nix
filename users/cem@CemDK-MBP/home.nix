@@ -12,11 +12,6 @@
   };
 
   home.file = {
-    ".config/nvim" = {
-      source = ../../modules/home-manager/dotfiles/nvim;
-      recursive = true;
-    };
-
     ".config/tmux/tmux.conf".source =
       ../../modules/home-manager/dotfiles/tmux/tmux.conf;
 
