@@ -22,4 +22,6 @@
   vimtip = ''
     curl -w "
     " https://vtip.43z.one'';
+
+  tsesh = "tmux-sessionizer";
 }

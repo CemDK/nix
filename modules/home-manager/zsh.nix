@@ -57,6 +57,8 @@
           eval "$(/usr/local/bin/brew shellenv)"
         fi
       else
+        # Linux
+        alias pbcopy='xclip -selection clipboard'
         alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
       fi
 
@@ -89,6 +91,8 @@
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       setopt hist_verify
+
+      export PATH="/home/cem/.local/scripts:$PATH"
     '';
   };
 }
