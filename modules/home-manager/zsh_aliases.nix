@@ -1,4 +1,7 @@
 {
+  tcol_grey = ''tmux set-option -g status-bg "#282c34"'';
+  tcol_orange = ''tmux set-option -g status-bg "#005F60"'';
+
   nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
   nixe = "pushd ~/.config/nix && vi && nixswitch --impure && popd";
@@ -19,10 +22,11 @@
   iv = "vi";
   vim = "vi";
   vmi = "vi";
-  vi = "(fs &); nvim; clear; (fs &)";
-  nv = "nvim";
-  nvi = "nvim";
-  nvimi = "nvim";
+  nv = "vi";
+  nvi = "vi";
+  nvim = "vi";
+  nvimi = "vi";
+  vi = "(fs &); (tcol_grey &); nvim; (tcol_orange &); clear; (fs &)";
 
   cfile = "cat $(fzf) | pbcopy";
 

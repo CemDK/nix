@@ -10,6 +10,7 @@
     obsidian
     raycast
     stats
+    neovim
   ];
 
   system.activationScripts.applications.text = let
