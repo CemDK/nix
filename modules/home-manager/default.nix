@@ -16,24 +16,32 @@
     git
     htop
     jq
-    lua
+    lazygit
     neofetch
-    nodejs_23
     ripgrep
-    rustup
+    tldr
     tmux
-    typescript
     unzip
     wget
     vim
     zsh
 
+    # Code
+    lua
+    luajitPackages.luarocks
+    nodejs_23
+    rustup
+    typescript
+
+    ###################
     # for nvim
-    nixd
-    nodePackages.prettier
     tree-sitter
+    # formatting / linting
+    nodePackages.prettier
+    statix # nix linter
+    nixd
     nixfmt-classic
-    # lazygit
+    # Let mason do these
     # eslint
     # eslint_d
     # lua-language-server
@@ -54,4 +62,19 @@
     # home-manager.enable = true;
     git.enable = true;
   };
+
+  xdg = {
+    enable = true;
+
+    configHome = "${config.home.homeDirectory}/.config";
+    dataHome = "${config.home.homeDirectory}/.local/share";
+    cacheHome = "${config.home.homeDirectory}/.cache";
+  };
+
+  # TODO: look into direnv
+  # programs.direnv = {
+  #   enable = true;
+  #   enableZshIntegration = true;
+  #   nix-direnv.enable = true;
+  # };
 }

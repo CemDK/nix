@@ -2,14 +2,17 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
-    defaultCommand = "rg --files --hidden --follow --glob '!.git/*'";
+    # defaultCommand = "rg --files --hidden --follow --glob '!.git/*'";
+    defaultCommand = "rg --files --follow --hidden --glob '!.git/*'";
     defaultOptions = [
-      "--layout=reverse"
+      # "--layout=reverse"
       "--preview-window=up,70%"
       "--bind 'ctrl-/:toggle-preview'"
+      # "--preview 'bat --style=numbers --color=always --line-range :500 {}'"
+      # "--tmux 80%"
     ];
-    #"--preview 'bat --style=numbers --color=always --line-range :500 {}'"
 
+    historyWidgetOptions = [ "--preview-window=hidden" ];
     colors = {
       "fg" = "#93a1a1";
       "hl" = "#268bd2";
