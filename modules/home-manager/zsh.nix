@@ -1,16 +1,20 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
   programs.zoxide.enable = true;
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    dotDir = ".config/zsh";
+    autocd = true;
     # oh-my-zsh = {
     #   enable = true;
-    #   plugins = ["git" "docker" "aws"];
+    #   plugins = [ "git" "docker" ];
     # };
-    dotDir = ".config/zsh";
-    shellAliases = import ./aliases.nix;
+
+    ########################################################
+    # HISTORY
+    ########################################################
     history = {
       path = "$HOME/.config/zsh/.zsh_history";
       ignorePatterns = [
@@ -18,8 +22,7 @@
         "cd *"
         "clear"
         "pwd"
-        "ls"
-        "ls *"
+        "ls*"
         "l"
         "la"
         "ll"
@@ -29,9 +32,10 @@
         "vi"
         "vif"
         "vim"
+        "nvim"
       ];
-      save = 10001;
-      size = 10000;
+      save = 100001;
+      size = 100000;
       share = true;
 
       expireDuplicatesFirst = true;
@@ -44,43 +48,36 @@
       searchDownKey = [ "^[[B" ];
     };
 
+    ########################################################
+    # INIT
+    ########################################################
+    shellAliases = import ./zsh_aliases.nix;
+    envExtra = ''
+      PATH=$PATH:${config.home.homeDirectory}/.cargo/bin
+      PATH=$PATH:${config.home.homeDirectory}/go/bin
+      PATH=$PATH:${config.home.homeDirectory}/.npm-global/bin
+      PATH=$PATH:${config.home.homeDirectory}/.local/scripts
+    '';
+
+    initExtraBeforeCompInit = ''
+      setopt MENU_COMPLETE
+      setopt ALWAYS_TO_END
+      setopt HIST_VERIFY
+
+    '' + import ./zsh_functions.nix;
+
     initExtra = ''
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source ${./dotfiles/.p10k-rainbow.zsh}
 
-      if [[ $(uname) == "Darwin" ]]; then
-        alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
-        alias nixswitch="darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s) && activate-settings"
-        if [[ $(uname -m) == "arm64" ]]; then
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-        else
-          eval "$(/usr/local/bin/brew shellenv)"
-        fi
-      else
-        # Linux
-        alias pbcopy='xclip -selection clipboard'
-        alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
-      fi
+      export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       eval "$(zoxide init zsh)"
-      # >>> conda initialize >>>
-      # !! Contents within this block are managed by 'conda init' !!
-      __conda_setup="$('/usr/local/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-      if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
-      else
-        if [ -f "/usr/local/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-           . "/usr/local/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-        else
-          export PATH="/usr/local/Caskroom/miniconda/base/bin:$PATH"
-        fi
-      fi
-      unset __conda_setup
-      # <<< conda initialize <<<
 
       bindkey "^P" history-beginning-search-backward
       bindkey "^N" history-beginning-search-forward
       bindkey '^ ' autosuggest-accept
+      bindkey '^z' autosuggest-accept
 
       # Arrow keys
       bindkey '^[[1;5A' up-line-or-history
@@ -88,11 +85,6 @@
       bindkey '^[[1;5D' backward-word
       bindkey '^[[1;5C' forward-word
 
-      export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
-
-      setopt hist_verify
-
-      export PATH="/home/cem/.local/scripts:$PATH"
-    '';
+    '' + import ./zsh_init.nix;
   };
 }
