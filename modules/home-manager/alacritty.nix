@@ -6,8 +6,8 @@
     general.import = [ "~/.config/alacritty/themes/orange-and-teal.toml" ];
     env = { TERM = "xterm-256color"; };
     window = {
-      padding.x = 10;
-      padding.y = 10;
+      # padding.x = 10;
+      # padding.y = 10;
 
       decorations = "Buttonless";
 
@@ -16,7 +16,7 @@
       option_as_alt = "Both";
     };
     font = {
-      normal.family = "MesloLGS Nerd Font Mono";
+      normal.family = "MesloLGS Nerd Font";
       size = 14;
     };
     #window.dimensions = {

@@ -1,6 +1,6 @@
 { ... }: {
   services.yabai = {
-    enable = true;
+    enable = false;
     config = {
       mouse_modifier = "alt";
       # set modifier + right-click drag to resize window (default: resize)
