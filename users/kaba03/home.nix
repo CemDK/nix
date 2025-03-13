@@ -1,7 +1,8 @@
 { pkgs, user, home, ... }:
 
 {
-  imports = [ ../../modules/home-manager ];
+  imports =
+    [ ../../modules/home-manager ../../modules/home-manager/alacritty.nix ];
 
   home = {
     username = user;
@@ -9,19 +10,10 @@
   };
 
   home.file = {
-    ".config/nvim" = {
-      source = ../../modules/home-manager/dotfiles/nvim;
-      recursive = true;
-    };
-
     ".config/.p10k-rainbow.zsh".source =
       ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
-
     ".config/tmux/tmux.conf".source =
       ../../modules/home-manager/dotfiles/tmux/tmux.conf;
-
-    ".vim/colors/orange_and_teal.vim".source =
-      ../../modules/home-manager/dotfiles/vim/orange_and_teal.vim;
   };
 
   home.packages = with pkgs; [
