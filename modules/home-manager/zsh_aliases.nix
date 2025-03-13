@@ -15,18 +15,18 @@
   lt = "ll --tree --git-ignore";
 
   cd = "z";
-  cdr =
-    "cd $(find ~/dev -mindepth 1 -maxdepth 2 -type d | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')";
+  cdr = ''
+    cd $(cat <(find ~/dev/personal -mindepth 1 -maxdepth 1 -type d) <(find ~/dev/work -mindepth 1 -maxdepth 2 -type d) \
+            | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')'';
 
-  v = "vi";
-  iv = "vi";
-  vim = "vi";
-  vmi = "vi";
-  nv = "vi";
-  nvi = "vi";
-  nvim = "vi";
-  nvimi = "vi";
-  vi = "(fs &); (tcol_grey &); nvim; (tcol_orange &); clear; (fs &)";
+  v = "nvim";
+  iv = "nvim";
+  vim = "nvim";
+  vmi = "nvim";
+  nv = "nvim";
+  nvi = "nvim";
+  nvimi = "nvim";
+  vi = "nvim";
 
   cfile = "cat $(fzf) | pbcopy";
 
