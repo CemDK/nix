@@ -43,8 +43,20 @@
   }
 
   fs(){
-    powershell.exe -command '$wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys("{F11}")' > /dev/null 2>&1
-    powershell.exe -command '$wshell = New-Object -ComObject Shell.Application; $wshell.minimizeall()' > /dev/null 2>&1
+    # if in wsl linux then execute else don't
+    if [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
+      powershell.exe -command '$wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys("{F11}")' > /dev/null 2>&1
+      powershell.exe -command '$wshell = New-Object -ComObject Shell.Application; $wshell.minimizeall()' > /dev/null 2>&1
+    fi
+  }
+
+  nvim(){
+    (fs &)
+    (tmux set-option -g status-bg "#282c34" &)
+    command nvim "$@"
+    (tmux set-option -g status-bg "#005F60" &)
+    clear
+    (fs &)
   }
 
 ''
