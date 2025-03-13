@@ -88,9 +88,11 @@
           home = "/Users/cem";
         };
 
-        "default" = mkDarwinConfig {
+        "kaba03@work" = mkDarwinConfig {
           system = "aarch64-darwin";
-          userHost = "kaba03@default";
+          user = "kaba03";
+          host = "work";
+          userHost = "kaba03@work";
           home = "/Users/kaba03";
         };
       };
