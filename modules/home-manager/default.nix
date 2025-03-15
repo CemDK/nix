@@ -1,11 +1,15 @@
-{ config, pkgs, ... }:
+{ config, pkgs, user, home, ... }:
 
 {
 
   # Common across all machines and users
-  imports = [ ./eza.nix ./fzf.nix ./vim.nix ./zsh.nix ];
+  imports = [ ./eza.nix ./fzf.nix ./tmux.nix ./vim.nix ./zsh.nix ];
 
   home.stateVersion = "21.11";
+  home = {
+    username = user;
+    homeDirectory = home;
+  };
 
   home.packages = with pkgs; [
     bat
@@ -56,6 +60,19 @@
 
     ".local/scripts/tmux-sessionizer".source =
       ../../modules/home-manager/scripts/tmux-sessionizer;
+
+    ".config/.p10k-rainbow.zsh".source =
+      ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
+
+    # ".config/tmux/tmux.conf".source =
+    #   ../../modules/home-manager/dotfiles/tmux/tmux.conf;
+
+    # ".local/scripts/taoup" = {
+    #   source = builtins.fetchGit {
+    #     url = "https://github.com/globalcitizen/taoup";
+    #     rev = "bd6f225edbd0babe58b09a836977e772ee1abbab";
+    #   };
+    # };
   };
 
   programs = {

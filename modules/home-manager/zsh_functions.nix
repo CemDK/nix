@@ -52,6 +52,7 @@
 
   nvim(){
     (fs &)
+    # (tmux set-option -g status-bg "#23272E" &)
     (tmux set-option -g status-bg "#282c34" &)
     command nvim "$@"
     (tmux set-option -g status-bg "#005F60" &)
