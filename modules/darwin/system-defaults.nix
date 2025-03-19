@@ -17,7 +17,7 @@
 
     finder = {
       AppleShowAllExtensions = true;
-      AppleShowAllFiles = true;
+      AppleShowAllFiles = false;
       CreateDesktop = false;
       FXEnableExtensionChangeWarning = false;
       FXDefaultSearchScope = "SCcf"; # current folder
