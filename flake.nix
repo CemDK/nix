@@ -46,8 +46,7 @@
           inherit system;
           specialArgs = { inherit host user home inputs; };
           modules = [
-            # TODO: Add custom NixOS modules here
-            (import ./hosts/nixos { inherit self system user home; })
+            (import ./modules/nixos/configuration.nix)
             home-manager.nixosModules.home-manager
             {
               home-manager = {
@@ -99,12 +98,12 @@
 
       # NixOS configurations
       nixosConfigurations = {
-        "desktop" = mkNixOSConfig {
+        "cemdk@nixos" = mkNixOSConfig {
           system = "x86_64-linux";
-          user = "cem";
-          host = "desktop";
-          userHost = "cem@desktop";
-          home = "/home/cem";
+          user = "cemdk";
+          host = "nixos";
+          userHost = "cemdk@nixos";
+          home = "/home/cemdk";
         };
       };
 
