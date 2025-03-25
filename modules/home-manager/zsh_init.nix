@@ -8,9 +8,13 @@
       eval "$(/usr/local/bin/brew shellenv)"
     fi
   else
-    # Linux
-    alias pbcopy='xclip -selection clipboard'
-    alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
+    if [[ $(uname -n) == "nixos" ]]; then
+        alias nixswitch="sudo nixos-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
+    else
+        # Linux
+        alias pbcopy='xclip -selection clipboard'
+        alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
+    fi
   fi
 
 
