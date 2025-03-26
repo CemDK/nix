@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{
   home.file.".config/alacritty/themes".source = ./alacritty/themes;
 
   programs.alacritty = {

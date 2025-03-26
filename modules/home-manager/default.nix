@@ -1,4 +1,4 @@
-{ config, pkgs, user, home, ... }:
+{ config, pkgs, inputs, user, home, ... }:
 
 {
 
@@ -74,6 +74,12 @@
     #   };
     # };
   };
+
+  nix.nixPath = [
+    "nixpkgs=${inputs.nixpkgs}"
+    # For home-manager
+    # "home-manager=${inputs.home-manager}"
+  ];
 
   programs = {
     # home-manager.enable = true;

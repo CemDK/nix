@@ -19,7 +19,7 @@
           inherit system;
           specialArgs = { inherit host user home inputs; };
           modules = [
-            ({ pkgs, config, ... }:
+            ({ pkgs, ... }:
               import ./modules/darwin/system-configuration.nix {
                 inherit pkgs self system user home;
               })
@@ -68,7 +68,7 @@
       mkHomeConfig = { system, user, host, userHost, home }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
-          extraSpecialArgs = { inherit user home inputs; };
+          extraSpecialArgs = { inherit user host home inputs; };
           modules = [
             ({ pkgs, ... }:
               (import ./users/${userHost}/home.nix { inherit pkgs user home; }))
@@ -117,5 +117,6 @@
           home = "/home/cem";
         };
       };
+
     };
 }
