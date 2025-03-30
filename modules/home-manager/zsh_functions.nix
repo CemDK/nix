@@ -51,19 +51,7 @@
   }
 
   nvim(){
-    # (fs &)
-    if [ -n "$TMUX" ]; then
-        # (tmux set-option -g status-bg "#23272E" &)
-        (tmux set-option -g status-bg "#282c34" &)
-    fi
-
-    command nvim "$@"
-
-    if [ -n "$TMUX" ]; then
-        (tmux set-option -g status-bg "#005F60" &)
-    fi
-    clear
-    # (fs &)
+    command nvim "$@" && clear
   }
 
 ''
