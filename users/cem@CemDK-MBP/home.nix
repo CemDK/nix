@@ -11,7 +11,7 @@
     homeDirectory = home;
   };
 
-  home.file = {};
+  home.file = { };
 
   home.packages = with pkgs; [ ];
 }

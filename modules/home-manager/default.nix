@@ -64,9 +64,6 @@
     ".config/.p10k-rainbow.zsh".source =
       ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
 
-    # ".config/tmux/tmux.conf".source =
-    #   ../../modules/home-manager/dotfiles/tmux/tmux.conf;
-
     # ".local/scripts/taoup" = {
     #   source = builtins.fetchGit {
     #     url = "https://github.com/globalcitizen/taoup";
@@ -77,7 +74,6 @@
 
   nix.nixPath = [
     "nixpkgs=${inputs.nixpkgs}"
-    # For home-manager
     # "home-manager=${inputs.home-manager}"
   ];
 
@@ -88,7 +84,6 @@
 
   xdg = {
     enable = true;
-
     configHome = "${config.home.homeDirectory}/.config";
     dataHome = "${config.home.homeDirectory}/.local/share";
     cacheHome = "${config.home.homeDirectory}/.cache";
