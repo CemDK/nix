@@ -1,12 +1,13 @@
 {
-  tcol_grey = ''tmux set-option -g status-bg "#282c34"'';
-  tcol_orange = ''tmux set-option -g status-bg "#005F60"'';
+  tgrey = ''tmux set-option -g status-bg "#282c34"'';
+  torange = ''tmux set-option -g status-bg "#005F60"'';
 
   nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
-  nixe = "pushd ~/.config/nix && vi && nixswitch --impure && popd";
+  nixe =
+    "pushd ~/.config/nix >/dev/null && vi && nixswitch --impure && popd >/dev/null && clear";
 
-  nvime = "pushd ~/.config/nvim && vi && popd";
+  nvime = "pushd ~/.config/nvim >/dev/null && vi && popd >/dev/null && clear";
 
   cat = "bat";
 
