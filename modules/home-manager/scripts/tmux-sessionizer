@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 debug="0"
-selected=$(find ~/dev/personal -mindepth 1 -maxdepth 1 -type d | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')
+# Search personal directory with depth 1 and work directory with depth 2
+personal_dirs=$(find ~/dev/personal -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+work_dirs=$(find ~/dev/work -mindepth 2 -maxdepth 2 -type d 2>/dev/null)
+# Combine results and pipe to fzf
+selected=$(printf "%s\n%s" "$personal_dirs" "$work_dirs" | sort | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')
 if [[ -z "$selected" ]]; then
     exit 0
 fi
-selected_name=$(basename $selected | tr ";,. " "____")
+selected_name=$(basename "$selected" | tr ";,. " "____")
 
 while [[ $# -gt 0 ]]; do
     if [[ $1 == "--debug" ]]; then
@@ -23,12 +27,11 @@ log() {
 switch_to() {
     if [[ -z "$TMUX" ]]; then
         log "attaching session"
-        tmux attach-session -t $selected_name
+        tmux attach-session -t "$selected_name"
     else
         log "switching client"
-        tmux switch-client -t $selected_name
+        tmux switch-client -t "$selected_name"
     fi
-
 }
 
 if tmux has-session -t="$selected_name" 2>/dev/null; then
@@ -37,8 +40,8 @@ if tmux has-session -t="$selected_name" 2>/dev/null; then
 else
     log "has no session \"$selected_name\""
     log "creating session"
-    tmux new-session -ds $selected_name -c $selected
+    tmux new-session -ds "$selected_name" -c "$selected"
     log "sending keys ready-tmux"
-    tmux send-keys -t $selected_name "ready-tmux" ^M
+    tmux send-keys -t "$selected_name" "ready-tmux" ^M
     switch_to
 fi
