@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
-echo "runnig ready-tmux"
+echo "runnig script ready-tmux"
+echo "looking for local .ready-tmux"
 if [[ -x ./.ready-tmux ]]; then
     echo "executing ./.ready-tmux"
     ./.ready-tmux
-elif [[ -x ~/dev/.ready-tmux ]]; then
-    echo "executing ~/.ready-tmux"
-    ~/.ready-tmux
 else
-    echo "no .ready-tmux found"
+    echo "looking for ~/dev/.ready-tmux"
+    if [[ -x ~/dev/.ready-tmux ]]; then
+        echo "executing ~/dev/.ready-tmux"
+        ~/dev/.ready-tmux
+    else
+        echo "no .ready-tmux found"
+    fi
 fi
