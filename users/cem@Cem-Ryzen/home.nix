@@ -16,8 +16,11 @@
     homeDirectory = home;
   };
 
-  home.file = {
-  };
+  home.file = { };
 
-  home.packages = with pkgs; [ ];
+  home.packages = with pkgs;
+    [
+      stripe-cli
+
+    ];
 }
