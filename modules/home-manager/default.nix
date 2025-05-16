@@ -33,7 +33,7 @@
     # Code
     lua
     luajitPackages.luarocks
-    nodejs_23
+    nodejs
     rustup
     typescript
 

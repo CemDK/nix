@@ -4,8 +4,9 @@ debug="0"
 # Search personal directory with depth 1 and work directory with depth 2
 personal_dirs=$(find ~/dev/personal -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 work_dirs=$(find ~/dev/work -mindepth 2 -maxdepth 2 -type d 2>/dev/null)
+git_dirs=$(find ~/dev/git -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 # Combine results and pipe to fzf
-selected=$(printf "%s\n%s" "$personal_dirs" "$work_dirs" | sort | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')
+selected=$(printf "%s\n%s\n%s" "$personal_dirs" "$work_dirs" "$git_dirs" | sort | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}')
 if [[ -z "$selected" ]]; then
     exit 0
 fi
