@@ -2,7 +2,7 @@
 
 {
   imports =
-    [ ./system-packages.nix ./system-defaults.nix ./skhd.nix ./yabai.nix ];
+    [ ./system-packages.nix ./system-defaults.nix ./window-manager.nix ];
 
   # STANDARD SETTINGS
   # services.nix-daemon.enable = true;
@@ -18,6 +18,8 @@
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 5;
+
+  system.primaryUser = "kaba03";
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;
