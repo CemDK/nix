@@ -18,7 +18,7 @@
   # $ darwin-rebuild changelog
   system.stateVersion = 5;
 
-  system.primaryUser = "kaba03";
+  system.primaryUser = user;
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = system;

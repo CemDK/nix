@@ -3,6 +3,8 @@
 {
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
+  # Add any applications that you want on all apple devices here.
+  # User-specific applications should be added to the user config in /users/$user/home.nix 
   environment.systemPackages = with pkgs; [
     hidden-bar
     mkalias
