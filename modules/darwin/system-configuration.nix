@@ -1,8 +1,7 @@
 { pkgs, self, system, user, home, ... }:
 
 {
-  imports =
-    [ ./system-packages.nix ./system-defaults.nix ./window-manager.nix ];
+  imports = [ ./system-packages.nix ./system-defaults.nix ];
 
   # STANDARD SETTINGS
   # services.nix-daemon.enable = true;
