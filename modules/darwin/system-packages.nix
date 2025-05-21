@@ -6,7 +6,7 @@
   environment.systemPackages = with pkgs; [
     hidden-bar
     mkalias
-    nodejs_23
+    nodejs
     obsidian
     raycast
     stats
