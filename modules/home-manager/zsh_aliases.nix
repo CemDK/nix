@@ -65,4 +65,5 @@
     " https://vtip.43z.one'';
 
   tsesh = "tmux-sessionizer";
+  ts = "tmux-sessionizer";
 }
