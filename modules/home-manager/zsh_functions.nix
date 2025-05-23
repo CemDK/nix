@@ -54,4 +54,13 @@
     command nvim "$@" && clear
   }
 
+  explain() {
+    local query="$*"
+    if [ -z "$query" ]; then
+      echo "Usage: explain <query>"
+      return 1
+    fi
+
+    gh copilot explain "$query"
+  }
 ''
