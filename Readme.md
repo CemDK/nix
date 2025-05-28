@@ -69,12 +69,14 @@ Nix darwin is used to manage my macOS machines using nix.
     }
     ```
 
-3. **Run Nix-Darwin Rebuild:**
+3. **Run nix-darwin Rebuild:**
 
-    Then run the following commands to install Nix and Nix-Darwin:
+    Finally, to install nix-darwin and apply your configuration, run the following command:
 
     ```sh
+    sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/.config/nix/.#$(whoami)@work
     nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake .#$(whoami)@$(hostname -s)
     ```
 
-    After this, if you include my zsh config, you can run `nixup`, `nixswitch` and `nixclean`
+    After this, if you include my zsh config, you can run these aliased commands `nixup`, `nixswitch` and `nixclean`
+    or the default `sudo darwin-rebuild switch`
