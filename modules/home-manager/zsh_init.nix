@@ -2,10 +2,10 @@
   if [[ $(uname) == "Darwin" ]]; then
     alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
     if [[ $(uname -m) == "arm64" ]]; then
-      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@work && activate-settings"
+      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@work"
       eval "$(/opt/homebrew/bin/brew shellenv)"
     else
-      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s) && activate-settings"
+      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
       eval "$(/usr/local/bin/brew shellenv)"
     fi
   else
