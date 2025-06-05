@@ -19,8 +19,11 @@
   home.file = { };
 
   home.packages = with pkgs;
+
     [
+
       stripe-cli
+      mkvtoolnix-cli
 
     ];
 }
