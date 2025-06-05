@@ -66,4 +66,6 @@
 
   tsesh = "tmux-sessionizer";
   ts = "tmux-sessionizer";
+
+  lg = "lazygit";
 }
