@@ -1,8 +1,8 @@
 # Nix Config
 
-This repository contains the configuration for my nix configurations (for nixOS, macOS, linux and wsl).
+This repository contains my nix configurations (for nixOS, macOS, linux and wsl).
 Nix home-manager is used across all systems to manage my dotfiles and user specific applications.
-Nix darwin is used to manage my macOS machines using nix.
+Nix darwin is used to manage my macOS machines.
 
 ## Installation
 
@@ -74,9 +74,8 @@ Nix darwin is used to manage my macOS machines using nix.
     Finally, to install nix-darwin and apply your configuration, run the following command:
 
     ```sh
-    sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/.config/nix/.#$(whoami)@work
-    nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake .#$(whoami)@$(hostname -s)
+    sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -I)
     ```
 
-    After this, if you include my zsh config, you can run these aliased commands `nixup`, `nixswitch` and `nixclean`
-    or the default `sudo darwin-rebuild switch`
+    Afterwards, if you include the aliases from my zsh config, you can run these aliased commands `nixup`, `nixswitch` and `nixclean`
+    or the default `sudo darwin-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -I)`.
