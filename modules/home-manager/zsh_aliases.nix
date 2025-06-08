@@ -29,6 +29,8 @@
   nvimi = "nvim";
   vi = "nvim";
 
+  neovide = "neovide.exe --frame=none --wsl";
+
   cfile = "cat $(fzf) | pbcopy";
 
   tadev = "ENV=dev terragrunt apply";

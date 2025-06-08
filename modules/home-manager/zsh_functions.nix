@@ -50,10 +50,6 @@
     fi
   }
 
-  nvim(){
-    command nvim "$@" && clear
-  }
-
   explain() {
     local query="$*"
     if [ -z "$query" ]; then
