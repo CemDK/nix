@@ -22,6 +22,7 @@
     jq
     lazygit
     neofetch
+    neovide
     ripgrep
     tldr
     tmux
