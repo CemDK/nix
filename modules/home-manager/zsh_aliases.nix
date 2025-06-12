@@ -29,7 +29,7 @@
   nvimi = "nvim";
   vi = "nvim";
 
-  neovide = "neovide.exe --frame=none --wsl";
+  # neovide = "(neovide.exe --frame=none --wsl &)";
 
   cfile = "cat $(fzf) | pbcopy";
 

@@ -7,7 +7,7 @@
     fd --type d --hidden --follow --exclude ".git" . "$1"
   }
 
-  fd() {
+  fdd() {
     DIR=$(find . -type d -not -path "*/\.*" -not -path "*/node_modules/*" \
     -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/.next/*" \
     -mindepth 1 -maxdepth 8 2> /dev/null | sed 's|^\./||' | fzf-tmux) \
@@ -58,5 +58,13 @@
     fi
 
     gh copilot explain "$query"
+  }
+
+  neovide() {
+    if [[ $(uname -r) == *WSL* ]]; then
+      (neovide.exe --frame=none --wsl &)
+    else
+      (neovide --frame=none &)
+    fi
   }
 ''
