@@ -35,6 +35,7 @@
     lua
     luajitPackages.luarocks
     nodejs
+    pnpm
     rustup
     typescript
 
@@ -85,9 +86,10 @@
 
   xdg = {
     enable = true;
+    cacheHome = "${config.home.homeDirectory}/.cache";
     configHome = "${config.home.homeDirectory}/.config";
     dataHome = "${config.home.homeDirectory}/.local/share";
-    cacheHome = "${config.home.homeDirectory}/.cache";
+    stateHome = "${config.home.homeDirectory}/.local/state";
   };
 
   # TODO: look into direnv
