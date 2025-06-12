@@ -60,7 +60,7 @@
     gh copilot explain "$query"
   }
 
-  neovide() {
+  nv() {
     if [[ $(uname -r) == *WSL* ]]; then
       (neovide.exe --frame=none --wsl &)
     else
