@@ -24,7 +24,7 @@
   iv = "nvim";
   vim = "nvim";
   vmi = "nvim";
-  nv = "nvim";
+  # nv = "nvim";
   nvi = "nvim";
   nvimi = "nvim";
   vi = "nvim";
