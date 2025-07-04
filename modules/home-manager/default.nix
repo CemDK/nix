@@ -23,6 +23,7 @@
     lazygit
     neofetch
     neovide
+    neovim
     ripgrep
     tldr
     tmux

@@ -23,11 +23,15 @@
     kubectl
     kubevela
 
+    yarn
+    postman
+    minikube
+
     alt-tab-macos
     go
     opentofu
-    podman
-    podman-desktop
+    # podman
+    # podman-desktop
     terragrunt
   ];
 }

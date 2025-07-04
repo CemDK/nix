@@ -13,6 +13,7 @@
     raycast
     stats
     neovim
+    betterdisplay
   ];
 
   system.activationScripts.applications.text = let
