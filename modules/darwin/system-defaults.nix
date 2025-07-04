@@ -44,6 +44,7 @@
       InitialKeyRepeat = 14;
       KeyRepeat = 2;
       NSWindowResizeTime = 0.0;
+      AppleSpacesSwitchOnActivate = false;
     };
 
     CustomUserPreferences = {
