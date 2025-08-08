@@ -14,6 +14,7 @@
   home.packages = with pkgs; [
     bat
     curl
+    direnv
     fd
     fzf
     gh

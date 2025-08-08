@@ -18,12 +18,20 @@
 
   home.file = { };
 
-  home.packages = with pkgs;
+  nixpkgs.config.allowUnfree = true;
 
-    [
+  home.packages = with pkgs; [
 
-      stripe-cli
-      mkvtoolnix-cli
+    stripe-cli
+    mkvtoolnix-cli
+    conda
+    claude-code
+    redis
+    google-cloud-sdk
+    # python313
+    # python313Packages.torch
+    # python313Packages.torchaudio
+    # python313Packages.torchvision
 
-    ];
+  ];
 }
