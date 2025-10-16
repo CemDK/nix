@@ -28,6 +28,8 @@
     claude-code
     redis
     google-cloud-sdk
+
+    miktex
     # python313
     # python313Packages.torch
     # python313Packages.torchaudio
