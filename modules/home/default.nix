@@ -1,13 +1,15 @@
 { config, pkgs, inputs, user, home, ... }:
 let
-  dotfiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
-  create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
+  link = config.lib.file.mkOutOfStoreSymlink;
+  # inherit (config.lib.file) mkOutOfStoreSymlink;
 
+  localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
-    alacritty = "alacritty";
-    tmux = "tmux";
-    hypr = "hypr";
-    waybar = "waybar";
+    alacritty = "${localFiles}/alacritty";
+    tmux = "${localFiles}/tmux";
+    hypr = "${localFiles}/hypr";
+    waybar = "${localFiles}/waybar";
+    wallpapers = "${localFiles}/wallpapers";
   };
 in {
   imports = [
@@ -78,8 +80,8 @@ in {
   #     ../../modules/home-manager/scripts/tmux-sessionizer;
   # };
   #
-  xdg.configFile = builtins.mapAttrs (name: subpath: {
-    source = create_symlink "${dotfiles}/${subpath}";
+  xdg.configFile = builtins.mapAttrs (name: config: {
+    source = link "${config}";
     recursive = true;
   }) configs;
 
