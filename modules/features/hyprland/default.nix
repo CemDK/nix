@@ -1,4 +1,5 @@
-{ config, pkgs, lib, ... }: {
+{ pkgs, ... }: {
+  # imports = [ ./waybar.nix ];
 
   programs.hyprland = {
     enable = true;

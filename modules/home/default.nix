@@ -1,14 +1,23 @@
 { config, pkgs, inputs, user, home, ... }:
 let
-  dotfiles = "${config.home.homeDirectory}/nix/dotfiles";
+  dotfiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
 
   configs = {
     alacritty = "alacritty";
     tmux = "tmux";
+    hypr = "hypr";
+    waybar = "waybar";
   };
 in {
-  imports = [ ./eza.nix ./fzf.nix ./tmux.nix ./vim.nix ./zsh.nix ];
+  imports = [
+    # ./alacritty/alacritty.nix
+    # ./eza.nix
+    # ./fzf.nix
+    # ./tmux.nix
+    # ./vim.nix
+    # ./zsh.nix
+  ];
 
   home.stateVersion = "25.05";
   home = {
@@ -22,37 +31,36 @@ in {
     fd
     fzf
     gh
-    git
+    # git
     htop
     jq
     lazygit
-    neofetch
     neovide
     neovim
     ripgrep
     tldr
     tmux
     unzip
-    wget
     vim
+    wget
     zsh
 
     # Code
-    lua
-    luajitPackages.luarocks
-    nodejs
-    pnpm
-    rustup
-    typescript
+    #    lua
+    # luajitPackages.luarocks
+    # nodejs
+    # pnpm
+    # rustup
+    # typescript
 
     ###################
     # for nvim
-    tree-sitter
+    # tree-sitter
     # formatting / linting
-    nodePackages.prettier
-    statix # nix linter
-    nixd
-    nixfmt-classic
+    # nodePackages.prettier
+    # statix # nix linter
+    # nixd
+    # nixfmt-classic
     # Let mason do these
     # eslint
     # eslint_d
@@ -62,14 +70,14 @@ in {
     # typescript-language-server
   ];
 
-  home.file = {
-    ".local/scripts/ready-tmux".source =
-      ../../modules/home-manager/scripts/ready-tmux;
-
-    ".local/scripts/tmux-sessionizer".source =
-      ../../modules/home-manager/scripts/tmux-sessionizer;
-  };
-
+  # home.file = {
+  #   ".local/scripts/ready-tmux".source =
+  #     ../../modules/home-manager/scripts/ready-tmux;
+  #
+  #   ".local/scripts/tmux-sessionizer".source =
+  #     ../../modules/home-manager/scripts/tmux-sessionizer;
+  # };
+  #
   xdg.configFile = builtins.mapAttrs (name: subpath: {
     source = create_symlink "${dotfiles}/${subpath}";
     recursive = true;
@@ -80,7 +88,17 @@ in {
   # Can probalby forgo
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    userName = "CemDK";
+    userEmail = "25245902+CemDK@users.noreply.github.com";
+    extraConfig = { credential.helper = "store"; };
+  };
+
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper = { enable = true; };
+  };
 
   xdg = {
     enable = true;

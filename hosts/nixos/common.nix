@@ -89,8 +89,8 @@
   # ============================================================================
   environment.systemPackages = with pkgs; [
     # neovim
-    gh
-    git
+    # git
+    lazygit
     wget
     curl
   ];
