@@ -3,3 +3,4 @@ result-*
 *.iso
 *.qcow2
 .ready-tmux
+dotfiles/tmux/plugins/tpm

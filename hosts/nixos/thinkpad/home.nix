@@ -12,7 +12,13 @@
   };
 
   home.file = { };
-  home.packages = with pkgs; [ neovim pavucontrol playerctl ];
+  home.packages = with pkgs; [ 
+    neovim 
+    pavucontrol 
+    playerctl 
+    claude-code
+    (callPackage ../../../modules/home/zen-browser { })
+  ];
 
   home.stateVersion = "25.05";
 

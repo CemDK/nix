@@ -1,8 +1,6 @@
 { config, pkgs, inputs, user, home, ... }:
 let
   link = config.lib.file.mkOutOfStoreSymlink;
-  # inherit (config.lib.file) mkOutOfStoreSymlink;
-
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
     alacritty = "${localFiles}/alacritty";
@@ -14,6 +12,7 @@ let
 in {
   imports = [
     # ./alacritty/alacritty.nix
+    ./nvim
     # ./eza.nix
     # ./fzf.nix
     # ./tmux.nix
