@@ -12,7 +12,7 @@
   };
 
   home.file = { };
-  home.packages = with pkgs; [ neovim ];
+  home.packages = with pkgs; [ neovim pavucontrol playerctl ];
 
   home.stateVersion = "25.05";
 

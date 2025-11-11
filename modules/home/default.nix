@@ -44,6 +44,7 @@ in {
     tmux
     unzip
     vim
+    obsidian
     wget
     zsh
 

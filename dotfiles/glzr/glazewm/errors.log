@@ -1,0 +1,10 @@
+[2m2025-06-05T07:25:22.793625Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m did not find expected ',' or ']' at line 354 column 36, while parsing a flow sequence at line 354 column 15
+[2m2025-06-05T10:12:09.823826Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m window_rules[14]: missing field `match` at line 239 column 5
+[2m2025-06-30T09:19:50.524258Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Another instance of the application is already running.
+[2m2025-07-12T14:11:56.031684Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Another instance of the application is already running.
+[2m2025-08-07T17:49:13.240045Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Workspace with name '9' doesn't exist or is already active.
+[2m2025-08-19T17:02:30.787000Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Another instance of the application is already running.
+[2m2025-08-22T13:08:31.072350Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Workspace with name 'minecraft' doesn't exist or is already active.
+[2m2025-08-22T13:08:36.473383Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Workspace with name 'minecraft' doesn't exist or is already active.
+[2m2025-08-22T13:08:37.268537Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Workspace with name 'minecraft' doesn't exist or is already active.
+[2m2025-08-22T13:08:37.894949Z[0m [31mERROR[0m [2mglazewm[0m[2m:[0m Workspace with name 'minecraft' doesn't exist or is already active.
