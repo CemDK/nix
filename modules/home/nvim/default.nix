@@ -2,7 +2,7 @@
   # install dependencies of my nvim setup
   home.packages = with pkgs; [
     fd
-    fzf
+    # fzf
     lazygit
     neovide
     neovim

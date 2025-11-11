@@ -13,8 +13,7 @@ in {
   imports = [
     # ./alacritty/alacritty.nix
     ./nvim
-    # ./eza.nix
-    # ./fzf.nix
+    ./fzf
     # ./tmux.nix
     # ./vim.nix
     # ./zsh.nix
@@ -30,8 +29,8 @@ in {
     bat
     curl
     fd
-    fzf
-    gh
+    # fzf
+    # gh
     # git
     htop
     jq
@@ -100,6 +99,12 @@ in {
   programs.gh = {
     enable = true;
     gitCredentialHelper = { enable = true; };
+  };
+
+  programs.eza = {
+    enable = true;
+    git = true;
+    extraOptions = [ "--group-directories-first" "--header" ];
   };
 
   xdg = {
