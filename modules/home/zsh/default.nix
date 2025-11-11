@@ -5,7 +5,8 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    dotDir = "${config.xdg.configHome}/zsh";
+    # dotDir expects a relative path from home directory, not absolute
+    dotDir = ".config/zsh";
     autocd = true;
     # oh-my-zsh = {
     #   enable = true;
@@ -61,13 +62,15 @@
       PATH=$PATH:${config.home.homeDirectory}/.local/scripts
     '';
 
+    # source ${./dotfiles/.p10k-rainbow.zsh}
+    # source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
     initContent = ''
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-      source ${./dotfiles/.p10k-rainbow.zsh}
 
       export COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
       eval "$(zoxide init zsh)"
+      eval "$(starship init zsh)"
+
 
       # HISTORY
       setopt MENU_COMPLETE

@@ -16,7 +16,7 @@ in {
     ./fzf
     # ./tmux.nix
     # ./vim.nix
-    # ./zsh.nix
+    ./zsh
   ];
 
   home.stateVersion = "25.05";
@@ -38,6 +38,7 @@ in {
     neovide
     neovim
     ripgrep
+    starship
     tldr
     tmux
     unzip

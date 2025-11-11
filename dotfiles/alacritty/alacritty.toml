@@ -17,6 +17,6 @@ size = 14
 family = "MesloLGS Nerd Font"
 
 [terminal]
-shell = "bash"
+shell = "zsh"
 
 
