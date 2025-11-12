@@ -19,6 +19,8 @@
     playerctl
     claude-code
     (callPackage ../../../modules/home/zen-browser { })
+    steam
+    obs-studio
   ];
 
   home.stateVersion = "25.05";

@@ -23,7 +23,7 @@ window#waybar {
 /* Workspaces */
 #workspaces button {
   padding: 6px 6px;
-  margin: 4px;
+  margin: 6px;
   /* margin-right: 4px; */
   color: @secondary;
   background: @subtle;
@@ -103,32 +103,32 @@ window#waybar {
 }
 
 /* Network group styling */
-#network-group {
-  padding: 2px 0;
-}
-
-.network-speed {
-  color: @secondary;
-  font-size: 12px;
-}
-
-#network#speed {
-  color: @secondary;
-  font-size: 12px;
+#network-speed {
+  padding: 4px 8px;
+  /* font-size: 12px; */
+  /* justify: "right"; */
 }
 
 #network {
   color: @secondary;
 }
 
-/* #network.disconnected { */
-/*   color: #ff6b6b; */
-/* } */
-
 #battery {
   color: @secondary;
 }
 
 #tray {
+  color: @secondary;
+}
+
+#tray > .active {
+  color: @secondary;
+}
+
+#tray > .passive {
+  color: @accent;
+}
+
+#tray > .needs-attention {
   color: @secondary;
 }

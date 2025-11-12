@@ -3,19 +3,20 @@
     "reload_style_on_change": true,
     "layer": "top",
     "position": "top",
-    "height": 30,
+    "height": 38,
     "spacing": 4,
     "modules-left": [
         "hyprland/workspaces",
+        "tray"
     ],
     "modules-center": [
         "clock",
-        "tray"
     ],
     "modules-right": [
         "group/tray-expander",
+        // "network#speed",
+        "group/network-speed",
         "network",
-        "network#speed",
         "cpu",
         "battery"
     ],
@@ -102,6 +103,13 @@
     },
 
     // ===== NETWORK CONFIGURATION =====
+    "group/network-speed": {
+        "orientation": "vertical",
+        "modules": [
+            "network#up",
+            "network#down",
+        ]
+    },
     "network": {
         "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
         "format": "{icon}",
@@ -112,16 +120,20 @@
         "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
         "tooltip-format-disconnected": "Disconnected",
         "interval": 3
-        // "on-click": "omarchy-launch-wifi"
     },
 
-    "network#speed": {
-        "name": "network-speed",
-        "format": "⇡{bandwidthUpBytes}\n⇣{bandwidthDownBytes}",
+    "network#up": {
+        "format": "⇡{bandwidthUpBytes}",
         "format-disconnected": "",
         "interval": 3,
         "tooltip": false
-        // "on-click": "omarchy-launch-wifi"
+    },
+
+    "network#down": {
+        "format": "⇣{bandwidthDownBytes}",
+        "format-disconnected": "",
+        "interval": 3,
+        "tooltip": false
     },
 
     // ===== BLUETOOTH CONFIGURATION =====
@@ -177,7 +189,9 @@
 
     // ===== SYSTEM TRAY =====
     "tray": {
-        "icon-size": 12,
-        "spacing": 17
+        "icon-size": 20,
+        "reverse-direction": false,
+        "show-passive-items": false,
+        "spacing": 16
     }
 }
