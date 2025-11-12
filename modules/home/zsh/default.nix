@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ config, ... }: {
   programs.zoxide.enable = true;
   programs.zsh = {
     enable = true;

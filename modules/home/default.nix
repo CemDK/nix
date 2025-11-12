@@ -75,14 +75,11 @@ in {
     # typescript-language-server
   ];
 
-  # home.file = {
-  #   ".local/scripts/ready-tmux".source =
-  #     ../../modules/home-manager/scripts/ready-tmux;
-  #
-  #   ".local/scripts/tmux-sessionizer".source =
-  #     ../../modules/home-manager/scripts/tmux-sessionizer;
-  # };
-  #
+  home.file = {
+    ".local/scripts/ready-tmux".source = ../../scripts/ready-tmux;
+    ".local/scripts/tmux-sessionizer".source = ../../scripts/tmux-sessionizer;
+  };
+
   xdg.configFile = builtins.mapAttrs (name: config: {
     source = link "${config}";
     recursive = true;
