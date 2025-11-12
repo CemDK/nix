@@ -17,6 +17,10 @@ configuration{
     kb-row-right: "Right,Control+l";
     kb-row-down: "Down,Control+j";
 
+    //adding ctrl+n and ctrl+p
+    kb-row-down: "Down,Control+n";
+    kb-row-up: "Up,Control+p";
+
     kb-accept-entry: "Control+z,Control+y,Return,KP_Enter";
 
     //fixing up
@@ -26,4 +30,6 @@ configuration{
     kb-move-char-forward: "Control+f";
     kb-mode-complete: "Control+o";
 }
-@theme "tokyonight.rasi"
+
+@theme "oat.rasi"
+//@theme "tokyonight.rasi"
