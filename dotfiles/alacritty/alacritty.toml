@@ -9,7 +9,7 @@ decorations = "Buttonless"
 opacity = 0.75
 blur = true
 option_as_alt = "Both"
-padding = { x = 10, y = 10}
+padding = { x = 10, y = 10 }
 
 [font]
 size = 14
@@ -20,4 +20,8 @@ family = "MesloLGS Nerd Font"
 [terminal]
 shell = "zsh"
 
-
+[keyboard]
+bindings = [
+  { key = "V", mods = "Control", action = "Paste" },
+  { key = "C", mods = "Control", action = "Copy" },
+]
