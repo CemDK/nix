@@ -34,7 +34,7 @@
   # SERVICES
   # ============================================================================
   # services.printing.enable = true;
-  services.openssh.enable = lib.mkDefault false;
+  # services.openssh.enable = lib.mkDefault false;
   services.getty.autologinUser = "cemdk";
 
   # ============================================================================
