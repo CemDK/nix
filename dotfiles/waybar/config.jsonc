@@ -103,7 +103,7 @@
     "network": {
         "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
         "format": "{icon}",
-        "format-wifi": "{icon} ⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "format-wifi": "{icon}",
         "format-ethernet": "󰀂",
         "format-disconnected": "󰤮",
         "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
@@ -111,8 +111,21 @@
         "tooltip-format-disconnected": "Disconnected",
         "interval": 3,
         "spacing": 1,
+        "modules": [
+            "custom/network-speed",
+        ]
         // "on-click": "omarchy-launch-wifi"
-  },
+      },
+
+    "custom/network-speed": {
+        "format": "⇣{bandwidthDownBytes}\n⇡{bandwidthUpBytes}",
+        "format-wifi": "⇣{bandwidthDownBytes}\n⇡{bandwidthUpBytes}",
+        "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "tooltip-format-disconnected": "Disconnected",
+        "interval": 3,
+        "spacing": 1,
+      },
 
     // ===== BLUETOOTH CONFIGURATION =====
     "bluetooth": {
@@ -161,7 +174,7 @@
         ]
     },
     "custom/expand-icon": {
-        "format": "",
+        "format": " ",
         "tooltip": false
     },
 
