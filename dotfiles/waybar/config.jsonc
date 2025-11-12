@@ -12,14 +12,13 @@
         "clock"
     ],
     "modules-right": [
-        "pulseaudio",
-        "mpris",
+        "group/tray-expander",
         "network",
         "cpu",
-        "group/tray-expander",
-        "bluetooth",
         "battery"
     ],
+
+    // ===== WORKSPACE CONFIGURATION =====
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -34,11 +33,15 @@
             ]
         }
     },
+
+    // ===== CLOCK CONFIGURATION =====
     "clock": {
         "format": "{:%a %d %b %H:%M}",
         "format-alt": "{:%Y-%m-%d}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
     },
+
+    // ===== AUDIO CONFIGURATION =====
     "pulseaudio": {
         "format": "{icon} {volume}%",
         "on-click": "pavucontrol",
@@ -55,6 +58,8 @@
             ]
         }
     },
+
+    // ===== MEDIA PLAYER CONFIGURATION =====
     "mpris": {
         "format": "{player_icon} {status_icon} {artist} - {title}",
         "format-paused": "{player_icon}  {artist} - {title}",
@@ -68,11 +73,8 @@
         },
         "max-length": 40
     },
-    "temperature": {
-        "format": " {temperatureC}°C",
-        "hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input",
-        "critical-threshold": 80
-    },
+
+    // ===== SYSTEM MONITORING =====
     "cpu": {
         "interval": 5,
         // "format": "CPU: {usage}%",
@@ -80,6 +82,24 @@
         "tooltip": false,
         // "on-click": "xdg-terminal-exec btop"
     },
+
+    "temperature": {
+        "format": " {temperatureC}°C",
+        "hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input",
+        "critical-threshold": 80
+    },
+
+    "memory": {
+        "format": "Mem: {used}GiB"
+    },
+
+    "disk": {
+        "interval": 60,
+        "path": "/",
+        "format": "Disk: {free}"
+    },
+
+    // ===== NETWORK CONFIGURATION =====
     "network": {
         "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
         "format": "{icon}",
@@ -94,6 +114,7 @@
         // "on-click": "omarchy-launch-wifi"
   },
 
+    // ===== BLUETOOTH CONFIGURATION =====
     "bluetooth": {
         "format": "",
         "format-disabled": "󰂲",
@@ -101,14 +122,8 @@
         "tooltip-format": "Devices connected: {num_connections}",
         "on-click": "blueberry"
     },
-    "memory": {
-        "format": "Mem: {used}GiB"
-    },
-    "disk": {
-        "interval": 60,
-        "path": "/",
-        "format": "Disk: {free}"
-    },
+
+    // ===== BATTERY CONFIGURATION =====
     "battery": {
         "format": "{icon} {capacity}%",
         "format-discharging": "{icon} {capacity}%",
@@ -129,21 +144,30 @@
         }
     },
 
+    // ===== EXPANDABLE TRAY GROUP =====
     "group/tray-expander": {
         "orientation": "inherit",
         "drawer": {
           "transition-duration": 600,
           "children-class": "tray-group-item"
     },
-    "modules": ["custom/expand-icon", "tray"]
+
+        "modules": [
+            "custom/expand-icon",
+            "mpris",
+            "pulseaudio",
+            "bluetooth",
+            "tray"
+        ]
     },
     "custom/expand-icon": {
-        "format": "<",
+        "format": "",
         "tooltip": false
     },
 
-  "tray": {
-    "icon-size": 12,
-    "spacing": 17
-  }
+    // ===== SYSTEM TRAY =====
+    "tray": {
+        "icon-size": 12,
+        "spacing": 17
+    }
 }
