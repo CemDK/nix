@@ -9,10 +9,12 @@
       eval "$(/usr/local/bin/brew shellenv)"
     fi
   else
-    if [[ $(uname -n) == "nixos" ]]; then
+    # Check if we're running NixOS by looking for the NixOS marker file
+    if [[ -f /etc/NIXOS ]] || grep -q "^ID=nixos$" /etc/os-release 2>/dev/null; then
+        # NixOS system
         alias nixswitch="sudo nixos-rebuild switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
     else
-        # Linux
+        # Other Linux distributions
         alias pbcopy='xclip -selection clipboard'
         alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(whoami)@$(hostname -s)"
     fi
