@@ -14,14 +14,9 @@
     ],
     "modules-right": [
         "pulseaudio",
-        "custom/sep",
         "mpris",
-        "custom/sep",
         "cpu",
-        "custom/sep",
-        "battery",
-        "custom/sep",
-        "tray"
+        "battery"
     ],
     // Modules configuration
     "hyprland/workspaces": {
@@ -105,15 +100,15 @@
             "critical": 15
         },
         "format": "{capacity}% {icon} {time}",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "Bat {capacity}%",
+        "format-plugged": "{capacity}%  ",
+        // "format-alt": "Bat {capacity}%",
         "format-time": "{H}:{M}",
         "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
     },
     "network": {
