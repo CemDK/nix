@@ -1,13 +1,12 @@
 // -*- mode: jsonc -*-
 {
+    "reload_style_on_change": true,
     "layer": "top",
     "position": "top",
     "height": 30,
     "spacing": 4,
-    // Choose the order of the modules
     "modules-left": [
         "hyprland/workspaces",
-        "hyprland/submap"
     ],
     "modules-center": [
         "clock"
@@ -15,10 +14,10 @@
     "modules-right": [
         "pulseaudio",
         "mpris",
+        "network",
         "cpu",
         "battery"
     ],
-    // Modules configuration
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -32,18 +31,6 @@
                 4
             ]
         }
-    },
-    "hyprland/submap": {
-        "format": "✨ {}",
-        "tooltip": false
-    },
-    "tray": {
-        // "icon-size": 21,
-        "spacing": 10
-        // "icons": {
-        //   "blueman": "bluetooth",
-        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
-        // }
     },
     "clock": {
         "format": "{:%a %d %b %H:%M}",
@@ -82,9 +69,25 @@
         "critical-threshold": 80
     },
     "cpu": {
-        "format": "CPU: {usage}%",
-        "tooltip": false
+        "interval": 5,
+        // "format": "CPU: {usage}%",
+        "format": "󰍛 {usage}%",
+        "tooltip": false,
+        // "on-click": "xdg-terminal-exec btop"
     },
+    "network": {
+        "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
+        "format": "{icon}",
+        "format-wifi": "{icon} ⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "format-ethernet": "󰀂",
+        "format-disconnected": "󰤮",
+        "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+        "tooltip-format-disconnected": "Disconnected",
+        "interval": 3,
+        "spacing": 1,
+        // "on-click": "omarchy-launch-wifi"
+  },
     "memory": {
         "format": "Mem: {used}GiB"
     },
@@ -94,29 +97,22 @@
         "format": "Disk: {free}"
     },
     "battery": {
-        "states": {
-            "good": 95,
-            "warning": 30,
-            "critical": 15
+        "format": "{icon} {capacity}%",
+        "format-discharging": "{icon} {capacity}%",
+        "format-charging": "{icon} {capacity}%",
+        "format-plugged": "{icon} {capacity}%  ",
+        "format-full": "󰂅 {capacity}%",
+        "format-icons": {
+            "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+            "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
         },
-        "format": "{capacity}% {icon} {time}",
-        "format-plugged": "{capacity}%  ",
-        // "format-alt": "Bat {capacity}%",
-        "format-time": "{H}:{M}",
-        "format-icons": [
-            " ",
-            " ",
-            " ",
-            " ",
-            " "
-        ]
+        "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+        "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+        "interval": 5,
+        "on-click": "omarchy-menu power",
+        "states": {
+            "warning": 20,
+            "critical": 10
+        }
     },
-    "network": {
-        "format": "Online",
-        "format-disconnected": "Disconnected ⚠"
-    },
-    "custom/sep": {
-        "format": "|",
-        "interval": 0
-    }
 }

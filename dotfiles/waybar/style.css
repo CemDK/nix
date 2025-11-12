@@ -1,7 +1,7 @@
 /* Zebar-inspired color scheme */
 @define-color bg-start #062027;
 @define-color bg-end   #002f30;
-@define-color fg       rgba(255, 255, 255, 0.9);
+@define-color fg       #93a1a1;
 @define-color secondary #93a1a1;
 @define-color accent   #005f60;
 @define-color subtle   rgba(255, 255, 255, 0.05);
@@ -9,7 +9,7 @@
 
 * {
   font-family: ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: normal;
   min-height: 0;
 }
@@ -22,12 +22,13 @@ window#waybar {
 
 /* Workspaces */
 #workspaces button {
-  padding: 4px 8px;
-  margin-right: 4px;
+  padding: 6px 6px;
+  margin: 4px;
+  /* margin-right: 4px; */
   color: @secondary;
   background: @subtle;
   border: none;
-  border-radius: 2px;
+  border-radius: 8px;
 }
 
 #workspaces button.visible {
