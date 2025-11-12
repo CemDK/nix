@@ -39,16 +39,19 @@
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": " muted",
+        "on-click": "pavucontrol",
+        // "on-click": "xdg-terminal-exec --app-id=com.omarchy.Wiremix -e wiremix",
+        // "on-click-right": "pamixer -t",
+        "tooltip-format": "Playing at {volume}%",
+        "scroll-step": 5,
+        "format-muted": "",
         "format-icons": {
             "default": [
-                "",
-                "",
-                ""
+                "",
+                "",
+                ""
             ]
-        },
-        "on-click": "pavucontrol",
-        "scroll-step": 2
+        }
     },
     "mpris": {
         "format": "{player_icon} {status_icon} {artist} - {title}",
