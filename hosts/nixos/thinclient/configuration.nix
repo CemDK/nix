@@ -1,4 +1,4 @@
-{ host, pkgs, lib, ... }: {
+{ config, host, pkgs, lib, ... }: {
 
   # ============================================================================
   # IMPORTS
@@ -22,7 +22,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       alacritty
-      gh
       neovim
       kitty
       tree
@@ -42,6 +41,7 @@
   # ============================================================================
   networking.hostName = host;
   networking.firewall.allowedTCPPorts = [ ];
+  # networking.wireless.enable = true;
   #networking.wireless.iwd.enable = true;
 
   # ============================================================================
@@ -72,10 +72,15 @@
   # HARDWARE
   # ============================================================================
   # Enable TPlink Archer Nano Wifi Dongle 
-  # boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
 
   hardware.bluetooth.enable = true;
   # input.touchpad.disable_while_typing = false;
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 
   # ============================================================================
   # SYSTEM

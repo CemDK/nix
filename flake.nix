@@ -141,6 +141,12 @@
           host = "thinkpad";
           home = "/home/cemdk";
         };
+        "thinclient" = mkNixOSConfig {
+          system = "x86_64-linux";
+          user = "cemdk";
+          host = "thinclient";
+          home = "/home/cemdk";
+        };
       };
 
       # Home-manager standalone configurations (for non-NixOS Linux)

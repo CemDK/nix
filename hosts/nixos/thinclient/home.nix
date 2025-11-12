@@ -17,10 +17,15 @@
     neovim
     pavucontrol
     playerctl
-    claude-code
     (callPackage ../../../modules/home/zen-browser { })
-    obs-studio
+    xdg-desktop-portal-gtk
+    libva-utils
+    vulkan-loader
   ];
+
+  programs.steam.enable = true;
+  programs.steam.gamescopeSession.enable = true;
+  programs.gamemode.enable = true;
 
   home.stateVersion = "25.05";
 
