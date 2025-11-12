@@ -6,10 +6,10 @@
 
 // define colors etc.
 * {
-    bg: #062027;        // Dark teal background
-    hv: #f78104;        // Bright orange for highlights
-    primary: #2aa198;   // Dark cyan for borders
-    ug: #003c3d;        // Darker teal
+    bg: #062027D9;        // Dark teal background with transparency (85% opacity)
+    hv: #f78104E6;        // Bright orange for highlights with transparency (90% opacity)
+    primary: ##005F60CC;   // Dark cyan for borders with transparency (80% opacity)
+    ug: #003c3dE6;        // Darker teal with transparency (90% opacity)
     font: "Monospace 11";
     background-color: @bg;
     //dark: @bg;
@@ -17,7 +17,7 @@
     kl: #93a1a1;        // Light gray for text
     black: #005F60;     // Dark teal (not really black)
 
-    transparent: rgba(46,52,64,0);
+    transparent: #00000000;
 }
 
 // defines different aspects of the window
@@ -31,12 +31,13 @@ window {
     orientation: horizontal;
     location: center;
     anchor: center;
-    transparency: "screenshot";
+    transparency: "real";
     border-color: @transparent;
     border: 0px;
-    border-radius: 6px;
+    border-radius: 12px;
     spacing: 0;
     children: [ mainbox ];
+    background-color: @bg;
 }
 
 mainbox {
