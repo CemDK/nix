@@ -9,6 +9,7 @@ decorations = "Buttonless"
 opacity = 0.75
 blur = true
 option_as_alt = "Both"
+padding = { x = 10, y = 10}
 
 [font]
 size = 14
