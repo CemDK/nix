@@ -13,7 +13,7 @@
     ],
     "modules-right": [
         "group/tray-expander",
-        "network",
+        "group/network-group",
         "cpu",
         "battery"
     ],
@@ -100,6 +100,14 @@
     },
 
     // ===== NETWORK CONFIGURATION =====
+    "group/network-group": {
+        "orientation": "horizontal",
+        "modules": [
+            "network",
+            "network#2"
+        ]
+    },
+
     "network": {
         "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
         "format": "{icon}",
@@ -109,23 +117,17 @@
         "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
         "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
         "tooltip-format-disconnected": "Disconnected",
-        "interval": 3,
-        "spacing": 1,
-        "modules": [
-            "custom/network-speed",
-        ]
+        "interval": 3
         // "on-click": "omarchy-launch-wifi"
-      },
+    },
 
-    "custom/network-speed": {
-        "format": "⇣{bandwidthDownBytes}\n⇡{bandwidthUpBytes}",
-        "format-wifi": "⇣{bandwidthDownBytes}\n⇡{bandwidthUpBytes}",
-        "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-        "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-        "tooltip-format-disconnected": "Disconnected",
+    "network#2": {
+        "format": "⇡{bandwidthUpBytes}\n⇣{bandwidthDownBytes}",
+        "format-disconnected": "",
         "interval": 3,
-        "spacing": 1,
-      },
+        "tooltip": false
+        // "on-click": "omarchy-launch-wifi"
+    },
 
     // ===== BLUETOOTH CONFIGURATION =====
     "bluetooth": {

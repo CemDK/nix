@@ -102,13 +102,19 @@ window#waybar {
   color: @secondary;
 }
 
-#network {
-  color: @secondary;
+/* Network group styling */
+#network-group {
+  padding: 2px 0;
 }
 
-#network.disconnected {
-  color: #ff6b6b;
+#network {
+  color: @secondary;
+  font-size: 12px;
 }
+
+/* #network.disconnected { */
+/*   color: #ff6b6b; */
+/* } */
 
 #battery {
   color: @secondary;
