@@ -48,6 +48,8 @@ in {
     wget
     zsh
 
+    blueberry
+
     # Code
     #    lua
     # luajitPackages.luarocks

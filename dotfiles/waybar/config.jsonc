@@ -16,6 +16,8 @@
         "mpris",
         "network",
         "cpu",
+        "group/tray-expander",
+        "bluetooth",
         "battery"
     ],
     "hyprland/workspaces": {
@@ -91,6 +93,14 @@
         "spacing": 1,
         // "on-click": "omarchy-launch-wifi"
   },
+
+    "bluetooth": {
+        "format": "",
+        "format-disabled": "󰂲",
+        "format-connected": "",
+        "tooltip-format": "Devices connected: {num_connections}",
+        "on-click": "blueberry"
+    },
     "memory": {
         "format": "Mem: {used}GiB"
     },
@@ -112,10 +122,28 @@
         "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
         "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
         "interval": 5,
-        "on-click": "omarchy-menu power",
+        // "on-click": "omarchy-menu power",
         "states": {
             "warning": 20,
             "critical": 10
         }
     },
+
+    "group/tray-expander": {
+        "orientation": "inherit",
+        "drawer": {
+          "transition-duration": 600,
+          "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+    },
+    "custom/expand-icon": {
+        "format": "<",
+        "tooltip": false
+    },
+
+  "tray": {
+    "icon-size": 12,
+    "spacing": 17
+  }
 }
