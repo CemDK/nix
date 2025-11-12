@@ -4,8 +4,9 @@ let
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
     alacritty = "${localFiles}/alacritty";
-    tmux = "${localFiles}/tmux";
     hypr = "${localFiles}/hypr";
+    rofi = "${localFiles}/rofi";
+    tmux = "${localFiles}/tmux";
     waybar = "${localFiles}/waybar";
     wallpapers = "${localFiles}/wallpapers";
   };
