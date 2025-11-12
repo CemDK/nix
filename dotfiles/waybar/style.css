@@ -107,9 +107,18 @@ window#waybar {
   padding: 2px 0;
 }
 
-#network {
+.network-speed {
   color: @secondary;
   font-size: 12px;
+}
+
+#network#speed {
+  color: @secondary;
+  font-size: 12px;
+}
+
+#network {
+  color: @secondary;
 }
 
 /* #network.disconnected { */

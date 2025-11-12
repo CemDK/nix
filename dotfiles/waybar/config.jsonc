@@ -9,11 +9,13 @@
         "hyprland/workspaces",
     ],
     "modules-center": [
-        "clock"
+        "clock",
+        "tray"
     ],
     "modules-right": [
         "group/tray-expander",
-        "group/network-group",
+        "network",
+        "network#speed",
         "cpu",
         "battery"
     ],
@@ -49,12 +51,12 @@
         // "on-click-right": "pamixer -t",
         "tooltip-format": "Playing at {volume}%",
         "scroll-step": 5,
-        "format-muted": "",
+        "format-muted": " ",
         "format-icons": {
             "default": [
-                "",
-                "",
-                ""
+                " ",
+                " ",
+                " "
             ]
         }
     },
@@ -100,14 +102,6 @@
     },
 
     // ===== NETWORK CONFIGURATION =====
-    "group/network-group": {
-        "orientation": "horizontal",
-        "modules": [
-            "network",
-            "network#2"
-        ]
-    },
-
     "network": {
         "format-icons": ["󰤯 ", "󰤟 ", "󰤢 ", "󰤥 ", "󰤨 "],
         "format": "{icon}",
@@ -121,7 +115,8 @@
         // "on-click": "omarchy-launch-wifi"
     },
 
-    "network#2": {
+    "network#speed": {
+        "name": "network-speed",
         "format": "⇡{bandwidthUpBytes}\n⇣{bandwidthDownBytes}",
         "format-disconnected": "",
         "interval": 3,
@@ -131,9 +126,9 @@
 
     // ===== BLUETOOTH CONFIGURATION =====
     "bluetooth": {
-        "format": "",
-        "format-disabled": "󰂲",
-        "format-connected": "",
+        "format": " ",
+        "format-disabled": "󰂲 ",
+        "format-connected": " ",
         "tooltip-format": "Devices connected: {num_connections}",
         "on-click": "blueberry"
     },
@@ -163,20 +158,20 @@
     "group/tray-expander": {
         "orientation": "inherit",
         "drawer": {
-          "transition-duration": 600,
-          "children-class": "tray-group-item"
-    },
-
+            "click-to-reveal": true,
+            "transition-duration": 600,
+            "children-class": "tray-group-item"
+        },
         "modules": [
             "custom/expand-icon",
             "mpris",
             "pulseaudio",
             "bluetooth",
-            "tray"
         ]
     },
+
     "custom/expand-icon": {
-        "format": " ",
+        "format": " ",
         "tooltip": false
     },
 
