@@ -13,6 +13,7 @@
 
   home.file = { };
   home.packages = with pkgs; [
+    btop
     brightnessctl
     neovim
     pavucontrol

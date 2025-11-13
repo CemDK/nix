@@ -69,6 +69,7 @@ window#waybar {
 /* Network group styling */
 #network-speed {
   margin-top: 4px;
+  /* text-align: right; */
   /* margin-bottom: 4px; */
 }
 #network.up,
