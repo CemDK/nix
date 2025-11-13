@@ -18,13 +18,13 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
     let
-      #############################################################
+      # ========================================================================
       # Nix-Darwin configuration
-      #############################################################
+      # ========================================================================
       mkDarwinConfig = { system, user, host, home }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit host user home inputs; };
+          specialArgs = { inherit user host home inputs; };
           modules = [
             ({ pkgs, ... }:
               import ./modules/darwin/system-configuration.nix {
@@ -33,9 +33,10 @@
             home-manager.darwinModules.home-manager
             {
               home-manager = {
+                extraSpecialArgs = { inherit user host home inputs; };
+                backupFileExtension = "backup";
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                extraSpecialArgs = { inherit user home inputs; };
                 users.${user} = ({ pkgs, ... }:
                   import "./users/${user}@${host}/home.nix" {
                     inherit pkgs user home;
@@ -45,39 +46,56 @@
           ];
         };
 
-      #############################################################
+      # ========================================================================
       # NixOS configuration
-      #############################################################
+      # ========================================================================
       mkNixOSConfig = { system, user, host, home }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit host user home inputs; };
+          specialArgs = { inherit user host home inputs; };
           modules = [
             (import ./hosts/nixos/${host}/configuration.nix)
             home-manager.nixosModules.home-manager
             {
               home-manager = {
+                extraSpecialArgs = { inherit user host home inputs; };
+                backupFileExtension = "backup";
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = { inherit user home inputs; };
                 users.${user} = ({ pkgs, ... }:
                   import ./hosts/nixos/thinkpad/home.nix {
-                    inherit pkgs user home inputs;
+                    inherit pkgs user host home inputs;
                   });
               };
             }
           ];
         };
 
-    in {
+      # ========================================================================
+      # Standalone Home-manager configuration (for non-NixOS Linux)
+      # ========================================================================
+      mkHomeConfig = { system, user, host, home }:
+        home-manager.lib.homeManagerConfiguration {
+          inherit system;
+          pkgs = nixpkgs.legacyPackages.${system};
+          extraSpecialArgs = { inherit user host home inputs; };
+          backupFileExtension = "backup";
+          modules = [
+            ({ pkgs, ... }:
+              (import "./hosts/linux/${host}/home.nix" {
+                inherit pkgs user host home;
+              }))
+            { targets.genericLinux.enable = true; }
+          ];
+        };
 
-      nixosConfigurations = {
-        # ========================================================================
-        # ISO installer configuration
-        # ========================================================================
-        iso = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
+      # ========================================================================
+      # ISO installer configuration
+      # ========================================================================
+      mkIsoConfig = { system, user, host, home }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit user host home inputs; };
           modules = [
             ({ modulesPath, ... }: {
               imports = [
@@ -88,33 +106,33 @@
 
               # Include target system packages in ISO for offline installation
               isoImage.storeContents = [
-                self.nixosConfigurations.thinkpad.config.system.build.toplevel
+                self.nixosConfigurations.${host}.config.system.build.toplevel
               ];
             })
           ];
         };
 
-        # ========================================================================
-        # Thinkpad
-        # ========================================================================
-        # thinkpad = nixpkgs.lib.nixosSystem {
-        #   system = "x86_64-linux";
-        #   specialArgs = { inherit inputs; };
-        #   modules = [
-        #     ./hosts/nixos/thinkpad/configuration.nix
-        #
-        #     home-manager.nixosModules.home-manager
-        #     {
-        #       home-manager = {
-        #         useGlobalPkgs = true;
-        #         useUserPackages = true;
-        #         users.cemdk = import ./hosts/nixos/thinkpad/home.nix;
-        #         backupFileExtension = "backup";
-        #       };
-        #     }
-        #   ];
-        # };
-      };
+    in {
+      #
+      # nixosConfigurations = {
+      #   iso = nixpkgs.lib.nixosSystem {
+      #     system = "x86_64-linux";
+      #     modules = [
+      #       ({ modulesPath, ... }: {
+      #         imports = [
+      #           (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
+      #           "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+      #           ./hosts/nixos/iso/configuration.nix
+      #         ];
+      #
+      #         # Include target system packages in ISO for offline installation
+      #         isoImage.storeContents = [
+      #           self.nixosConfigurations.thinkpad.config.system.build.toplevel
+      #         ];
+      #       })
+      #     ];
+      #   };
+      # };
 
       # Darwin configurations (macOS)
       darwinConfigurations = {
@@ -150,14 +168,23 @@
       };
 
       # Home-manager standalone configurations (for non-NixOS Linux)
-      # homeConfigurations = {
-      #   "cem@Cem-Ryzen" = mkHomeConfig {
-      #     system = "x86_64-linux";
-      #     user = "cem";
-      #     host = "Cem-Ryzen";
-      #     home = "/home/cem";
-      #   };
-      # };
+      homeConfigurations = {
+        "Cem-Ryzen" = mkHomeConfig {
+          system = "x86_64-linux";
+          user = "cem";
+          host = "Cem-Ryzen";
+          home = "/home/cem";
+        };
+      };
 
+      # Home-manager standalone configurations (for non-NixOS Linux)
+      isoConfigurations = {
+        "thinkpad" = mkIsoConfig {
+          system = "x86_64-linux";
+          user = "cemdk";
+          host = "thinkpad";
+          home = "/home/cemdk";
+        };
+      };
     };
 }

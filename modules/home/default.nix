@@ -12,7 +12,6 @@ let
   };
 in {
   imports = [
-    # ./alacritty/alacritty.nix
     ./nvim
     ./fzf
     # ./tmux.nix
@@ -76,8 +75,9 @@ in {
   ];
 
   home.file = {
-    ".local/scripts/ready-tmux".source = ../../scripts/ready-tmux;
-    ".local/scripts/tmux-sessionizer".source = ../../scripts/tmux-sessionizer;
+    ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
+    ".local/scripts/tmux-sessionizer".source =
+      ../../dotfiles/scripts/tmux-sessionizer;
   };
 
   xdg.configFile = builtins.mapAttrs (name: config: {
