@@ -3,13 +3,14 @@
 @define-color bg-end   #002f30;
 @define-color fg       #93a1a1;
 @define-color secondary #93a1a1;
+@define-color primary #f78104;
 @define-color accent   #005f60;
 @define-color subtle   rgba(255, 255, 255, 0.05);
 @define-color subtle-bright rgba(255, 255, 255, 0.15);
 
 * {
-  font-family: ui-monospace, monospace;
   font-size: 14px;
+  font-family: ui-monospace, monospace;
   font-weight: normal;
   min-height: 0;
 }
@@ -17,14 +18,16 @@
 window#waybar {
   background: linear-gradient(to bottom, @bg-start, @bg-end);
   color: @fg;
-  /* border-bottom: 1px solid @subtle; */
+  /* border: 1px solid @primary; */
+  /* border-radius: 8px; */
 }
 
 /* Workspaces */
 #workspaces button {
-  padding: 6px 6px;
-  margin: 6px;
-  /* margin-right: 4px; */
+  /* padding: 1rem; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 4px;
   color: @secondary;
   background: @subtle;
   border: none;
@@ -45,90 +48,32 @@ window#waybar {
   color: @fg;
 }
 
-/* Submap (binding mode) */
-#submap {
-  background: @subtle-bright;
-  color: @secondary;
-  padding: 4px 8px;
-  margin-right: 10px;
-  border-radius: 2px;
-}
-
-/* All module styling */
-#clock,
-#custom-sep,
 #battery,
+#bluetooth,
 #cpu,
-#memory,
+#clock,
+#custom-power,
+#custom-sep,
 #disk,
-#network,
-#pulseaudio,
+#memory,
 #mpris,
+#pulseaudio,
+#network,
 #temperature,
 #tray {
-  padding: 0 8px;
-  color: @secondary;
-}
-
-#custom-sep {
-  color: @subtle-bright;
-}
-
-#clock {
-  color: @fg;
-}
-
-#pulseaudio {
-  color: @secondary;
-}
-
-#mpris {
-  color: @secondary;
-}
-
-#temperature {
-  color: @secondary;
-}
-
-#cpu {
-  color: @secondary;
-}
-
-#memory {
-  color: @secondary;
-}
-
-#disk {
+  padding: 0rem 0.5rem;
+  font-size: 18px;
   color: @secondary;
 }
 
 /* Network group styling */
 #network-speed {
-  padding: 4px 8px;
-  /* font-size: 12px; */
-  /* justify: "right"; */
+  margin-top: 4px;
+  /* margin-bottom: 4px; */
 }
-
-#network {
-  color: @secondary;
-}
-
-#battery {
-  color: @secondary;
-}
-
-#tray {
-  color: @secondary;
-}
-
-#tray > .active {
-  color: @secondary;
-}
-
-#tray > .passive {
-  color: @accent;
-}
-
-#tray > .needs-attention {
+#network.up,
+#network.down {
+  font-size: 12px;
+  font-weight: normal;
   color: @secondary;
 }

@@ -13,12 +13,15 @@
         "clock",
     ],
     "modules-right": [
-        "group/tray-expander",
+        // "group/tray-expander",
         // "network#speed",
         "group/network-speed",
         "network",
         "cpu",
-        "battery"
+        "bluetooth",
+        "pulseaudio",
+        "battery",
+        "custom/power"
     ],
 
     // ===== WORKSPACE CONFIGURATION =====
@@ -46,7 +49,7 @@
 
     // ===== AUDIO CONFIGURATION =====
     "pulseaudio": {
-        "format": "{icon} {volume}%",
+        "format": "{icon}",
         "on-click": "pavucontrol",
         // "on-click": "xdg-terminal-exec --app-id=com.omarchy.Wiremix -e wiremix",
         // "on-click-right": "pamixer -t",
@@ -138,9 +141,9 @@
 
     // ===== BLUETOOTH CONFIGURATION =====
     "bluetooth": {
-        "format": " ",
-        "format-disabled": "󰂲 ",
-        "format-connected": " ",
+        "format": "",
+        "format-disabled": "󰂲",
+        "format-connected": "",
         "tooltip-format": "Devices connected: {num_connections}",
         "on-click": "blueberry"
     },
@@ -177,8 +180,8 @@
         "modules": [
             "custom/expand-icon",
             "mpris",
-            "pulseaudio",
             "bluetooth",
+            "pulseaudio"
         ]
     },
 
@@ -186,6 +189,12 @@
         "format": " ",
         "tooltip": false
     },
+
+    "custom/power": {
+        "format": " ",
+        "tooltip": false
+    },
+
 
     // ===== SYSTEM TRAY =====
     "tray": {
