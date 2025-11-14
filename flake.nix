@@ -4,10 +4,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+
     nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:nixos/nixos-hardware/master";
 
     # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     # nix-darwin.url = "github:nix-darwin/nix-darwin/master";
@@ -16,7 +20,8 @@
     # home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, ... }:
+  outputs =
+    inputs@{ self, nix-darwin, nixos-hardware, nixpkgs, home-manager, ... }:
     let
       # ========================================================================
       # Nix-Darwin configuration

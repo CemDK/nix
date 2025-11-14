@@ -10,7 +10,9 @@
 
 * {
   font-size: 14px;
-  font-family: ui-monospace, monospace;
+  font-family: MesloLGS Nerd Font;
+  /* ui-monospace, */
+  /* monospace; */
   font-weight: normal;
   min-height: 0;
 }

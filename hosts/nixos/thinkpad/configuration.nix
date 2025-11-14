@@ -1,4 +1,4 @@
-{ host, pkgs, lib, ... }: {
+{ pkgs, lib, inputs, host, ... }: {
 
   # ============================================================================
   # IMPORTS
@@ -7,6 +7,14 @@
     ../common.nix
     ./hardware-configuration.nix
     ../../../modules/features/hyprland
+
+    # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad
+    # Power Efficiency: AMD P-State driver, TLP/power-profiles integration, SSD TRIM
+    # Proper Drivers: AMD microcode, GPU acceleration, modern modesetting
+    # Bug Fixes: Touchpad clicking, backlight control, sleep/suspend
+    # Performance: Early KMS, hardware acceleration, CPU frequency scaling
+    # Automatic Kernel Updates: Ensures minimum kernel versions for hardware support
+    inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
   ];
 
   programs.firefox.enable = true;
