@@ -2,6 +2,7 @@
 
   imports = [
     ../../../modules/home
+    ../../../modules/home/retroarch
     # ../../modules/home-manager/alacritty.nix
   ];
 

@@ -43,7 +43,7 @@
   # ============================================================================
   # services.printing.enable = true;
   # services.openssh.enable = lib.mkDefault false;
-  services.getty.autologinUser = "cemdk";
+  services = { getty.autologinUser = "cemdk"; };
 
   # ============================================================================
   # NETWORKING & FIREWALL
@@ -83,8 +83,13 @@
   # ============================================================================
   # Enable TPlink Archer Nano Wifi Dongle 
   # boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
-
   hardware.bluetooth.enable = true;
+  hardware.uinput.enable = true;
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
   # input.touchpad.disable_while_typing = false;
 
   # ============================================================================

@@ -76,6 +76,7 @@
   boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
 
   hardware.bluetooth.enable = true;
+  hardware.uinput.enable = true;
   # input.touchpad.disable_while_typing = false;
 
   hardware.graphics = {

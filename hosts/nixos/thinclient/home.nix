@@ -2,6 +2,7 @@
 
   imports = [
     ../../../modules/home
+    ../../../modules/home/retroarch
     # ../../modules/home-manager/alacritty.nix
     #
   ];
@@ -17,6 +18,7 @@
     neovim
     pavucontrol
     playerctl
+    localsend
     (callPackage ../../../modules/home/zen-browser { })
     xdg-desktop-portal-gtk
     libva-utils
