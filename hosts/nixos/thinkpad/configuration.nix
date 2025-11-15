@@ -49,7 +49,9 @@
   # NETWORKING & FIREWALL
   # ============================================================================
   networking.hostName = host;
-  networking.firewall.allowedTCPPorts = [ ];
+  networking.firewall.allowedTCPPorts = [
+    53317 # localsend port
+  ];
   #networking.wireless.iwd.enable = true;
 
   # ============================================================================
