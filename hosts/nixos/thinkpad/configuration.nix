@@ -29,9 +29,6 @@
     description = "CemDK";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      alacritty
-      gh
-      neovim
       kitty
       tree
       #impala

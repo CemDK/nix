@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, user, home, ... }:
+{ config, pkgs, user, home, ... }:
 let
   link = config.lib.file.mkOutOfStoreSymlink;
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
@@ -13,72 +13,49 @@ let
   };
 in {
   imports = [
+    #
     ./nvim
     ./fzf
-    # ./tmux.nix
-    # ./vim.nix
     ./zsh
   ];
 
-  home.stateVersion = "25.05";
   home = {
     username = user;
     homeDirectory = home;
+    stateVersion = "25.05";
+
+    packages = with pkgs; [
+      alacritty
+      bat
+      btop
+      curl
+      fd
+      htop
+      jq
+      lazygit
+      neovide
+      neovim
+      obsidian
+      ripgrep
+      starship
+      tldr
+      tmux
+      unzip
+      vim
+      wget
+
+      # TODO: move me
+      # nixos only
+      # blueberry
+    ];
   };
 
-  home.packages = with pkgs; [
-    bat
-    curl
-    fd
-    # fzf
-    # gh
-    # git
-    htop
-    jq
-    lazygit
-    neovide
-    neovim
-    ripgrep
-    starship
-    tldr
-    tmux
-    unzip
-    vim
-    obsidian
-    wget
-    zsh
-
-    blueberry
-
-    # Code
-    #    lua
-    # luajitPackages.luarocks
-    # nodejs
-    # pnpm
-    # rustup
-    # typescript
-
-    ###################
-    # for nvim
-    # tree-sitter
-    # formatting / linting
-    # nodePackages.prettier
-    # statix # nix linter
-    # nixd
-    # nixfmt-classic
-    # Let mason do these
-    # eslint
-    # eslint_d
-    # lua-language-server
-    # nodePackages.vscode-json-languageserver
-    # tailwindcss-language-server
-    # typescript-language-server
-  ];
-
-  home.file = {
-    ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
-    ".local/scripts/tmux-sessionizer".source =
-      ../../dotfiles/scripts/tmux-sessionizer;
+  xdg = {
+    enable = true;
+    cacheHome = "${config.home.homeDirectory}/.cache";
+    configHome = "${config.home.homeDirectory}/.config";
+    dataHome = "${config.home.homeDirectory}/.local/share";
+    stateHome = "${config.home.homeDirectory}/.local/state";
   };
 
   xdg.configFile = builtins.mapAttrs (name: config: {
@@ -86,16 +63,24 @@ in {
     recursive = true;
   }) configs;
 
-  # Sets NIX_PATH to this flakes nixpkgs input path.
-  # Legacy nix commands (nix-shell, nix-env) will then use the same nixpkgs version as this flake
-  # Can probalby forgo
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+  home.file = {
+    ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
+    ".local/scripts/tmux-sessionizer".source =
+      ../../dotfiles/scripts/tmux-sessionizer;
+  };
 
+  # ============================================================================
+  # EXTRA PROGRAMS
+  # ============================================================================
   programs.git = {
     enable = true;
-    userName = "CemDK";
-    userEmail = "25245902+CemDK@users.noreply.github.com";
-    extraConfig = { credential.helper = "store"; };
+    settings = {
+      user = {
+        name = "CemDK";
+        email = "25245902+CemDK@users.noreply.github.com";
+      };
+      credential.helper = "store";
+    };
   };
 
   programs.gh = {
@@ -109,21 +94,12 @@ in {
     extraOptions = [ "--group-directories-first" "--header" ];
   };
 
-  xdg = {
-    enable = true;
-    cacheHome = "${config.home.homeDirectory}/.cache";
-    configHome = "${config.home.homeDirectory}/.config";
-    dataHome = "${config.home.homeDirectory}/.local/share";
-    stateHome = "${config.home.homeDirectory}/.local/state";
-  };
-
-  programs.direnv = {
-    enable = true;
-    enableZshIntegration = true;
-    nix-direnv.enable = true;
-    # direnvrcExtra = ''
-    #   export FOO="foo"
-    #   echo "loaded direnv!"
-    # '';
-  };
+  # TODO: this compiles fish on macos for some rerason
+  # and then fails
+  # programs.direnv = {
+  #   enable = true;
+  #   enableZshIntegration = true;
+  #   enableFishIntegration = false;
+  #   nix-direnv.enable = true;
+  # };
 }

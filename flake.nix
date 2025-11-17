@@ -3,21 +3,18 @@
     "Shokunix - Multi platform Nix configuration with nixos iso installer";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+    # nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    # home-manager.url = "github:nix-community/home-manager/release-25.05";
+    home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
-
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    # nix-darwin.url = "github:nix-darwin/nix-darwin/master";
-    # nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    # home-manager.url = "github:nix-community/home-manager/master";
-    # home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -32,7 +29,7 @@
           specialArgs = { inherit user host home inputs; };
           modules = [
             ({ pkgs, ... }:
-              import ./modules/darwin/system-configuration.nix {
+              import ./hosts/darwin/${host}/configuration.nix {
                 inherit pkgs self system user home;
               })
             home-manager.darwinModules.home-manager
@@ -43,8 +40,8 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 users.${user} = ({ pkgs, ... }:
-                  import "./users/${user}@${host}/home.nix" {
-                    inherit pkgs user home;
+                  import ./hosts/darwin/${host}/home.nix {
+                    inherit pkgs user host home inputs;
                   });
               };
             }
@@ -148,11 +145,11 @@
           home = "/Users/cem";
         };
 
-        "work" = mkDarwinConfig {
+        "mac-mini" = mkDarwinConfig {
           system = "aarch64-darwin";
-          user = "kaba03";
-          host = "work";
-          home = "/Users/kaba03";
+          user = "cemdk";
+          host = "mac-mini";
+          home = "/Users/cemdk";
         };
       };
 

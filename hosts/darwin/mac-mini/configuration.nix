@@ -1,4 +1,52 @@
-{ self, user, ... }: {
+{ pkgs, self, system, user, home, ... }: {
+
+  # ============================================================================
+  # IMPORTS
+  # ============================================================================
+  imports = [
+    #
+    ./packages.nix
+  ];
+
+  # ============================================================================
+  # NIX CONFIGURATION
+  # ============================================================================
+  nix.enable = false;
+  #  nix = {
+  #    settings = {
+  #      experimental-features = [ "nix-command" "flakes" ];
+  #      trusted-users = [ "@wheel" ];
+  #    };
+  #    gc = {
+  #      automatic = true;
+  #     interval = {
+  #       Weekday = 0;
+  #       Hour = 0;
+  #       Minute = 0;
+  #     };
+  #      options = "--delete-older-than 30d";
+  #    };
+  # optimise.automatic = true;
+  #  };
+
+  nixpkgs.hostPlatform = system;
+  nixpkgs.config.allowUnfree = true;
+  # services.nix-daemon.enable = true;
+
+  # ============================================================================
+  # USER MANAGEMENT
+  # ============================================================================
+  users.users.${user}.home = "${home}";
+
+  # ============================================================================
+  # SECURITY
+  # ============================================================================
+  security.pam.services.sudo_local.touchIdAuth = true;
+
+  # ============================================================================
+  # ENVIRONMENT
+  # ============================================================================
+  environment.shells = [ pkgs.bash pkgs.zsh ];
 
   # ============================================================================
   # SYSTEM
@@ -6,9 +54,6 @@
   system = {
     primaryUser = user;
     stateVersion = 6;
-
-    # TODO: dunno if I need this?
-    # Set Git commit hash for darwin-version.
     configurationRevision = self.rev or self.dirtyRev or null;
 
     startup.chime = false;
@@ -82,10 +127,10 @@
       # ============================================================================
       # KEYBOARD
       # ============================================================================
-      keyboard = {
-        enableKeyMapping = true;
-        remapCapsLockToEscape = true;
-      };
+      # keyboard = {
+      # enableKeyMapping = true;
+      # remapCapsLockToEscape = true;
+      # };
 
       # ============================================================================
       # OTHER PREFERENCES
