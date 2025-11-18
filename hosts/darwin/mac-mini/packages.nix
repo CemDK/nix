@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ pkgs, ... }: {
 
   # ============================================================================
   # FONTS
@@ -25,6 +25,8 @@
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;
+
+    #TODO: add this as xdg.configFile
     settings = builtins.fromTOML
       (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
   };

@@ -14,7 +14,12 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-hardware.url = "github:nixos/nixos-hardware/master";
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    homebrew-core.url = "github:homebrew/homebrew-core";
+    homebrew-core.flake = false;
+    homebrew-cask.url = "github:homebrew/homebrew-cask";
+    homebrew-cask.flake = false;
+    homebrew-bundle.url = "github:nixos/nixos-hardware/master";
   };
 
   outputs =
@@ -26,25 +31,38 @@
       mkDarwinConfig = { system, user, host, home }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit user host home inputs; };
+          specialArgs = { inherit self system user host home inputs; };
           modules = [
-            ({ pkgs, ... }:
-              import ./hosts/darwin/${host}/configuration.nix {
-                inherit pkgs self system user home;
-              })
-            home-manager.darwinModules.home-manager
+
+            # SYSTEM CONFIGURATION
+            ./hosts/darwin/${host}/configuration.nix
+
+            # HOME-MANAGER 
+            inputs.home-manager.darwinModules.home-manager
             {
-              home-manager = {
-                extraSpecialArgs = { inherit user host home inputs; };
-                backupFileExtension = "backup";
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.${user} = ({ pkgs, ... }:
-                  import ./hosts/darwin/${host}/home.nix {
-                    inherit pkgs user host home inputs;
-                  });
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.extraSpecialArgs = { inherit user home; };
+              home-manager.users.${user} = {
+                imports = [ ./hosts/darwin/${host}/home.nix ];
               };
             }
+
+            # NIX-HOMEBREW
+            inputs.nix-homebrew.darwinModules.nix-homebrew
+            {
+              nix-homebrew.enable = true;
+              nix-homebrew.enableRosetta = true;
+              nix-homebrew.mutableTaps = true;
+              nix-homebrew.user = "${user}";
+              nix-homebrew.taps = with inputs; {
+                "homebrew/homebrew-core" = homebrew-core;
+                "homebrew/homebrew-cask" = homebrew-cask;
+                "homebrew/homebrew-bundle" = homebrew-bundle;
+              };
+            }
+
           ];
         };
 
