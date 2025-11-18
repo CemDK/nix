@@ -1,0 +1,241 @@
+# Enable normalization for better window management
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# Layout configuration
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+accordion-padding = 30
+
+# Mouse follows focus when monitor changes
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Gaps configuration (matching glazewm outer gaps)
+[gaps]
+    inner.horizontal = 0
+    inner.vertical = 0
+    outer.left = 20
+    outer.bottom = 20
+    outer.top = 20
+    outer.right = 20
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 1
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'app.zen-browser.zen'
+    run = ['move-node-to-workspace 1']
+
+[[on-window-detected]]
+    if.app-id = 'org.mozilla.firefox'
+    run = ['move-node-to-workspace 1']
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 2
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'org.alacritty'
+    run = ['move-node-to-workspace 2']
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 3
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.VSCode'
+    run = ['move-node-to-workspace 3']
+
+[[on-window-detected]]
+    if.app-name-regex-substring = 'neovide-wrapped'
+    run = ['move-node-to-workspace 3']
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 4
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'com.apple.finder'
+    run = ['move-node-to-workspace 4']
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 5
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 6
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 7
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'md.obsidian'
+    run = ['move-node-to-workspace 7']
+
+[[on-window-detected]]
+    if.app-id = 'anki'
+    run = ['move-node-to-workspace 7']
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 8
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 9
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# WORKSPACE 10
+# ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'com.discord.Discord'
+    run = ['move-node-to-workspace 10']
+
+# ---------------------------------------------------------------------------
+# FLOATING
+# ---------------------------------------------------------------------------
+# Set floating for specific windows (equivalent to glazewm floating rules)
+# TODO: pip not working
+[[on-window-detected]]
+    if.window-title-regex-substring = 'Picture-in-Picture'
+    run = ['layout floating']
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.calculator'
+    run = ['layout floating']
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.ActivityMonitor'
+    run = ['layout floating']
+
+# ---------------------------------------------------------------------------
+# KEYBINDINGS
+# ---------------------------------------------------------------------------
+[workspace-to-monitor-force-assignment]
+    0 = 'secondary'  # workspace on second monitor
+    1 = 'main'       # Browser on main monitor
+    2 = 'main'       # Terminal on main monitor
+    3 = 'main'       # Editor on main monitor
+    4 = 'main'       # Explorer on main monitor
+    5 = 'main'       # Games on main monitor
+    6 = 'main'       # Others on main monitor
+    7 = 'main'       # Obsidian on main monitor
+    8 = 'main'       # Misc on main monitor
+    9 = 'main'       # Launchers on main monitor
+    10 = 'main'      # Stuff on main monitor
+
+# Main binding mode (equivalent to glazewm keybindings)
+[mode.main.binding]
+    # Focus navigation (matching glazewm focus bindings)
+    alt-left = 'focus left'
+    alt-right = 'focus right'
+    alt-up = 'focus up'
+    alt-down = 'focus down'
+
+    # Alternative focus bindings (ctrl+alt+hjkl like in glazewm)
+    ctrl-alt-h = 'focus left'
+    ctrl-alt-l = 'focus right'
+    ctrl-alt-k = 'focus up'
+    ctrl-alt-j = 'focus down'
+
+    # Move windows (matching glazewm move bindings)
+    alt-shift-h = 'move left'
+    alt-shift-l = 'move right'
+    alt-shift-k = 'move up'
+    alt-shift-j = 'move down'
+    alt-shift-left = 'move left'
+    alt-shift-right = 'move right'
+    alt-shift-up = 'move up'
+    alt-shift-down = 'move down'
+
+    # Resize windows
+    alt-u = 'resize smart -50'
+    alt-o = 'resize smart +50'
+
+    # Toggle floating (matching glazewm alt+shift+space and alt+c)
+    alt-shift-space = 'layout floating tiling'
+    alt-c = 'layout floating tiling'
+
+    # Toggle tiling
+    alt-t = 'layout tiling'
+
+    # Toggle layout direction (matching glazewm alt+v)
+    alt-v = 'layout tiles horizontal vertical'
+
+    # Close window (matching glazewm alt+q)
+    alt-q = 'close'
+
+    # Workspace navigation (matching glazewm workspace bindings)
+    alt-f = 'workspace 1'
+    alt-h = 'workspace 0'
+    alt-j = 'workspace 2'
+    alt-k = 'workspace 3'
+    alt-l = 'workspace 4'
+    alt-semicolon = 'workspace 5'
+
+    alt-0 = 'workspace 0'
+    alt-1 = 'workspace 1'
+    alt-2 = 'workspace 2'
+    alt-3 = 'workspace 3'
+    alt-4 = 'workspace 4'
+    alt-5 = 'workspace 5'
+    alt-6 = 'workspace 6'
+    alt-7 = 'workspace 7'
+    alt-8 = 'workspace 8'
+    alt-9 = 'workspace 9'
+
+    # Move window to workspace and follow (matching glazewm behavior)
+    alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+    alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+    alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+    alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+    alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+    alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+    alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+    alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+    alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+
+    # Navigate between workspaces (matching glazewm alt+s/alt+n and alt+a/alt+p)
+    alt-s = 'workspace --wrap-around next'
+    alt-n = 'workspace --wrap-around next'
+    alt-a = 'workspace --wrap-around prev'
+    alt-p = 'workspace --wrap-around prev'
+
+    # Focus recent workspace (matching glazewm alt+d)
+    alt-d = 'workspace-back-and-forth'
+
+    # Move workspace between monitors (matching glazewm workspace movement)
+    alt-shift-a = 'move-workspace-to-monitor --wrap-around next'
+    alt-shift-f = 'move-workspace-to-monitor --wrap-around next'
+    alt-shift-d = 'move-workspace-to-monitor --wrap-around next'
+    alt-shift-s = 'move-workspace-to-monitor --wrap-around next'
+
+    # Enter resize mode (matching glazewm alt+r)
+    alt-r = 'mode resize'
+
+    # Reload config (matching glazewm alt+shift+r)
+    alt-shift-r = 'reload-config'
+
+    # Service mode for advanced operations
+    alt-shift-semicolon = 'mode service'
+
+# Resize mode (matching glazewm resize mode)
+[mode.resize.binding]
+    h = 'resize smart -50'
+    left = 'resize smart -50'
+    l = 'resize smart +50'
+    right = 'resize smart +50'
+    k = 'resize smart -50'
+    up = 'resize smart -50'
+    j = 'resize smart +50'
+    down = 'resize smart +50'
+
+    # Exit resize mode
+    enter = 'mode main'
+    esc = 'mode main'
+
+# Service mode for system operations
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+    r = ['flatten-workspace-tree', 'mode main'] # reset layout
+    f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
+    backspace = ['close-all-windows-but-current', 'mode main']
+

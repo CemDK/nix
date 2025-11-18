@@ -1,13 +1,8 @@
 ''
   if [[ $(uname) == "Darwin" ]]; then
     alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
-    if [[ $(uname -m) == "arm64" ]]; then
-      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#work"
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    else
       alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"
       eval "$(/usr/local/bin/brew shellenv)"
-    fi
   else
     # Check if we're running NixOS by looking for the NixOS marker file
     if [[ -f /etc/NIXOS ]] || grep -q "^ID=nixos$" /etc/os-release 2>/dev/null; then

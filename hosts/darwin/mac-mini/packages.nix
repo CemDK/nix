@@ -10,7 +10,9 @@
   # ============================================================================
   environment.systemPackages = with pkgs; [
     aerospace
-    betterdisplay
+    # anki # borken atm
+    # betterdisplay
+    # linearmouse # install me via brew
     hidden-bar
     mkalias
     neovim
@@ -19,6 +21,13 @@
     raycast
     stats
   ];
+
+  services.aerospace = {
+    enable = true;
+    package = pkgs.aerospace;
+    settings = builtins.fromTOML
+      (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
+  };
 
   # ============================================================================
   # OTHER CONFIGURATIONS
