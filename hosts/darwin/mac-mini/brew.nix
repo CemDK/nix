@@ -8,6 +8,7 @@
     };
     global.autoUpdate = true;
 
+    # CLI-TOOLS, LIBRARIES, ETC.
     brews = [
       # "bitwarden-cli"
       # "neovim"
@@ -15,22 +16,26 @@
       # "tailscale"
       # "borders"
     ];
+
+    # USER REPOSITORIES
     taps = [
       # "FelixKratz/formulae" #sketchybar
     ];
+
+    # GUI APPLICATIONS
     casks = [
-      # "screenflow"
-      # "cleanshot"
+      "vlc"
       # "adobe-creative-cloud"
-      # "nikitabobko/tap/aerospace"
       # "alacritty"
       # "alcove"
       # "audacity"
-      # # "balenaetcher"
+      # "audio-hijack"
+      # "balenaetcher"
       # "bambu-studio"
       # "bentobox"
       # "claude"
       # "claude-code"
+      # "cleanshot"
       # "clop"
       # "discord"
       # "displaylink"
@@ -40,58 +45,52 @@
       # "elgato-camera-hub"
       # "elgato-control-center"
       # "elgato-stream-deck"
+      # "farrago"
       # "firefox"
       # "flameshot"
-      # "font-fira-code"
-      # "font-fira-code-nerd-font"
-      # "font-fira-mono-for-powerline"
-      # "font-hack-nerd-font"
-      # "font-jetbrains-mono-nerd-font"
-      # "font-meslo-lg-nerd-font"
       # "ghostty"
       # "google-chrome"
-      # "iina"
       # "hammerspoon"
+      # "iina"
       # "istat-menus"
       # "iterm2"
       # "jordanbaird-ice"
       # "karabiner-elements"
+      # "linearmouse"
+      # "lm-studio"
       # "lm-studio"
       # "logitech-options"
+      # "loopback"
       # "macwhisper"
       # "marta"
       # "mqtt-explorer"
-      # "music-decoy" # github/FuzzyIdeas/MusicDecoy
       # "nextcloud"
       # "notion"
       # "obs"
       # "obsidian"
       # "ollama-app"
       # "omnidisksweeper"
-      # "orbstack"
       # "openscad"
       # "openttd"
+      # "orbstack"
       # "plexamp"
       # "popclip"
       # "prusaslicer"
       # "raycast"
-      # "signal"
+      # "screenflow"
       # "shortcat"
+      # "signal"
       # "slack"
+      # "soundsource"
       # "spotify"
       # "steam"
-      # "wireshark"
       # "viscosity"
       # "visual-studio-code"
-      "vlc"
-      # "lm-studio"
-
-      # # rogue amoeba
-      # "audio-hijack"
-      # "farrago"
-      # "loopback"
-      # "soundsource"
+      # "wireshark"
+      # rogue amoeba
     ];
+
+    # APPSTORE APPS
     masApps = {
       # "Amphetamine" = 937984704;
       # "AutoMounter" = 1160435653;
@@ -100,8 +99,8 @@
       "DaVinci Resolve" = 571213070;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
-      # "Ivory for Mastodon by Tapbots" = 6444602274;
       "Home Assistant Companion" = 1099568401;
+      # "Ivory for Mastodon by Tapbots" = 6444602274;
       # "Microsoft Remote Desktop" = 1295203466;
       # "Perplexity" = 6714467650;
       # "Resize Master" = 1025306797;
@@ -113,15 +112,6 @@
       # "Todoist" = 585829637;
       # "UTM" = 1538878817;
       # "Wireguard" = 1451685025;
-
-      # "Final Cut Pro" = 424389933;
-
-      # these apps only available via uk apple id
-      # "Logic Pro" = 634148309;
-      # "MainStage" = 634159523;
-      # "Garageband" = 682658836;
-      # "ShutterCount" = 720123827;
-      # "Teleprompter" = 1533078079;
 
       # "Keynote" = 409183694;
       # "Numbers" = 409203825;

@@ -10,9 +10,8 @@
   # ============================================================================
   environment.systemPackages = with pkgs; [
     aerospace
+    claude-code
     # anki # borken atm
-    # betterdisplay
-    # linearmouse # install me via brew
     hidden-bar
     mkalias
     neovim
@@ -20,13 +19,12 @@
     obsidian
     raycast
     stats
+
   ];
 
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;
-
-    #TODO: add this as xdg.configFile
     settings = builtins.fromTOML
       (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
   };
@@ -53,5 +51,14 @@
   #       echo "copying $src" >&2
   #       ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
   #   done
+  # '';
+
+  # system.activationScripts.applications.text = ''
+  #   set -e
+  #   echo >&2 "Switching wallpapers..."
+  #   /usr/bin/osascript -e "tell application \"Finder\" to set desktop picture to POSIX file
+  #   \"${
+  #     /Users/cemdk/.config/wallpapers/autumn-season-leafs-plant-scene-generative-ai.jpg
+  #   }\""
   # '';
 }

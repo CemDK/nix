@@ -6,7 +6,7 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     # dotDir expects a relative path from home directory, not absolute
-    dotDir = ".config/zsh";
+    dotDir = "${config.xdg.configHome}/zsh";
     autocd = true;
     # oh-my-zsh = {
     #   enable = true;

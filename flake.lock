@@ -38,54 +38,6 @@
         "type": "github"
       }
     },
-    "homebrew-bundle": {
-      "locked": {
-        "lastModified": 1762847253,
-        "narHash": "sha256-BWWnUUT01lPwCWUvS0p6Px5UOBFeXJ8jR+ZdLX8IbrU=",
-        "owner": "nixos",
-        "repo": "nixos-hardware",
-        "rev": "899dc449bc6428b9ee6b3b8f771ca2b0ef945ab9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "master",
-        "repo": "nixos-hardware",
-        "type": "github"
-      }
-    },
-    "homebrew-cask": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1763495842,
-        "narHash": "sha256-s7mWArEoLUAbdKicLz0rprmeznZlnXneH2HyCkA+SZE=",
-        "owner": "homebrew",
-        "repo": "homebrew-cask",
-        "rev": "6227333cd4205b4936dd683077702ca62725b73d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "homebrew",
-        "repo": "homebrew-cask",
-        "type": "github"
-      }
-    },
-    "homebrew-core": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1763497571,
-        "narHash": "sha256-bifvHCQJQPZ22/cew5y3fC4Kekkj8eT3P1521I8mDw0=",
-        "owner": "homebrew",
-        "repo": "homebrew-core",
-        "rev": "bce12a1651817e643dffcbed6532a27c03d9aa5d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "homebrew",
-        "repo": "homebrew-core",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -129,14 +81,16 @@
       "locked": {
         "lastModified": 1762847253,
         "narHash": "sha256-BWWnUUT01lPwCWUvS0p6Px5UOBFeXJ8jR+ZdLX8IbrU=",
-        "owner": "NixOS",
+        "owner": "nixos",
         "repo": "nixos-hardware",
         "rev": "899dc449bc6428b9ee6b3b8f771ca2b0ef945ab9",
         "type": "github"
       },
       "original": {
-        "id": "nixos-hardware",
-        "type": "indirect"
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixos-hardware",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -158,9 +112,6 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "homebrew-bundle": "homebrew-bundle",
-        "homebrew-cask": "homebrew-cask",
-        "homebrew-core": "homebrew-core",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nixos-hardware": "nixos-hardware",

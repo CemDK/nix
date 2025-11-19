@@ -3,6 +3,7 @@ let
   link = config.lib.file.mkOutOfStoreSymlink;
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
+    # aerospace = "${localFiles}/aerospace";
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
     # retroarch = "${localFiles}/retroarch/retroarch.cfg";

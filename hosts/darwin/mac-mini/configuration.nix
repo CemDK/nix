@@ -13,22 +13,6 @@
   # NIX CONFIGURATION
   # ============================================================================
   nix.enable = false;
-  #  nix = {
-  #    settings = {
-  #      experimental-features = [ "nix-command" "flakes" ];
-  #      trusted-users = [ "@wheel" ];
-  #    };
-  #    gc = {
-  #      automatic = true;
-  #     interval = {
-  #       Weekday = 0;
-  #       Hour = 0;
-  #       Minute = 0;
-  #     };
-  #      options = "--delete-older-than 30d";
-  #    };
-  # optimise.automatic = true;
-  #  };
 
   nixpkgs.hostPlatform = system;
   nixpkgs.config.allowUnfree = true;
@@ -66,6 +50,7 @@
 
     defaults = {
       LaunchServices.LSQuarantine = false; # quarantine downloaded apps?
+      loginwindow.GuestEnabled = false;
 
       # ============================================================================
       # DOCK
@@ -79,10 +64,27 @@
         mouse-over-hilite-stack = true;
         mru-spaces = false;
         # orientation = "bottom";
-        # TODO:
-        # persistent-apps = {
-        # [ "/Applications/Safari.app" "/System/Applications/Nix\ Apps/Alacritty.app" ]
-        # };
+        persistent-apps = [
+          "/Applications/Zen.app"
+          "${pkgs.alacritty}/Applications/Alacritty.app"
+          "${pkgs.obsidian}/Applications/Obsidian.app"
+          "/System/Applications/System Settings.app"
+        ];
+        persistent-others = [
+          {
+            folder = {
+              path = "/Applications/";
+              displayas = "folder";
+            };
+          }
+
+          {
+            folder = {
+              path = "${home}/Downloads/";
+              displayas = "folder";
+            };
+          }
+        ];
         show-recents = false;
         # tilesize = 48;
       };
@@ -94,16 +96,16 @@
         AppleShowAllExtensions = true;
         AppleShowAllFiles = false;
         CreateDesktop = false;
-        FXEnableExtensionChangeWarning = false;
         FXDefaultSearchScope = "SCcf"; # current folder
+        FXEnableExtensionChangeWarning = false;
         FXPreferredViewStyle = "Nlsv";
+        QuitMenuItem = true;
         ShowExternalHardDrivesOnDesktop = false;
         ShowHardDrivesOnDesktop = false;
         ShowPathbar = true;
         ShowStatusBar = false;
         _FXShowPosixPathInTitle = true;
         _FXSortFoldersFirst = true;
-        QuitMenuItem = true;
       };
 
       # ============================================================================
@@ -120,22 +122,22 @@
       # ============================================================================
       NSGlobalDomain = {
         AppleInterfaceStyle = "Dark";
-        # TODO: toggle this once my keyboard layout lives in nix-darwin
-        # ApplePressAndHoldEnabled = false;
+        ApplePressAndHoldEnabled = false;
         AppleShowAllExtensions = true;
         AppleShowAllFiles = true;
+        AppleSpacesSwitchOnActivate = false;
         InitialKeyRepeat = 14;
         KeyRepeat = 2;
+        NSAutomaticSpellingCorrectionEnabled = false;
         NSWindowResizeTime = 0.0;
-        AppleSpacesSwitchOnActivate = false;
       };
 
       # ============================================================================
       # KEYBOARD
       # ============================================================================
       # keyboard = {
-      # enableKeyMapping = true;
-      # remapCapsLockToEscape = true;
+      #   enableKeyMapping = true;
+      #   # remapCapsLockToEscape = true;
       # };
 
       # ============================================================================
@@ -143,6 +145,25 @@
       # ============================================================================
       CustomUserPreferences = {
         "com.microsoft.VSCode" = { ApplePressAndHoldEnabled = false; };
+
+        # TODO: check if this is contained to mouse options
+        # or if this messs with trackpad options
+        NSGlobalDomain."com.apple.mouse.linear" = true;
+        NSGlobalDomain."com.apple.swipescrolldirection" = false;
+
+        "com.apple.desktopservices" = {
+          # Avoid creating .DS_Store files on network or USB volumes
+          DSDontWriteNetworkStores = true;
+          DSDontWriteUSBStores = true;
+        };
+
+        # "com.apple.Safari" = {
+        #   # Privacy: don’t send search queries to Apple
+        #   UniversalSearchEnabled = false;
+        #   SuppressSearchSuggestions = true;
+        # };
+
+        "com.apple.AdLib" = { allowApplePersonalizedAdvertising = false; };
       };
     };
   };

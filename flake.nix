@@ -15,11 +15,15 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    homebrew-core.url = "github:homebrew/homebrew-core";
-    homebrew-core.flake = false;
-    homebrew-cask.url = "github:homebrew/homebrew-cask";
-    homebrew-cask.flake = false;
-    homebrew-bundle.url = "github:nixos/nixos-hardware/master";
+    # TODO: manage to get this working without ugly cli errors
+    # homebrew-core.url = "github:homebrew/homebrew-core";
+    # homebrew-core.flake = false;
+    # homebrew-cask.url = "github:homebrew/homebrew-cask";
+    # homebrew-cask.flake = false;
+    # homebrew-bundle.url = "github:homebrew/homebrew-bundle";
+    # homebrew-bundle.flake = false;
+
+    nixos-hardware.url = "github:nixos/nixos-hardware/master";
   };
 
   outputs =
@@ -54,13 +58,14 @@
             {
               nix-homebrew.enable = true;
               nix-homebrew.enableRosetta = true;
+              nix-homebrew.autoMigrate = true;
               nix-homebrew.mutableTaps = true;
               nix-homebrew.user = "${user}";
-              nix-homebrew.taps = with inputs; {
-                "homebrew/homebrew-core" = homebrew-core;
-                "homebrew/homebrew-cask" = homebrew-cask;
-                "homebrew/homebrew-bundle" = homebrew-bundle;
-              };
+              # nix-homebrew.taps = with inputs; {
+              #   "homebrew/homebrew-core" = homebrew-core;
+              #   "homebrew/homebrew-cask" = homebrew-cask;
+              #   "homebrew/homebrew-bundle" = homebrew-bundle;
+              # };
             }
 
           ];
