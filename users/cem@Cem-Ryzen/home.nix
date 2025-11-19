@@ -30,6 +30,7 @@
     google-cloud-sdk
 
     miktex
+    spotdl
     # python313
     # python313Packages.torch
     # python313Packages.torchaudio

@@ -34,6 +34,7 @@
     zsh
 
     # Code
+    stylua
     lua
     luajitPackages.luarocks
     nodejs
@@ -52,7 +53,7 @@
     # Let mason do these
     # eslint
     # eslint_d
-    # lua-language-server
+    lua-language-server
     # nodePackages.vscode-json-languageserver
     # tailwindcss-language-server
     # typescript-language-server
