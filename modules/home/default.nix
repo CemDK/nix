@@ -1,4 +1,4 @@
-{ config, pkgs, user, home, ... }:
+{ config, pkgs, ... }:
 let
   link = config.lib.file.mkOutOfStoreSymlink;
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
@@ -21,8 +21,6 @@ in {
   ];
 
   home = {
-    username = user;
-    homeDirectory = home;
     stateVersion = "25.05";
 
     packages = with pkgs; [

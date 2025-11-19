@@ -4,16 +4,13 @@
 
   inputs = {
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
     # nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+    # home-manager.url = "github:nix-community/home-manager/release-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-
-    # home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     # TODO: manage to get this working without ugly cli errors
     # homebrew-core.url = "github:homebrew/homebrew-core";
@@ -22,7 +19,6 @@
     # homebrew-cask.flake = false;
     # homebrew-bundle.url = "github:homebrew/homebrew-bundle";
     # homebrew-bundle.flake = false;
-
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
   };
 
@@ -37,23 +33,18 @@
           inherit system;
           specialArgs = { inherit self system user host home inputs; };
           modules = [
-
-            # SYSTEM CONFIGURATION
             ./hosts/darwin/${host}/configuration.nix
-
-            # HOME-MANAGER 
             inputs.home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
-              home-manager.extraSpecialArgs = { inherit user home; };
               home-manager.users.${user} = {
                 imports = [ ./hosts/darwin/${host}/home.nix ];
+                home.username = user;
+                home.homeDirectory = home;
               };
             }
-
-            # NIX-HOMEBREW
             inputs.nix-homebrew.darwinModules.nix-homebrew
             {
               nix-homebrew.enable = true;
@@ -79,7 +70,7 @@
           inherit system;
           specialArgs = { inherit user host home inputs; };
           modules = [
-            (import ./hosts/nixos/${host}/configuration.nix)
+            ./hosts/nixos/${host}/configuration.nix
             home-manager.nixosModules.home-manager
             {
               home-manager = {
@@ -138,27 +129,10 @@
         };
 
     in {
-      #
-      # nixosConfigurations = {
-      #   iso = nixpkgs.lib.nixosSystem {
-      #     system = "x86_64-linux";
-      #     modules = [
-      #       ({ modulesPath, ... }: {
-      #         imports = [
-      #           (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
-      #           "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-      #           ./hosts/nixos/iso/configuration.nix
-      #         ];
-      #
-      #         # Include target system packages in ISO for offline installation
-      #         isoImage.storeContents = [
-      #           self.nixosConfigurations.thinkpad.config.system.build.toplevel
-      #         ];
-      #       })
-      #     ];
-      #   };
-      # };
 
+      # ========================================================================
+      # CONFIG DEFINTIONS
+      # ========================================================================
       # Darwin configurations (macOS)
       darwinConfigurations = {
         "CemDK-MBP" = mkDarwinConfig {
