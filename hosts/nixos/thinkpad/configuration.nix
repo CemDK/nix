@@ -17,7 +17,6 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
   ];
 
-  programs.firefox.enable = true;
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   # ============================================================================
@@ -28,14 +27,12 @@
     isNormalUser = true;
     description = "CemDK";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      kitty
-      tree
-      #impala
-    ];
+    packages = with pkgs;
+      [
+        # machine specific packages
+        tree
+      ];
   };
-  users.defaultUserShell = pkgs.zsh;
-  programs.zsh.enable = true;
 
   # ============================================================================
   # SERVICES

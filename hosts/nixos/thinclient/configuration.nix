@@ -9,7 +9,6 @@
     ../../../modules/features/hyprland
   ];
 
-  programs.firefox.enable = true;
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   # ============================================================================
@@ -21,11 +20,11 @@
     description = "CemDK";
     extraGroups = [ "networkmanager" "wheel" ];
     shell = lib.getExe pkgs.zsh;
-    packages = with pkgs; [
-      kitty
-      tree
-      #impala
-    ];
+    packages = with pkgs;
+      [
+        tree
+        #impala
+      ];
   };
 
   # ============================================================================

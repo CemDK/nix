@@ -11,6 +11,7 @@
     # CLI-TOOLS, LIBRARIES, ETC.
     brews = [
       # "bitwarden-cli"
+      "direnv"
       # "ollama"
       # "tailscale"
       # "borders"

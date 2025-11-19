@@ -36,6 +36,12 @@
     ];
   };
 
+  programs.firefox.enable = true;
+
+  # enable zsh and set it as default user shell
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+
   # ============================================================================
   # SERVICES
   # ============================================================================

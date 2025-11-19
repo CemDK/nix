@@ -28,7 +28,7 @@ in {
       bat
       btop
       curl
-      direnv
+      # direnv # installed with brew on macos
       fd
       htop
       jq
