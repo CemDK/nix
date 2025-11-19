@@ -1,28 +1,17 @@
-{ pkgs, user, home, ... }: {
+{ pkgs, ... }: {
 
   imports = [
     ../../../modules/home
     ../../../modules/home/retroarch
-    # ../../modules/home-manager/alacritty.nix
     #
   ];
 
-  home = {
-    username = user;
-    homeDirectory = home;
-  };
-
   home.file = { };
   home.packages = with pkgs; [
-    brightnessctl
-    neovim
-    pavucontrol
-    playerctl
-    localsend
-    (callPackage ../../../modules/home/zen-browser { })
-    xdg-desktop-portal-gtk
     libva-utils
+    localsend
     vulkan-loader
+    xdg-desktop-portal-gtk
   ];
 
   programs.steam.enable = true;
@@ -35,6 +24,5 @@
     enable = true;
     shellAliases = { btw = "echo i use nix"; };
   };
-
 }
 

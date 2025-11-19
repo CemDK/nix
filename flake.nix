@@ -68,20 +68,18 @@
       mkNixOSConfig = { system, user, host, home }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit user host home inputs; };
+          specialArgs = { inherit self system user host home inputs; };
           modules = [
             ./hosts/nixos/${host}/configuration.nix
-            home-manager.nixosModules.home-manager
+            inputs.home-manager.nixosModules.home-manager
             {
-              home-manager = {
-                extraSpecialArgs = { inherit user host home inputs; };
-                backupFileExtension = "backup";
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.${user} = ({ pkgs, ... }:
-                  import ./hosts/nixos/thinkpad/home.nix {
-                    inherit pkgs user host home inputs;
-                  });
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.users.${user} = {
+                imports = [ ./hosts/nixos/${host}/home.nix ];
+                home.username = user;
+                home.homeDirectory = home;
               };
             }
           ];

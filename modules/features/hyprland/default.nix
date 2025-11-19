@@ -1,34 +1,33 @@
 { pkgs, ... }: {
-  # imports = [ ./waybar.nix ];
+
+  # ============================================================================
+  # IMPORTS
+  # ============================================================================
+  imports = [ ../waybar ];
 
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
 
+  # ============================================================================
+  # SERVICES
+  # ============================================================================
   services.dbus.enable = true;
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
         user = "greeter";
       };
     };
   };
-
-  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-  };
-
-  environment.sessionVariables = {
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_TYPE = "wayland";
-    XDG_SESSION_DESKTOP = "Hyprland";
   };
 
   # XDG portal for screen sharing, file picker, etc. (required for Wayland)
@@ -37,21 +36,35 @@
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
-  # Essential desktop packages
+  # ============================================================================
+  # SECURITY
+  # ============================================================================
+  security.rtkit.enable = true;
+
+  # ============================================================================
+  # SECURITY
+  # ============================================================================
+  environment.sessionVariables = {
+    XDG_CURRENT_DESKTOP = "Hyprland";
+    XDG_SESSION_TYPE = "wayland";
+    XDG_SESSION_DESKTOP = "Hyprland";
+  };
+
+  # ============================================================================
+  # PACKAGES
+  # ============================================================================
   environment.systemPackages = with pkgs; [
     # Terminal
-    kitty
-    #foot
-    # alacritty
+    kitty # just in case
 
     # Wayland utilities
     waybar # Status bar
-    # wofi # Application launcher
-    rofi
+    rofi # App launcher
     dunst # Notification daemon
-    # swww # Wallpaper daemon
-    hyprpaper
-    wlr-randr # Wayland display configuration tool (for resolution)
+    hyprpaper # Wallpaper daemon
+    # wlr-randr # Wayland display configuration tool (for resolution)
+
+    blueberry
 
     # Screenshot and screen recording
     # grim # Screenshot
@@ -62,9 +75,8 @@
     # xfce.thunar
 
     # Basic utilities
-    # networkmanagerapplet
-    # pavucontrol # Audio control
-    # brightnessctl # Brightness control
+    brightnessctl # Brightness control
+    networkmanagerapplet
+    pavucontrol # Audio control
   ];
-
 }

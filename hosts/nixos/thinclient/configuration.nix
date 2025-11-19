@@ -22,8 +22,6 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = lib.getExe pkgs.zsh;
     packages = with pkgs; [
-      alacritty
-      neovim
       kitty
       tree
       #impala

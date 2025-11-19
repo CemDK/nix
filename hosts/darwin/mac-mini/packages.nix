@@ -14,7 +14,6 @@
     # anki # borken atm
     hidden-bar
     mkalias
-    neovim
     nodejs
     obsidian
     raycast

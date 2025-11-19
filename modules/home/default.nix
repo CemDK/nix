@@ -28,6 +28,7 @@ in {
       bat
       btop
       curl
+      direnv
       fd
       htop
       jq
@@ -42,10 +43,6 @@ in {
       unzip
       vim
       wget
-
-      # TODO: move me
-      # nixos only
-      # blueberry
     ];
   };
 
@@ -92,13 +89,4 @@ in {
     git = true;
     extraOptions = [ "--group-directories-first" "--header" ];
   };
-
-  # TODO: this compiles fish on macos for some rerason
-  # and then fails
-  # programs.direnv = {
-  #   enable = true;
-  #   enableZshIntegration = true;
-  #   enableFishIntegration = false;
-  #   nix-direnv.enable = true;
-  # };
 }

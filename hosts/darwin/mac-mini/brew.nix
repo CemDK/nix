@@ -11,7 +11,6 @@
     # CLI-TOOLS, LIBRARIES, ETC.
     brews = [
       # "bitwarden-cli"
-      # "neovim"
       # "ollama"
       # "tailscale"
       # "borders"

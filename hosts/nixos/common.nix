@@ -88,13 +88,12 @@
   # PACKAGES
   # ============================================================================
   environment.systemPackages = with pkgs; [
-    # neovim
-    # git
+    #
+    cifs-utils
+    curl
     gcc
     lazygit
-    wget
-    curl
-    cifs-utils
     nautilus
+    wget
   ];
 }
