@@ -34,13 +34,19 @@
       #impala
     ];
   };
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh.enable = true;
 
   # ============================================================================
   # SERVICES
   # ============================================================================
   # services.printing.enable = true;
   # services.openssh.enable = lib.mkDefault false;
-  services = { getty.autologinUser = "cemdk"; };
+  services = {
+    getty.autologinUser = "cemdk";
+    gvfs.enable = true;
+    udisks2.enable = true;
+  };
 
   # ============================================================================
   # NETWORKING & FIREWALL
@@ -48,6 +54,7 @@
   networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
+    5900 # vnc port
   ];
   #networking.wireless.iwd.enable = true;
 

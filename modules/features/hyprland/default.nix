@@ -47,7 +47,7 @@
     # Wayland utilities
     waybar # Status bar
     # wofi # Application launcher
-    rofi-wayland
+    rofi
     dunst # Notification daemon
     # swww # Wallpaper daemon
     hyprpaper
