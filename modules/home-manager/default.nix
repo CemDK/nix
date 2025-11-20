@@ -12,6 +12,7 @@
   };
 
   home.packages = with pkgs; [
+    starship
     bat
     curl
     direnv
@@ -66,8 +67,8 @@
     ".local/scripts/tmux-sessionizer".source =
       ../../modules/home-manager/scripts/tmux-sessionizer;
 
-    ".config/.p10k-rainbow.zsh".source =
-      ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
+    # ".config/.p10k-rainbow.zsh".source =
+    #   ../../modules/home-manager/dotfiles/.p10k-rainbow.zsh;
 
     # ".local/scripts/taoup" = {
     #   source = builtins.fetchGit {

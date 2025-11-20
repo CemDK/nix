@@ -1,5 +1,22 @@
 { pkgs, config, ... }: {
   programs.zoxide.enable = true;
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = true;
+      # command_timeout = 1300;
+      # scan_timeout = 50;
+      aws.disabled = true;
+      gcloud.disabled = true;
+      # format = ''
+      #   $all$nix_shell$nodejs$lua$golang$rust$php$git_branch$git_commit$git_state$git_status
+      #   $username$hostname$directory'';
+      # character = {
+      #   success_symbol = "[](bold green) ";
+      #   error_symbol = "[✗](bold red) ";
+      # };
+    };
+  };
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -60,8 +77,8 @@
     '';
 
     initContent = ''
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-      source ${./dotfiles/.p10k-rainbow.zsh}
+      # source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+      # source ${./dotfiles/.p10k-rainbow.zsh}
 
       export ZSH_COMPDUMP=$HOME/.cache/.zcompdump-$HOST
 
