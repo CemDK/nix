@@ -21,6 +21,13 @@
 
   ];
 
+  users.users.cemdk.packages = with pkgs; [
+    wakatime-cli
+    nix-search-tv
+    fastfetch
+    # Add user packages here
+  ];
+
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;

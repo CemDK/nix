@@ -67,6 +67,7 @@
     initContent = ''
 
       export COMPDUMP=$HOME/.cache/.zcompdump-$HOST
+      export WAKATIME_HOME=$XDG_CONFIG_HOME/wakatime
 
       eval "$(zoxide init zsh)"
       eval "$(starship init zsh)"
