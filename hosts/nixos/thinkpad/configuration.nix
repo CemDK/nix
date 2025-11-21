@@ -33,6 +33,8 @@
         tree
       ];
   };
+  users.defaultUserShell = pkgs.zsh;
+  programs.zsh.enable = true;
 
   # ============================================================================
   # SERVICES

@@ -6,7 +6,6 @@ let
     # aerospace = "${localFiles}/aerospace";
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
-    # retroarch = "${localFiles}/retroarch/retroarch.cfg";
     rofi = "${localFiles}/rofi";
     tmux = "${localFiles}/tmux";
     waybar = "${localFiles}/waybar";

@@ -101,5 +101,8 @@
     lazygit
     nautilus
     wget
+    curl
+    cifs-utils
+    nautilus
   ];
 }
