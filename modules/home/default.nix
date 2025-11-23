@@ -46,6 +46,7 @@ in {
       ] ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
         btop
+        cpupower
       ];
   };
 

@@ -27,14 +27,7 @@
     isNormalUser = true;
     description = "CemDK";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs;
-      [
-        # machine specific packages
-        tree
-      ];
   };
-  users.defaultUserShell = pkgs.zsh;
-  programs.zsh.enable = true;
 
   # ============================================================================
   # SERVICES
@@ -93,8 +86,6 @@
   # ============================================================================
   # HARDWARE
   # ============================================================================
-  # Enable TPlink Archer Nano Wifi Dongle 
-  # boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
   hardware.bluetooth.enable = true;
   hardware.uinput.enable = true;
 

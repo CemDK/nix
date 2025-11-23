@@ -19,12 +19,13 @@
     isNormalUser = true;
     description = "CemDK";
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = lib.getExe pkgs.zsh;
-    packages = with pkgs;
-      [
-        tree
-        #impala
-      ];
+  };
+
+  # ============================================================================
+  # ENVIRONMENT
+  # ============================================================================
+  environment.variables = {
+    LIBVA_DRIVER_NAME = "iHD"; # Force Intel media driver
   };
 
   # ============================================================================
@@ -67,6 +68,10 @@
   # boot.loader.grub.useOSProber = true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelParams = [ "i915.fastboot=1" ];
+  boot.initrd.kernelModules = [ "i915" ];
+
+  # powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   # ============================================================================
   # HARDWARE
@@ -81,6 +86,13 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+
+    extraPackages = with pkgs; [
+      intel-media-driver # VAAPI for Gemini Lake+
+      intel-compute-runtime-legacy1 # OpenCL
+      # vaapiVdpau
+      libvdpau-va-gl
+    ];
   };
 
   # ============================================================================
