@@ -1,27 +1,28 @@
 { pkgs, ... }: {
 
+  # ============================================================================
+  # IMPORTS
+  # ============================================================================
   imports = [
+    # Import custom modules
     ../../../modules/home
     ../../../modules/home/retroarch
-    #
+    ../../../modules/features/steam
+
   ];
 
-  home.file = { };
-  home.packages = with pkgs; [
-    libva-utils
-    vulkan-loader
-    xdg-desktop-portal-gtk
-  ];
+  # ============================================================================
+  # PACKAGES
+  # ============================================================================
+  home = {
+    packages = with pkgs; [
+      # local apps
+      libva-utils
+      vulkan-loader
+      xdg-desktop-portal-gtk
+    ];
 
-  programs.steam.enable = true;
-  programs.steam.gamescopeSession.enable = true;
-  programs.gamemode.enable = true;
-
-  home.stateVersion = "25.05";
-
-  programs.bash = {
-    enable = true;
-    shellAliases = { btw = "echo i use nix"; };
+    file = { };
   };
 }
 
