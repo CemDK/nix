@@ -3,7 +3,6 @@ let
   link = config.lib.file.mkOutOfStoreSymlink;
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
-    # aerospace = "${localFiles}/aerospace";
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
     rofi = "${localFiles}/rofi";
@@ -22,27 +21,32 @@ in {
   home = {
     stateVersion = "25.05";
 
-    packages = with pkgs; [
-      alacritty
-      bat
-      btop
-      curl
-      # direnv # installed with brew on macos
-      fd
-      htop
-      jq
-      lazygit
-      neovide
-      neovim
-      obsidian
-      ripgrep
-      starship
-      tldr
-      tmux
-      unzip
-      vim
-      wget
-    ];
+    packages = with pkgs;
+      [
+        alacritty
+        bat
+        btop
+        claude-code
+        curl
+        fd
+        htop
+        jq
+        lazygit
+        localsend
+        neovide
+        neovim
+        obsidian
+        ripgrep
+        starship
+        tldr
+        tmux
+        unzip
+        vim
+        wget
+      ] ++ lib.optionals pkgs.stdenv.isLinux [
+        # Linux-only packages
+        btop
+      ];
   };
 
   xdg = {
@@ -94,5 +98,11 @@ in {
     enable = true;
     git = true;
     extraOptions = [ "--group-directories-first" "--header" ];
+  };
+
+  programs.direnv = pkgs.lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
   };
 }

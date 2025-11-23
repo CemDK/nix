@@ -78,5 +78,6 @@
     brightnessctl # Brightness control
     networkmanagerapplet
     pavucontrol # Audio control
+    nautilus
   ];
 }

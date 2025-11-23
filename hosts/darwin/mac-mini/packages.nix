@@ -9,23 +9,22 @@
   # SYSTEM PACKAGES
   # ============================================================================
   environment.systemPackages = with pkgs; [
+    # anki # borken atm
     aerospace
     claude-code
-    # anki # borken atm
     hidden-bar
     mkalias
     nodejs
     obsidian
     raycast
     stats
-
   ];
 
+  # Add user packages here
   users.users.cemdk.packages = with pkgs; [
     wakatime-cli
     nix-search-tv
     fastfetch
-    # Add user packages here
   ];
 
   services.aerospace = {
