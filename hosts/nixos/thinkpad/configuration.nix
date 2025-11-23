@@ -39,9 +39,9 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
-  # services.printing.enable = true;
-  # services.openssh.enable = lib.mkDefault false;
   services = {
+    # openssh.enable = lib.mkDefault false;
+    # printing.enable = true;
     getty.autologinUser = "cemdk";
     gvfs.enable = true;
     udisks2.enable = true;

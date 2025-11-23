@@ -23,3 +23,8 @@ The ISO will be in `./result/iso/`.
      - Let you choose which host to install (currently: `thinkpad`)
      - Partition the disk
      - Install NixOS with my configuration
+
+## TODOs
+
+- [ ] Add Mission Center to pkgs
+- [ ] refactor steam stuff

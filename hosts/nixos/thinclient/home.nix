@@ -9,7 +9,6 @@
   home.file = { };
   home.packages = with pkgs; [
     libva-utils
-    localsend
     vulkan-loader
     xdg-desktop-portal-gtk
   ];
