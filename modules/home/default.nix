@@ -69,6 +69,7 @@ in {
   # ============================================================================
   programs.git = {
     enable = true;
+    lfs = { enable = true; };
     settings = {
       user = {
         name = "CemDK";
@@ -76,6 +77,11 @@ in {
       };
       credential.helper = "store";
       init.defaultBranch = "main";
+      core.editor = "vim";
+      core.autocrlf = "input";
+      # commit.gpgsign = true;
+      pull.rebase = true;
+      rebase.autoStash = true;
     };
   };
 
