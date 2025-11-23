@@ -100,5 +100,6 @@
     gcc
     lazygit
     wget
+    linuxPackages.cpupower
   ];
 }

@@ -39,14 +39,7 @@
     gvfs.enable = true;
     udisks2.enable = true;
 
-    udiskie = {
-      enable = true;
-      settings = {
-        program_options = {
-          file_manager = "${pkgs.nemo-with-extensions}/bin/nemo";
-        };
-      };
-    };
+    dbus.enable = true;
   };
 
   # ============================================================================
