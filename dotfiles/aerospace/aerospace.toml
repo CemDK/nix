@@ -75,11 +75,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # WORKSPACE 3
 # ---------------------------------------------------------------------------
 [[on-window-detected]]
-    if.app-id = 'com.microsoft.VSCode'
-    run = ['move-node-to-workspace 3']
-
-[[on-window-detected]]
-    if.app-name-regex-substring = 'neovide-wrapped'
+    if.app-name-regex-substring = 'neovide'
     run = ['move-node-to-workspace 3']
 
 # ---------------------------------------------------------------------------
@@ -87,6 +83,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # ---------------------------------------------------------------------------
 [[on-window-detected]]
     if.app-id = 'com.apple.finder'
+    run = ['move-node-to-workspace 4']
+
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.VSCode'
     run = ['move-node-to-workspace 4']
 
 # ---------------------------------------------------------------------------

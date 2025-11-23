@@ -25,6 +25,7 @@
     # GUI APPLICATIONS
     casks = [
       "vlc"
+      # "neovide"
       # "adobe-creative-cloud"
       # "alacritty"
       # "alcove"
@@ -85,7 +86,7 @@
       # "spotify"
       # "steam"
       # "viscosity"
-      # "visual-studio-code"
+      "visual-studio-code"
       # "wireshark"
       # rogue amoeba
     ];

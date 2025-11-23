@@ -1,5 +1,5 @@
 { pkgs, ... }: {
-  # install dependencies of my nvim setup
+  # nvim dependencies
   home.packages = with pkgs; [
     fd
     # fzf

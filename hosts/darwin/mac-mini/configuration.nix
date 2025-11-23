@@ -39,6 +39,34 @@
   environment.shells = [ pkgs.bash pkgs.zsh ];
 
   # ============================================================================
+  # KEYBOARD
+  # ============================================================================
+  # keyboard = {
+  #   enableKeyMapping = true;
+  #   # remapCapsLockToEscape = true;
+  # };
+
+  # Swap z and y, because I grew up with QWERTZ :)
+  launchd.user.agents.remap-keys = {
+    serviceConfig = {
+      ProgramArguments = [
+        "/usr/bin/hidutil"
+        "property"
+        "--set"
+        ''
+          {
+            "UserKeyMapping":[
+              {"HIDKeyboardModifierMappingSrc":0x70000001C,"HIDKeyboardModifierMappingDst":0x70000001D},
+              {"HIDKeyboardModifierMappingSrc":0x70000001D,"HIDKeyboardModifierMappingDst":0x70000001C}
+            ]
+          }
+        ''
+      ];
+      RunAtLoad = true;
+    };
+  };
+
+  # ============================================================================
   # SYSTEM
   # ============================================================================
   system = {
@@ -131,14 +159,6 @@
         NSAutomaticSpellingCorrectionEnabled = false;
         NSWindowResizeTime = 0.0;
       };
-
-      # ============================================================================
-      # KEYBOARD
-      # ============================================================================
-      # keyboard = {
-      #   enableKeyMapping = true;
-      #   # remapCapsLockToEscape = true;
-      # };
 
       # ============================================================================
       # OTHER PREFERENCES
