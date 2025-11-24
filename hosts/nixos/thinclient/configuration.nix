@@ -7,6 +7,8 @@
     ../common.nix
     ./hardware-configuration.nix
     ../../../modules/features/hyprland
+    ../../../modules/features/steam
+
   ];
 
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
@@ -39,11 +41,12 @@
   # NETWORKING & FIREWALL
   # ============================================================================
   networking.hostName = host;
+  networking.networkmanager.enable = true;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
   ];
   # networking.wireless.enable = true;
-  #networking.wireless.iwd.enable = true;
+  # networking.wireless.iwd.enable = true;
 
   # ============================================================================
   # VIRTUALIZATION

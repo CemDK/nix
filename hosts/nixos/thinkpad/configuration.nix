@@ -50,7 +50,7 @@
     53317 # localsend port
     5900 # vnc port
   ];
-  #networking.wireless.iwd.enable = true;
+  # networking.wireless.iwd.enable = true;
 
   # ============================================================================
   # VIRTUALIZATION

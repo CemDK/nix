@@ -7,8 +7,6 @@
     # Import custom modules
     ../../../modules/home
     ../../../modules/home/retroarch
-    ../../../modules/features/steam
-
   ];
 
   # ============================================================================
