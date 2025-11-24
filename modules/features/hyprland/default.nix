@@ -13,21 +13,31 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
-  services.dbus.enable = true;
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
-        user = "greeter";
+  services = {
+    dbus.enable = true;
+
+    greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          command = ''
+            ${pkgs.tuigreet}/bin/tuigreet --greeting 'SHOKUNIX' --asterisks --remember
+                    --remember-user-session --time --cmd Hyprland'';
+          user = "greeter";
+        };
+        initial_session = {
+          command = "${pkgs.hyprland}/bin/Hyprland";
+          user = "cemdk";
+        };
       };
     };
-  };
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
   };
 
   # XDG portal for screen sharing, file picker, etc. (required for Wayland)

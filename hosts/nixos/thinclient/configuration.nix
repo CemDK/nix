@@ -26,9 +26,9 @@
   # ============================================================================
   # ENVIRONMENT
   # ============================================================================
-  environment.variables = {
-    LIBVA_DRIVER_NAME = "iHD"; # Force Intel media driver
-  };
+  # environment.variables = {
+  #   LIBVA_DRIVER_NAME = "iHD"; # Force Intel media driver
+  # };
 
   # ============================================================================
   # SERVICES
@@ -41,7 +41,6 @@
   # NETWORKING & FIREWALL
   # ============================================================================
   networking.hostName = host;
-  networking.networkmanager.enable = true;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
   ];
@@ -84,18 +83,17 @@
 
   hardware.bluetooth.enable = true;
   hardware.uinput.enable = true;
-  # input.touchpad.disable_while_typing = false;
 
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
 
-    extraPackages = with pkgs; [
-      intel-media-driver # VAAPI for Gemini Lake+
-      intel-compute-runtime-legacy1 # OpenCL
-      # vaapiVdpau
-      libvdpau-va-gl
-    ];
+    # extraPackages = with pkgs; [
+    #   intel-media-driver # VAAPI for Gemini Lake+
+    #   intel-compute-runtime-legacy1 # OpenCL
+    #   # vaapiVdpau
+    #   libvdpau-va-gl
+    # ];
   };
 
   # ============================================================================

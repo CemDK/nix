@@ -13,12 +13,13 @@
   # PACKAGES
   # ============================================================================
   home = {
-    packages = with pkgs; [
-      # local apps
-      libva-utils
-      vulkan-loader
-      xdg-desktop-portal-gtk
-    ];
+    packages = with pkgs;
+      [
+        # local apps
+        # libva-utils
+        # vulkan-loader
+        # xdg-desktop-portal-gtk
+      ];
 
     file = { };
   };
