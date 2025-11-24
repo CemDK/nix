@@ -108,12 +108,15 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     run = ['move-node-to-workspace 7']
 
 [[on-window-detected]]
-    if.app-id = 'anki'
+    if.app-id = 'net.ankiweb.launcher'
     run = ['move-node-to-workspace 7']
 
 # ---------------------------------------------------------------------------
 # WORKSPACE 8
 # ---------------------------------------------------------------------------
+[[on-window-detected]]
+    if.app-id = 'tv.plex.desktop'
+    run = ['move-node-to-workspace 8']
 
 # ---------------------------------------------------------------------------
 # WORKSPACE 9

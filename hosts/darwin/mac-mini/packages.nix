@@ -8,14 +8,12 @@
   # ============================================================================
   # SYSTEM PACKAGES
   # ============================================================================
+  # this installs into /nix/store/...
   environment.systemPackages = with pkgs; [
-    # anki # borken atm
     aerospace
-    claude-code
     hidden-bar
     mkalias
     nodejs
-    obsidian
     raycast
     stats
   ];

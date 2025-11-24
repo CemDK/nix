@@ -24,6 +24,8 @@
 
     # GUI APPLICATIONS
     casks = [
+      "anki"
+      "plex"
       "vlc"
       # "neovide"
       # "adobe-creative-cloud"
@@ -74,7 +76,6 @@
       # "openscad"
       # "openttd"
       # "orbstack"
-      # "plexamp"
       # "popclip"
       # "prusaslicer"
       # "raycast"
