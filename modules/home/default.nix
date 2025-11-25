@@ -45,7 +45,7 @@ in {
         wget
       ] ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
-        btop
+        anki # using brew for macos
       ];
   };
 
