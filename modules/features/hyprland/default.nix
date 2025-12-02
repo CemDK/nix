@@ -89,5 +89,8 @@
     networkmanagerapplet
     pavucontrol # Audio control
     nautilus
+
+    # cursors
+    rose-pine-cursor
   ];
 }

@@ -33,6 +33,13 @@
     ];
 
     file = { };
+    pointerCursor = {
+      name = "BreezeX-RosePine-Linux";
+      package = pkgs.rose-pine-cursor;
+      size = 36;
+      gtk.enable = true;
+      x11.enable = true;
+    };
   };
 
 }
