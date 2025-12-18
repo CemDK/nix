@@ -1,6 +1,7 @@
 {
   homebrew = {
     enable = true;
+    caskArgs.no_quarantine = true;
     onActivation = {
       cleanup = "zap";
       autoUpdate = true;
@@ -12,6 +13,7 @@
     brews = [
       # "bitwarden-cli"
       "direnv"
+      "winetricks"
       # "ollama"
       # "tailscale"
       # "borders"
@@ -25,8 +27,12 @@
     # GUI APPLICATIONS
     casks = [
       "anki"
+      "playonmac"
       "plex"
       "vlc"
+      "wine-stable"
+      "whisky"
+      "xquartz"
       # "neovide"
       # "adobe-creative-cloud"
       # "alacritty"
@@ -99,6 +105,7 @@
       # "Bitwarden" = 1352778147;
       # "Creator's Best Friend" = 1524172135;
       "DaVinci Resolve" = 571213070;
+      "NetSpeedMonitor" = 1575839740;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
       "Home Assistant Companion" = 1099568401;
