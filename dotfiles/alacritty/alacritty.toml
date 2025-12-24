@@ -26,4 +26,5 @@ shell = "zsh"
 bindings = [
   { key = "V", mods = "Control|Shift", action = "Paste" },
   { key = "C", mods = "Control|Shift", action = "Copy" },
+  # { key = "Return", mods = "Shift", chars = "\\\r" },
 ]

@@ -89,6 +89,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     if.app-id = 'com.microsoft.VSCode'
     run = ['move-node-to-workspace 4']
 
+[[on-window-detected]]
+    if.app-id = 'com.wireguard.macos'
+    run = ['move-node-to-workspace 4']
+
 # ---------------------------------------------------------------------------
 # WORKSPACE 5
 # ---------------------------------------------------------------------------

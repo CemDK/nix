@@ -105,7 +105,6 @@
       # "Bitwarden" = 1352778147;
       # "Creator's Best Friend" = 1524172135;
       "DaVinci Resolve" = 571213070;
-      "NetSpeedMonitor" = 1575839740;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
       "Home Assistant Companion" = 1099568401;
@@ -120,7 +119,7 @@
       # "The Unarchiver" = 425424353;
       # "Todoist" = 585829637;
       # "UTM" = 1538878817;
-      # "Wireguard" = 1451685025;
+      "WireGuard" = 1451685025;
 
       # "Keynote" = 409183694;
       # "Numbers" = 409203825;
