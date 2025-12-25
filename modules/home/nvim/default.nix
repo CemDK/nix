@@ -23,6 +23,7 @@
     statix # nix linter
     nixd
     nixfmt-classic
+    typescript-go
     # Let mason do these
     # eslint
     # eslint_d

@@ -101,5 +101,6 @@
     lazygit
     wget
     linuxPackages.cpupower
+
   ];
 }

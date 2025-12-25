@@ -30,6 +30,10 @@
       protonup-qt
       wine
       wayvnc
+
+      # project dependencies
+      stripe-cli
+      redis
     ];
 
     file = { };
