@@ -22,7 +22,7 @@ done
 
 log() {
     if [[ $debug == "1" ]]; then
-        echo "[DEBUG]: $@"
+        echo "[DEBUG]: $*"
     fi
 }
 
