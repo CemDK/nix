@@ -23,12 +23,22 @@ in {
 
     packages = with pkgs;
       [
+        # ---------------------------------
+        # Packages managed by home-manager
+        # ---------------------------------
+        # eza
+        # fzf
+        # gh
+        # zsh
+        # ---------------------------------
+
         alacritty
         bat
         btop
         claude-code
         curl
         fd
+        git
         htop
         jq
         lazygit
@@ -43,6 +53,7 @@ in {
         unzip
         vim
         wget
+
       ] ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
         anki # using brew for macos

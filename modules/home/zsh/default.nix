@@ -1,5 +1,16 @@
 { config, ... }: {
+
   programs.zoxide.enable = true;
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = true;
+      aws.disabled = true;
+      gcloud.disabled = true;
+    };
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -62,8 +73,6 @@
       PATH=$PATH:${config.home.homeDirectory}/.local/scripts
     '';
 
-    # source ${./dotfiles/.p10k-rainbow.zsh}
-    # source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
     initContent = ''
 
       export COMPDUMP=$HOME/.cache/.zcompdump-$HOST

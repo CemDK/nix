@@ -90,16 +90,15 @@
       # ========================================================================
       mkHomeConfig = { system, user, host, home }:
         home-manager.lib.homeManagerConfiguration {
-          inherit system;
           pkgs = nixpkgs.legacyPackages.${system};
-          extraSpecialArgs = { inherit user host home inputs; };
-          backupFileExtension = "backup";
+          extraSpecialArgs = { inherit self system user host home inputs; };
           modules = [
-            ({ pkgs, ... }:
-              (import "./hosts/linux/${host}/home.nix" {
-                inherit pkgs user host home;
-              }))
-            { targets.genericLinux.enable = true; }
+            ./hosts/linux/${host}/home.nix
+            {
+              home.username = user;
+              home.homeDirectory = home;
+              targets.genericLinux.enable = true;
+            }
           ];
         };
 

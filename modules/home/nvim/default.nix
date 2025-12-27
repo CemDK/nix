@@ -1,35 +1,63 @@
 { pkgs, ... }: {
-  # nvim dependencies
+  # ============================================================================
+  # NVIM STUFF
+  # ============================================================================
   home.packages = with pkgs; [
+    # ---------------------------------
+    # General tools
+    # ---------------------------------
     fd
-    # fzf
     lazygit
     neovide
     neovim
     ripgrep
 
-    ###################
-    # Code
+    # ---------------------------------
+    # Packages managed by home-manager
+    # ---------------------------------
+    # fzf
+
+    # ---------------------------------
+    # Development tools
+    # ---------------------------------
+    gcc # needed for treesitter
     lua
     luajitPackages.luarocks
     nodejs
     pnpm
-    rustup
+    rustup # includes rust-analyzer
     typescript
 
+    # ---------------------------------
+    # LSP servers and tools
+    # ---------------------------------
+    # Parsers
     tree-sitter
-    # formatting / linting
-    nodePackages.prettier
-    statix # nix linter
+
+    # Formatting / Linting
+    biome
+    eslint
     nixd
     nixfmt-classic
+    nodePackages.prettier
+    statix # nix linter
+
+    # LSP servers
+    bash-language-server
+    docker-language-server
+    dockerfile-language-server
+    lua-language-server
+    tailwindcss-language-server
+    terraform-ls
     typescript-go
-    # Let mason do these
-    # eslint
-    # eslint_d
-    # lua-language-server
-    # nodePackages.vscode-json-languageserver
-    # tailwindcss-language-server
-    # typescript-language-server
+    typescript-language-server
+    vscode-langservers-extracted
+    yaml-language-server
+
+    # NVIM lsp stuff seems to use libuv-watchdirs, but this makes nvim rather slow when opening
+    # installing inotify-tools seems to fix this
+    #  File watch backend: libuv-watchdirs
+    #  ⚠️ WARNING libuv-watchdirs has known performance issues. Consider installing inotify-tools.
+    inotify-tools
   ];
 }
