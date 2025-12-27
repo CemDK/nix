@@ -11,54 +11,56 @@
     homeDirectory = home;
   };
 
-  home.packages = with pkgs; [
-    starship
-    bat
-    curl
-    direnv
-    fd
-    fzf
-    gh
-    git
-    htop
-    jq
-    lazygit
-    neofetch
-    neovide
-    neovim
-    ripgrep
-    tldr
-    tmux
-    unzip
-    wget
-    vim
-    zsh
+  home.packages = with pkgs;
+    [
+      bat
+      curl
+      fd
+      fzf
+      gh
+      git
+      htop
+      jq
+      lazygit
+      neovide
+      neovim
+      ripgrep
+      starship
+      tldr
+      tmux
+      unzip
+      vim
+      wget
+      zsh
 
-    # Code
-    stylua
-    lua
-    luajitPackages.luarocks
-    nodejs
-    pnpm
-    rustup
-    typescript
+      # Code
+      stylua
+      lua
+      luajitPackages.luarocks
+      nodejs
+      pnpm
+      rustup
+      typescript
 
-    ###################
-    # for nvim
-    tree-sitter
-    # formatting / linting
-    nodePackages.prettier
-    statix # nix linter
-    nixd
-    nixfmt-classic
-    # Let mason do these
-    # eslint
-    # eslint_d
-    lua-language-server
-    # nodePackages.vscode-json-languageserver
-    # tailwindcss-language-server
-    # typescript-language-server
-  ];
+      ###################
+      # for nvim
+      tree-sitter
+      # formatting / linting
+      nodePackages.prettier
+      statix # nix linter
+      nixd
+      nixfmt-classic
+      # Let mason do these
+      # eslint
+      # eslint_d
+      lua-language-server
+      # nodePackages.vscode-json-languageserver
+      # tailwindcss-language-server
+      # typescript-language-server
+    ] ++ lib.optionals pkgs.stdenv.isLinux [
+      # Linux-only packages
+      # direnv
+    ];
 
   home.file = {
     ".local/scripts/ready-tmux".source =
@@ -83,9 +85,18 @@
     # "home-manager=${inputs.home-manager}"
   ];
 
-  programs = {
-    # home-manager.enable = true;
-    git.enable = true;
+  programs.git = {
+    enable = true;
+    lfs = { enable = true; };
+    settings = {
+      credential.helper = "store";
+      init.defaultBranch = "main";
+      core.editor = "vim";
+      core.autocrlf = "input";
+      # commit.gpgsign = true;
+      pull.rebase = true;
+      rebase.autoStash = true;
+    };
   };
 
   xdg = {
@@ -96,10 +107,9 @@
     stateHome = "${config.home.homeDirectory}/.local/state";
   };
 
-  # TODO: look into direnv
-  # programs.direnv = {
-  #   enable = true;
-  #   enableZshIntegration = true;
-  #   nix-direnv.enable = true;
-  # };
+  programs.direnv = pkgs.lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
 }
