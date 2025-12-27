@@ -1,6 +1,5 @@
 {
-  description =
-    "Shokunix - Multi platform Nix configuration with nixos iso installer";
+  description = "Shokunix - Multi platform Nix configuration";
 
   inputs = {
     # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";

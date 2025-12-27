@@ -13,7 +13,7 @@
     brews = [
       # "bitwarden-cli"
       "direnv"
-      "winetricks"
+      # "winetricks"
       # "ollama"
       # "tailscale"
       # "borders"
@@ -27,13 +27,13 @@
     # GUI APPLICATIONS
     casks = [
       "anki"
-      "playonmac"
-      "plex"
+      # "playonmac"
+      # "plex"
       "visual-studio-code"
-      "vlc"
-      "wine-stable"
-      "whisky"
-      "xquartz"
+      # "vlc"
+      # "wine-stable"
+      # "whisky"
+      # "xquartz"
       # "neovide"
       # "adobe-creative-cloud"
       # "alacritty"
@@ -104,10 +104,10 @@
       # "AutoMounter" = 1160435653;
       # "Bitwarden" = 1352778147;
       # "Creator's Best Friend" = 1524172135;
-      "DaVinci Resolve" = 571213070;
+      # "DaVinci Resolve" = 571213070;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
-      "Home Assistant Companion" = 1099568401;
+      # "Home Assistant Companion" = 1099568401;
       # "Ivory for Mastodon by Tapbots" = 6444602274;
       # "Microsoft Remote Desktop" = 1295203466;
       # "Perplexity" = 6714467650;
@@ -119,7 +119,7 @@
       # "The Unarchiver" = 425424353;
       # "Todoist" = 585829637;
       # "UTM" = 1538878817;
-      "WireGuard" = 1451685025;
+      # "WireGuard" = 1451685025;
 
       # "Keynote" = 409183694;
       # "Numbers" = 409203825;

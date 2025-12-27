@@ -6,6 +6,8 @@
   imports = [
     ../common.nix
     ./hardware-configuration.nix
+
+    # Import hyprland module
     ../../../modules/features/hyprland
 
     # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad

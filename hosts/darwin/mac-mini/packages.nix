@@ -28,8 +28,8 @@
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;
-    settings = builtins.fromTOML
-      (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
+    settings =
+      fromTOML (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
   };
 
   # ============================================================================
