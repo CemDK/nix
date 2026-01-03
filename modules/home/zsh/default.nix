@@ -98,6 +98,15 @@
       bindkey '^[[1;5D' backward-word
       bindkey '^[[1;5C' forward-word
 
+      # Bind space to magic-space (expand aliases in the middle of a command)
+      bindkey ' ' magic-space
+
+      # Open buffer line in editor
+      autoload -Uz edit-command-line
+      zle -N edit-command-line
+      bindkey '^x^e' edit-command-line
+
+
     '' + import ./init.nix + import ./functions.nix;
   };
 }
