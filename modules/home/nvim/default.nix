@@ -21,6 +21,7 @@
     # Development tools
     # ---------------------------------
     gcc # needed for treesitter
+    gnumake # needed for avante
     lua
     luajitPackages.luarocks
     nodejs

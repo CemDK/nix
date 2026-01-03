@@ -40,6 +40,7 @@ in {
         curl
         fd
         git
+        gnumake
         htop
         jq
         lazygit
