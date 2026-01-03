@@ -54,6 +54,8 @@
     typescript-language-server
     vscode-langservers-extracted
     yaml-language-server
+    omnisharp-roslyn
+    roslyn-ls
 
     # NVIM lsp stuff seems to use libuv-watchdirs, but this makes nvim rather slow when opening
     # installing inotify-tools seems to fix this

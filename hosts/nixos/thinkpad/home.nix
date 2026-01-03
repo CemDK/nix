@@ -36,6 +36,8 @@
 
       # unity
       p7zip # unity-hub doesn't ship with 7z (03.01.26), so we need to include it here
+      dotnet-sdk
+      vscode
       unityhub
 
       # project dependencies
