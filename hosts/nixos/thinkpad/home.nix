@@ -6,7 +6,7 @@
   imports = [
     # Import custom modules
     ../../../modules/home
-    ../../../modules/home/retroarch
+    #../../../modules/home/retroarch
   ];
 
   # ============================================================================
