@@ -5,6 +5,7 @@ let
   configs = {
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
+    neovide = "${localFiles}/neovide";
     rofi = "${localFiles}/rofi";
     tmux = "${localFiles}/tmux";
     waybar = "${localFiles}/waybar";
