@@ -103,6 +103,7 @@
     lazygit
     wget
     seahorse
+    pix
     linuxPackages.cpupower
 
   ];
