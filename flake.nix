@@ -22,15 +22,37 @@
   };
 
   outputs =
-    inputs@{ self, nix-darwin, nixos-hardware, nixpkgs, home-manager, ... }:
+    inputs@{
+      self,
+      nix-darwin,
+      nixos-hardware,
+      nixpkgs,
+      home-manager,
+      ...
+    }:
     let
       # ========================================================================
       # Nix-Darwin configuration
       # ========================================================================
-      mkDarwinConfig = { system, user, host, home }:
+      mkDarwinConfig =
+        {
+          system,
+          user,
+          host,
+          home,
+        }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = { inherit self system user host home inputs; };
+          specialArgs = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
           modules = [
             ./hosts/darwin/${host}/configuration.nix
             inputs.home-manager.darwinModules.home-manager
@@ -57,17 +79,32 @@
               #   "homebrew/homebrew-bundle" = homebrew-bundle;
               # };
             }
-
           ];
         };
 
       # ========================================================================
       # NixOS configuration
       # ========================================================================
-      mkNixOSConfig = { system, user, host, home }:
+      mkNixOSConfig =
+        {
+          system,
+          user,
+          host,
+          home,
+        }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit self system user host home inputs; };
+          specialArgs = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
+          formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
           modules = [
             ./hosts/nixos/${host}/configuration.nix
             inputs.home-manager.nixosModules.home-manager
@@ -87,10 +124,25 @@
       # ========================================================================
       # Standalone Home-manager configuration (for non-NixOS Linux)
       # ========================================================================
-      mkHomeConfig = { system, user, host, home }:
+      mkHomeConfig =
+        {
+          system,
+          user,
+          host,
+          home,
+        }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
-          extraSpecialArgs = { inherit self system user host home inputs; };
+          extraSpecialArgs = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
           modules = [
             ./hosts/linux/${host}/home.nix
             {
@@ -104,28 +156,43 @@
       # ========================================================================
       # ISO installer configuration
       # ========================================================================
-      mkIsoConfig = { system, user, host, home }:
+      mkIsoConfig =
+        {
+          system,
+          user,
+          host,
+          home,
+        }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit user host home inputs; };
+          specialArgs = {
+            inherit
+              user
+              host
+              home
+              inputs
+              ;
+          };
           modules = [
-            ({ modulesPath, ... }: {
-              imports = [
-                (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
-                "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-                ./hosts/nixos/iso/configuration.nix
-              ];
+            (
+              { modulesPath, ... }:
+              {
+                imports = [
+                  (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
+                  "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+                  ./hosts/nixos/iso/configuration.nix
+                ];
 
-              # Include target system packages in ISO for offline installation
-              isoImage.storeContents = [
-                self.nixosConfigurations.${host}.config.system.build.toplevel
-              ];
-            })
+                # Include target system packages in ISO for offline installation
+                isoImage.storeContents = [
+                  self.nixosConfigurations.${host}.config.system.build.toplevel
+                ];
+              }
+            )
           ];
         };
-
-    in {
-
+    in
+    {
       # ========================================================================
       # CONFIG DEFINTIONS
       # ========================================================================
@@ -177,6 +244,5 @@
           home = "/home/cem";
         };
       };
-
     };
 }

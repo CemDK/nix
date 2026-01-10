@@ -1,4 +1,5 @@
-{ pkgs, lib, ... }: {
+{ pkgs, lib, ... }:
+{
 
   environment.etc."shokunix".source = ../../..;
 
@@ -13,7 +14,10 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   nixpkgs.config.allowUnfree = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   nix.extraOptions = "experimental-features = nix-command flakes";
 
   # ============================================================================
@@ -22,8 +26,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_6_6;
-  boot.supportedFilesystems =
-    lib.mkForce [ "btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs" ];
+  boot.supportedFilesystems = lib.mkForce [
+    "btrfs"
+    "reiserfs"
+    "vfat"
+    "f2fs"
+    "xfs"
+    "ntfs"
+    "cifs"
+  ];
 
   # systemd = {
   #   services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
@@ -45,8 +56,7 @@
     networkmanagerapplet
     #impala # TUI for managing wifi
 
-    (pkgs.writeShellScriptBin "shokunix_installer"
-      (builtins.readFile ./shokunix_installer))
+    (pkgs.writeShellScriptBin "shokunix_installer" (builtins.readFile ./shokunix_installer))
   ];
 
   # ============================================================================

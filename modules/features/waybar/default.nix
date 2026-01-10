@@ -1,6 +1,7 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   environment.systemPackages = with pkgs; [
-    # waybar dependencies 
+    # waybar dependencies
     blueberry # bluetooth gui
     brightnessctl # keyboard brightness controls
     pavucontrol # audio controls gui

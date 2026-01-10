@@ -1,4 +1,13 @@
-{ pkgs, self, system, user, home, host, ... }: {
+{
+  pkgs,
+  self,
+  system,
+  user,
+  home,
+  host,
+  ...
+}:
+{
 
   # ============================================================================
   # IMPORTS
@@ -36,7 +45,10 @@
   # ============================================================================
   # ENVIRONMENT
   # ============================================================================
-  environment.shells = [ pkgs.bash pkgs.zsh ];
+  environment.shells = [
+    pkgs.bash
+    pkgs.zsh
+  ];
 
   # ============================================================================
   # KEYBOARD
@@ -165,7 +177,9 @@
       # OTHER PREFERENCES
       # ============================================================================
       CustomUserPreferences = {
-        "com.microsoft.VSCode" = { ApplePressAndHoldEnabled = false; };
+        "com.microsoft.VSCode" = {
+          ApplePressAndHoldEnabled = false;
+        };
 
         # TODO: check if this is contained to mouse options
         # or if this messs with trackpad options
@@ -184,7 +198,9 @@
         #   SuppressSearchSuggestions = true;
         # };
 
-        "com.apple.AdLib" = { allowApplePersonalizedAdvertising = false; };
+        "com.apple.AdLib" = {
+          allowApplePersonalizedAdvertising = false;
+        };
       };
     };
   };

@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
 
   # ============================================================================
   # FONTS
@@ -19,17 +20,23 @@
   ];
 
   # Add user packages here
+  # This installs into $HOME/.nix-profile
   users.users.cemdk.packages = with pkgs; [
     wakatime-cli
     nix-search-tv
     fastfetch
   ];
 
+  # Add home-manager managed packages here
+  # This installs into $HOME/.nix-profile
+  home.packages = with pkgs; [
+    # bat
+  ];
+
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;
-    settings =
-      fromTOML (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
+    settings = fromTOML (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
   };
 
   # ============================================================================

@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # ============================================================================
   # NVIM STUFF
   # ============================================================================
@@ -38,24 +39,25 @@
     # Formatting / Linting
     biome
     eslint
-    nixd
-    nixfmt-classic
+    nixfmt
     nodePackages.prettier
     statix # nix linter
+    treefmt
 
     # LSP servers
     bash-language-server
     docker-language-server
     dockerfile-language-server
     lua-language-server
+    nixd
+    omnisharp-roslyn
+    roslyn-ls
     tailwindcss-language-server
     terraform-ls
     typescript-go
     typescript-language-server
     vscode-langservers-extracted
     yaml-language-server
-    omnisharp-roslyn
-    roslyn-ls
 
     # NVIM lsp stuff seems to use libuv-watchdirs, but this makes nvim rather slow when opening
     # installing inotify-tools seems to fix this

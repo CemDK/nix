@@ -1,4 +1,11 @@
-{ pkgs, lib, inputs, host, ... }: {
+{
+  pkgs,
+  lib,
+  inputs,
+  host,
+  ...
+}:
+{
 
   # ============================================================================
   # IMPORTS
@@ -28,7 +35,10 @@
   users.users.cemdk = {
     isNormalUser = true;
     description = "CemDK";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   # ============================================================================

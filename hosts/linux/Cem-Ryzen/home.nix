@@ -1,5 +1,8 @@
-{ pkgs, lib, inputs, ... }:
-
+{
+  lib,
+  inputs,
+  ...
+}:
 {
   # ============================================================================
   # IMPORTS
@@ -7,6 +10,7 @@
   imports = [
     # Import custom modules
     ../../../modules/home
+    ./packages.nix
   ];
 
   # ============================================================================
@@ -27,32 +31,10 @@
   systemd.user.startServices = "sd-switch";
 
   # ============================================================================
-  # PACKAGES
+  # HOME SETTINGS
   # ============================================================================
   home = {
     stateVersion = lib.mkForce "21.11";
-    packages = with pkgs; [
-      # Development tools
-      stripe-cli
-      claude-code
-      redis
-      minio-client
-
-      # Stuff
-      iperf3
-      mkvtoolnix-cli
-      conda
-      google-cloud-sdk
-      miktex
-      spotdl
-      yt-dlp
-
-      # TODO: look into making this work nicely
-      # use this to mount a remote filesystem on my VPS via SSH
-      sshfs
-      fuse
-    ];
-
     file = { };
   };
 }

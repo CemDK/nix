@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ config, ... }:
+{
 
   programs.zoxide.enable = true;
 
@@ -107,6 +108,8 @@
       bindkey '^x^e' edit-command-line
 
 
-    '' + import ./init.nix + import ./functions.nix;
+    ''
+    + import ./init.nix
+    + import ./functions.nix;
   };
 }

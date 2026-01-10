@@ -1,5 +1,10 @@
 # Laptop-specific power management
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
 
   # TODO: Add laptop power management configuration

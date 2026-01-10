@@ -11,7 +11,8 @@ let
     waybar = "${localFiles}/waybar";
     wallpapers = "${localFiles}/wallpapers";
   };
-in {
+in
+{
   imports = [
     #
     ./nvim
@@ -22,7 +23,8 @@ in {
   home = {
     stateVersion = "25.05";
 
-    packages = with pkgs;
+    packages =
+      with pkgs;
       [
         # ---------------------------------
         # Packages managed by home-manager
@@ -56,7 +58,8 @@ in {
         vim
         wget
 
-      ] ++ lib.optionals pkgs.stdenv.isLinux [
+      ]
+      ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
         anki # using brew for macos
       ];
@@ -77,8 +80,7 @@ in {
 
   home.file = {
     ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
-    ".local/scripts/tmux-sessionizer".source =
-      ../../dotfiles/scripts/tmux-sessionizer;
+    ".local/scripts/tmux-sessionizer".source = ../../dotfiles/scripts/tmux-sessionizer;
   };
 
   # ============================================================================
@@ -86,7 +88,9 @@ in {
   # ============================================================================
   programs.git = {
     enable = true;
-    lfs = { enable = true; };
+    lfs = {
+      enable = true;
+    };
     settings = {
       user = {
         name = "CemDK";
@@ -104,13 +108,18 @@ in {
 
   programs.gh = {
     enable = true;
-    gitCredentialHelper = { enable = true; };
+    gitCredentialHelper = {
+      enable = true;
+    };
   };
 
   programs.eza = {
     enable = true;
     git = true;
-    extraOptions = [ "--group-directories-first" "--header" ];
+    extraOptions = [
+      "--group-directories-first"
+      "--header"
+    ];
   };
 
   programs.direnv = pkgs.lib.mkIf pkgs.stdenv.isLinux {

@@ -1,4 +1,11 @@
-{ config, host, pkgs, lib, ... }: {
+{
+  config,
+  host,
+  pkgs,
+  lib,
+  ...
+}:
+{
 
   # ============================================================================
   # IMPORTS
@@ -20,7 +27,10 @@
   users.users.cemdk = {
     isNormalUser = true;
     description = "CemDK";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   # ============================================================================
@@ -78,7 +88,7 @@
   # ============================================================================
   # HARDWARE
   # ============================================================================
-  # Enable TPlink Archer Nano Wifi Dongle 
+  # Enable TPlink Archer Nano Wifi Dongle
   boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
 
   hardware.bluetooth.enable = true;

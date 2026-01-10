@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
 
   # ============================================================================
   # FONTS
@@ -24,8 +25,7 @@
     nix-search-tv
     wakatime-cli
 
-    (google-cloud-sdk.withExtraComponents
-      [ google-cloud-sdk.components.gke-gcloud-auth-plugin ])
+    (google-cloud-sdk.withExtraComponents [ google-cloud-sdk.components.gke-gcloud-auth-plugin ])
     cloudfoundry-cli
     gotools
     k9s
@@ -47,7 +47,6 @@
   services.aerospace = {
     enable = true;
     package = pkgs.aerospace;
-    settings =
-      fromTOML (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
+    settings = fromTOML (builtins.readFile ../../../dotfiles/aerospace/aerospace.toml);
   };
 }
