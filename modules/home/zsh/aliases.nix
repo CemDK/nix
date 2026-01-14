@@ -21,12 +21,11 @@
 
   v = "nvim";
   iv = "nvim";
-  vim = "nvim";
+  # vi = "nvim";
+  # vim = "nvim";
   vmi = "nvim";
-  # nv = "nvim";
   nvi = "nvim";
   nvimi = "nvim";
-  vi = "nvim";
 
   # neovide = "(neovide.exe --frame=none --wsl &)";
 

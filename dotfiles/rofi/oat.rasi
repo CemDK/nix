@@ -7,7 +7,7 @@
 // define colors etc.
 * {
     bg: #062027;        // Dark teal background
-    fg: #3a1a1;
+    fg: #93a1a1;
     hv: #f78104;        // Bright orange for highlights
     primary: #005F60;   // Dark cyan for borders
     ug: #003c3d;        // Darker teal
