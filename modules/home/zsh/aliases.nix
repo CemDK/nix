@@ -4,9 +4,9 @@
 
   nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
-  nixe = "pushd ~/.config/nix >/dev/null && vi && nixswitch --impure && popd >/dev/null && clear";
+  nixe = "pushd ~/.config/nix >/dev/null && nvim && nixswitch --impure && popd >/dev/null && clear";
 
-  nvime = "pushd ~/.config/nvim >/dev/null && vi && popd >/dev/null && clear";
+  nvime = "pushd ~/.config/nvim >/dev/null && nvim && popd >/dev/null && clear";
 
   cat = "bat";
 

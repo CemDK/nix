@@ -101,9 +101,23 @@ in
       core.editor = "vim";
       core.autocrlf = "input";
       # commit.gpgsign = true;
+      push = {
+        default = "simple";
+        followTags = true;
+        autoSetupRemote = true;
+      };
       pull.rebase = true;
       rebase.autoStash = true;
     };
+    ignores = [
+      "**/.claude/settings.local.json"
+      ".DS_Store"
+      ".direnv"
+      ".env*"
+      ".envrc"
+      ".ready-tmux" # custom file for my tmux setup
+      "zHide" # I have neo-tree rules to hide clutter under this file
+    ];
   };
 
   programs.gh = {

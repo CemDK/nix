@@ -17,13 +17,8 @@
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    # dotDir expects a relative path from home directory, not absolute
     dotDir = "${config.xdg.configHome}/zsh";
     autocd = true;
-    # oh-my-zsh = {
-    #   enable = true;
-    #   plugins = [ "git" "docker" ];
-    # };
 
     # ============================================================================
     # HISTORY
@@ -69,9 +64,8 @@
     shellAliases = import ./aliases.nix;
     envExtra = ''
       PATH=$PATH:${config.home.homeDirectory}/.cargo/bin
-      PATH=$PATH:${config.home.homeDirectory}/go/bin
-      PATH=$PATH:${config.home.homeDirectory}/.npm-global/bin
       PATH=$PATH:${config.home.homeDirectory}/.local/scripts
+      PATH=$PATH:${config.home.homeDirectory}/.local/bin
     '';
 
     initContent = ''

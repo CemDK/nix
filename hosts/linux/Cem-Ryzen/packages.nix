@@ -18,6 +18,9 @@
     minio-client
     redis
     stripe-cli
+    dioxus-cli
+    ngrok
+    bun
 
     # Stuff
     # miktex
