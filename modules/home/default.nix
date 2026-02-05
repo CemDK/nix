@@ -115,7 +115,6 @@ in
       ".direnv"
       ".env*"
       ".envrc"
-      ".ready-tmux" # custom file for my tmux setup
       "zHide" # I have neo-tree rules to hide clutter under this file
     ];
   };
