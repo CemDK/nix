@@ -38,7 +38,6 @@ in
         alacritty
         bat
         btop
-        claude-code
         curl
         fd
         git

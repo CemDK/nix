@@ -54,6 +54,8 @@
   gprune = ''git remote prune origin && git for-each-ref --format "%(refname:short)" refs/heads | grep -v "master\|main" | xargs git branch -D'';
   gwtcd = "cd $(git worktree list | grep -v '(bare)' | awk '{print $1}' | fzf)";
   gwtrm = "git worktree remove $(git worktree list | grep -v '(bare)' | awk '{print $1}' | fzf)";
+  # delete local branches that have been merged into main (except for the develop branch)
+  gclean = ''git branch --merged origin/main | grep -vE "^\s*(\*|main|develop)" | xargs -n 1 git branch -d'';
 
   vimtip = ''
     curl -w "

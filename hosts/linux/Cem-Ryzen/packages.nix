@@ -14,13 +14,13 @@
   # This installs into $HOME/.nix-profile
   home.packages = with pkgs; [
     # Development tools
-    claude-code
     minio-client
     redis
     stripe-cli
     dioxus-cli
     ngrok
     bun
+    pastel
 
     # Stuff
     # miktex
