@@ -60,7 +60,7 @@ in
       ]
       ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
-        anki # using brew for macos
+        # anki # using brew for macos
       ];
   };
 

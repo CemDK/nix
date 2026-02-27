@@ -89,7 +89,7 @@
   # HARDWARE
   # ============================================================================
   # Enable TPlink Archer Nano Wifi Dongle
-  boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
+  # boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
 
   hardware.bluetooth.enable = true;
   hardware.uinput.enable = true;
