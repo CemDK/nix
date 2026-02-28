@@ -11,13 +11,6 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    # TODO: manage to get this working without ugly cli errors
-    # homebrew-core.url = "github:homebrew/homebrew-core";
-    # homebrew-core.flake = false;
-    # homebrew-cask.url = "github:homebrew/homebrew-cask";
-    # homebrew-cask.flake = false;
-    # homebrew-bundle.url = "github:homebrew/homebrew-bundle";
-    # homebrew-bundle.flake = false;
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
   };
 
@@ -113,6 +106,44 @@
               home-manager.backupFileExtension = "backup";
               home-manager.users.${user} = {
                 imports = [ ./hosts/nixos/${host}/home.nix ];
+                home.username = user;
+                home.homeDirectory = home;
+              };
+            }
+          ];
+        };
+
+      # ========================================================================
+      # Homelab NixOS configuration
+      # ========================================================================
+      mkHomelabConfig =
+        {
+          system,
+          user,
+          host,
+          home,
+        }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
+          modules = [
+            ./hosts/nixos/homelab/${host}/configuration.nix
+            inputs.home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.users.${user} = {
+                imports = [ ./hosts/nixos/homelab/${host}/home.nix ];
                 home.username = user;
                 home.homeDirectory = home;
               };
@@ -241,6 +272,14 @@
           system = "x86_64-linux";
           user = "cemdk";
           host = "thinclient";
+          home = "/home/cemdk";
+        };
+
+        # Homelab
+        "wyse-5070" = mkHomelabConfig {
+          system = "x86_64-linux";
+          user = "cemdk";
+          host = "lab-phy-01";
           home = "/home/cemdk";
         };
       };

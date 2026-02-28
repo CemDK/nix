@@ -6,20 +6,19 @@
   # ============================================================================
   imports = [
     # Import custom modules
-    ../../../modules/home
-    ../../../modules/home/retroarch
+    # ../../../../modules/home
   ];
 
   # ============================================================================
   # PACKAGES
   # ============================================================================
   home = {
+    stateVersion = "25.05";
     packages = with pkgs; [
       # local apps
       # libva-utils
       # vulkan-loader
       # xdg-desktop-portal-gtk
-      claude-code
     ];
 
     file = { };

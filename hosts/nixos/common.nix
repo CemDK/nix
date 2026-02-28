@@ -52,15 +52,17 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
+  services = {
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+      };
 
-  services.gnome.gnome-keyring.enable = true;
+    };
+    gnome.gnome-keyring.enable = true;
+  };
 
   # ============================================================================
   # SECURITY
@@ -103,7 +105,6 @@
   # PACKAGES
   # ============================================================================
   environment.systemPackages = with pkgs; [
-    #
     cifs-utils
     curl
     gcc
@@ -112,6 +113,5 @@
     seahorse
     pix
     linuxPackages.cpupower
-
   ];
 }

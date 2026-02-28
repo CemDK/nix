@@ -1,9 +1,31 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   # ============================================================================
   # IMPORTS
   # ============================================================================
   imports = [ ];
+
+  # ============================================================================
+  # NIX CONFIGURATION
+  # ============================================================================
+  # nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nix = {
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      auto-optimise-store = true;
+      trusted-users = [ "@wheel" ];
+    };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+  };
+
+  nixpkgs.config.allowUnfree = true;
 
   # ============================================================================
   # USER MANAGEMENT
@@ -24,12 +46,16 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "no";
+  services = {
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+      };
     };
+
+    gnome.gnome-keyring.enable = true;
   };
 
   # ============================================================================
@@ -45,6 +71,31 @@
   networking.firewall.allowedTCPPorts = [ 22 ]; # SSH
 
   # ============================================================================
+  # LOCALIZATION & TIMEZONE
+  # ============================================================================
+  time.timeZone = lib.mkDefault "Europe/Berlin";
+  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = lib.mkDefault "de_DE.UTF-8";
+    LC_IDENTIFICATION = lib.mkDefault "de_DE.UTF-8";
+    LC_MEASUREMENT = lib.mkDefault "de_DE.UTF-8";
+    LC_MONETARY = lib.mkDefault "de_DE.UTF-8";
+    LC_NAME = lib.mkDefault "de_DE.UTF-8";
+    LC_NUMERIC = lib.mkDefault "de_DE.UTF-8";
+    LC_PAPER = lib.mkDefault "de_DE.UTF-8";
+    LC_TELEPHONE = lib.mkDefault "de_DE.UTF-8";
+    LC_TIME = lib.mkDefault "de_DE.UTF-8";
+  };
+
+  # ============================================================================
+  # INPUT & KEYBOARD
+  # ============================================================================
+  services.xserver.xkb = {
+    layout = lib.mkDefault "us";
+    variant = "";
+  };
+
+  # ============================================================================
   # VIRTUALIZATION
   # ============================================================================
   virtualisation = {
@@ -54,16 +105,15 @@
       dockerCompat = true;
       defaultNetwork.settings.dns_enabled = true;
     };
-  };
 
-  virtualisation.oci-containers.containers = { };
-  virtualisation.oci-containers.backend = "podman";
+    oci-containers.containers = { };
+    oci-containers.backend = "podman";
+  };
 
   # ============================================================================
   # PACKAGES
   # ============================================================================
   environment.systemPackages = with pkgs; [
-    #
     git
     wget
     curl
