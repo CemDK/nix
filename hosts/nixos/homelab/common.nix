@@ -117,5 +117,6 @@
     git
     wget
     curl
+    htop
   ];
 }
