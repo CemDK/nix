@@ -34,6 +34,7 @@
     isNormalUser = true;
     description = "CemDK";
     extraGroups = [
+      "docker"
       "networkmanager"
       "wheel"
     ];
@@ -68,7 +69,7 @@
   # ============================================================================
   networking.networkmanager.enable = true;
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ]; # SSH
+  networking.firewall.allowedTCPPorts = [ 22 ];
 
   # ============================================================================
   # LOCALIZATION & TIMEZONE
@@ -101,22 +102,43 @@
   virtualisation = {
     containers.enable = true;
     podman = {
+      autoPrune.enable = true;
       enable = true;
       dockerCompat = true;
       defaultNetwork.settings.dns_enabled = true;
     };
 
-    oci-containers.containers = { };
-    oci-containers.backend = "podman";
+    oci-containers = {
+      backend = "podman";
+      containers = { };
+    };
   };
 
   # ============================================================================
   # PACKAGES
   # ============================================================================
+  programs.git.enable = true;
+  programs.htop.enable = true;
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    defaultEditor = true;
+  };
+
   environment.systemPackages = with pkgs; [
-    git
-    wget
+    bat
+    btop
     curl
-    htop
+    fd
+    jq
+    lazygit
+    podman-compose
+    podman-tui
+    ripgrep
+    tmux
+    unzip
+    vim
+    wget
   ];
 }

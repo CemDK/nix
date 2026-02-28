@@ -13,32 +13,53 @@
   imports = [
     ../common.nix
     ./hardware-configuration.nix
+    ../../../../modules/containers/traefik.nix
   ];
-
-  # ============================================================================
-  # USER
-  # ============================================================================
-  users.motd = "There is no motd ;)";
-  users.users.cemdk = {
-    isNormalUser = true;
-    description = "CemDK";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-  };
 
   # ============================================================================
   # ENVIRONMENT
   # ============================================================================
   # environment.variables = {
-  #   LIBVA_DRIVER_NAME = "iHD"; # Force Intel media driver
+  #   KEY = "VALUE";
   # };
+
+  # ============================================================================
+  # VIRTUALIZATION
+  # ============================================================================
+  virtualisation = {
+    oci-containers = {
+      backend = "podman";
+      containers = {
+        homer = import ../../../../modules/containers/homer.nix;
+      };
+    };
+  };
+
+  # Enable Podman socket so Traefik can discover containers
+  systemd.sockets."podman".enable = true;
 
   # ============================================================================
   # SERVICES
   # ============================================================================
   services.getty.autologinUser = "cemdk";
+
+  systemd.services.create-podman-network = with config.virtualisation.oci-containers; {
+    serviceConfig.Type = "oneshot";
+    wantedBy = [
+      "${backend}-homer.service"
+      "${backend}-traefik.service"
+    ];
+    script = ''
+      ${pkgs.podman}/bin/podman network exists traefik_network || \
+        ${pkgs.podman}/bin/podman network create --driver=bridge traefik_network
+    '';
+  };
+
+  system.activationScripts = {
+    script.text = ''
+      install -d -m 755 /home/cemdk/docker/homer/assets -o root -g root
+    '';
+  };
 
   # ============================================================================
   # NETWORKING & FIREWALL
@@ -46,6 +67,9 @@
   networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
+    80 # traefik http
+    443 # traefik https
+    8080 # traefik dashboard
   ];
 
   # ============================================================================
@@ -61,11 +85,6 @@
   # ============================================================================
   hardware.bluetooth.enable = true;
   hardware.uinput.enable = true;
-
-  # hardware.graphics = {
-  #   enable = true;
-  #   enable32Bit = true;
-  # };
 
   # ============================================================================
   # SYSTEM

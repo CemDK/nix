@@ -1,0 +1,35 @@
+global:
+  sendAnonymousUsage: false
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    watch: true
+    network: traefik_network
+
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+    # http3:
+    #   advertisedPort: 443
+    # http:
+    #   tls:
+    #     certResolver: letsencrypt
+    #
+# certificatesResolvers:
+#   letsencrypt:
+#     acme:
+#       email: mail@mail.com
+#       storage: /etc/dokploy/traefik/dynamic/acme.json
+#       dnsChallenge:
+#         provider: cloudflare
+#         resolvers:
+#           - 1.1.1.1:53
+#           - 1.0.0.1:53
