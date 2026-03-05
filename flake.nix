@@ -75,7 +75,7 @@
               #   "homebrew/homebrew-bundle" = homebrew-bundle;
               # };
             }
-            sops-nix.darwinModules.sops
+            # sops-nix.darwinModules.sops
           ];
         };
 

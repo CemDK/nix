@@ -63,6 +63,8 @@
     # installing inotify-tools seems to fix this. neovim message:
     #  File watch backend: libuv-watchdirs
     #  ⚠️ WARNING libuv-watchdirs has known performance issues. Consider installing inotify-tools.
-    inotify-tools
+    # inotify-tools
+    # only import if x86_64-linux, since inotify-tools is not available for darwin
+    (lib.mkIf pkgs.stdenv.isLinux inotify-tools)
   ];
 }

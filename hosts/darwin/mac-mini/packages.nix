@@ -29,9 +29,9 @@
 
   # Add home-manager managed packages here
   # This installs into $HOME/.nix-profile
-  home.packages = with pkgs; [
-    # bat
-  ];
+  # home.packages = with pkgs; [
+  #   # bat
+  # ];
 
   services.aerospace = {
     enable = true;
