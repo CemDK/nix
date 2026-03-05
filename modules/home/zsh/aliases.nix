@@ -6,6 +6,27 @@
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
   nixe = "pushd ~/.config/nix >/dev/null && nvim && nixswitch --impure && popd >/dev/null && clear";
 
+  # TODO: use colmena actually
+  homelab = ''
+    rsync -avz --delete \
+      --exclude '.git' \
+      --filter=':- .gitignore' \
+      /home/cem/.config/nix/ \
+      cemdk@nixos.local:/home/cemdk/.config/nix/;
+    nix shell nixpkgs#nixos-rebuild --command nixos-rebuild switch \
+      --flake .#wyse-5070 \
+      --target-host cemdk@nixos.local \
+      --sudo
+  '';
+
+  synchomelab = ''
+    rsync -avz --delete \
+        --exclude '.git' \
+        --filter=':- .gitignore' \
+        /home/cem/.config/nix/ \
+        cemdk@nixos.local:/home/cemdk/.config/nix/ \
+  '';
+
   nvime = "pushd ~/.config/nvim >/dev/null && nvim && popd >/dev/null && clear";
 
   cat = "bat";

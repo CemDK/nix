@@ -1,10 +1,19 @@
 {
   config,
+  self,
+  user,
   host,
   pkgs,
   lib,
   ...
 }:
+let
+  args = {
+    configBase = "/home/${user}/.config/nix/modules/containers";
+    storagePath = "/mnt/storage/data";
+  };
+  container = name: import "${self}/modules/containers/${name}" args;
+in
 {
 
   # ============================================================================
@@ -13,8 +22,34 @@
   imports = [
     ../common.nix
     ./hardware-configuration.nix
-    ../../../../modules/containers/traefik.nix
+
+    # TODO: Enable after setting up /etc/restic-password on target
+    # "${self}/modules/backup.nix"
+
+    # Import containers for this host
+    (container "audiobookshelf")
+    (container "calibre-web")
+    (container "homer")
+    (container "it-tools")
+    (container "mealie")
+    (container "navidrome")
+    (container "traefik")
   ];
+
+  # ============================================================================
+  # SECRETS (sops-nix)
+  # ============================================================================
+  sops = {
+    defaultSopsFile = "${self}/secrets/global.yaml";
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    age.keyFile = "~/.config/sops/age/keys.txt";
+    age.generateKey = true;
+    secrets = {
+      "example/token" = {
+        owner = config.users.users.${user}.name;
+      };
+    };
+  };
 
   # ============================================================================
   # ENVIRONMENT
@@ -24,13 +59,40 @@
   # };
 
   # ============================================================================
-  # VIRTUALIZATION
+  # FILESYSTEMS
   # ============================================================================
-  virtualisation = {
-    oci-containers = {
-      backend = "podman";
-      containers = {
-        homer = import ../../../../modules/containers/homer.nix;
+  # TODO: look into disko and use it instead?
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/362EAAD12EAA8A07";
+    fsType = "ntfs-3g";
+    options = [
+      "nofail" # don't block boot if drive is missing
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=600"
+    ];
+  };
+
+  # ============================================================================
+  # SERVICES
+  # ============================================================================
+  services.getty.autologinUser = "cemdk";
+  services.samba = {
+    enable = true;
+    openFirewall = true; # opens ports 139, 445
+    settings = {
+      global = {
+        "workgroup" = "WORKGROUP";
+        "server string" = "lab-phy-01";
+        "security" = "user";
+        "map to guest" = "Bad User";
+      };
+      data = {
+        path = "/mnt/storage/data";
+        browseable = "yes";
+        "read only" = "no";
+        "valid users" = "cemdk";
+        "create mask" = "0644";
+        "directory mask" = "0755";
       };
     };
   };
@@ -38,26 +100,21 @@
   # Enable Podman socket so Traefik can discover containers
   systemd.sockets."podman".enable = true;
 
-  # ============================================================================
-  # SERVICES
-  # ============================================================================
-  services.getty.autologinUser = "cemdk";
-
   systemd.services.create-podman-network = with config.virtualisation.oci-containers; {
     serviceConfig.Type = "oneshot";
+    serviceConfig.RemainAfterExit = true;
     wantedBy = [
       "${backend}-homer.service"
       "${backend}-traefik.service"
+      "${backend}-audiobookshelf.service"
+      "${backend}-it-tools.service"
+      "${backend}-navidrome.service"
+      "${backend}-calibre-web.service"
+      "${backend}-mealie.service"
     ];
     script = ''
       ${pkgs.podman}/bin/podman network exists traefik_network || \
         ${pkgs.podman}/bin/podman network create --driver=bridge traefik_network
-    '';
-  };
-
-  system.activationScripts = {
-    script.text = ''
-      install -d -m 755 /home/cemdk/docker/homer/assets -o root -g root
     '';
   };
 
@@ -66,10 +123,9 @@
   # ============================================================================
   networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
-    53317 # localsend port
-    80 # traefik http
-    443 # traefik https
-    8080 # traefik dashboard
+    80
+    443
+    53317 # localsend
   ];
 
   # ============================================================================

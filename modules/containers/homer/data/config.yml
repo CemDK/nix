@@ -1,0 +1,247 @@
+---
+# Homepage configuration
+# See https://fontawesome.com/v5/search for icons options
+
+# Optional: Use external configuration file.
+# Using this will ignore remaining config in this file
+# externalConfig: https://example.com/server-luci/config.yaml
+
+title: "CEMDK NIXOS"
+subtitle: "Dashboard"
+logo: "assets/icons/logo.png"
+#icon: "fas fa-skull-crossbones"
+assetsFolder: /www/assets
+# documentTitle: "Welcome" # Customize the browser tab text
+
+header: true
+footer: false #'<p>CEMDK</p>' # false if you want to hide it
+
+# "auto" or number (must be a factor of 12: 1, 2, 3, 4, 6, 12)
+columns: "4"
+connectivityCheck: false
+
+defaults:
+  layout: columns #columns or list
+  colorTheme: dark #auto, light, or dark
+
+# Optional custom stylesheet
+stylesheet:
+  - "assets/custom.css"
+
+# Optional theming
+# 'default' or one of the themes available in 'src/assets/themes'
+theme: default
+colors:
+  light:
+    highlight-primary: "#323946"
+    highlight-secondary: "#323946"
+    highlight-hover: "#323946"
+    background: "#2E3440"
+    card-background: "#323946"
+    text: "#81A1C1"
+    text-header: "#81A1C1"
+    text-title: "#D8DEE9"
+    text-subtitle: "#ECEFF4"
+    status-offline: "#BF616A"
+    status-online: "#A3BE8C"
+
+  dark:
+    highlight-primary: "#323946"
+    highlight-secondary: "#81a1c1"
+    highlight-hover: "#323946"
+    background: "#2E3440"
+    card-background: "#323946"
+    text: "#81A1C1"
+    text-header: "#81A1C1"
+    text-title: "#D8DEE9"
+    text-subtitle: "#ECEFF4"
+    status-offline: "#BF616A"
+    status-online: "#A3BE8C"
+
+# Services
+services:
+  - name: "High Seas"
+    icon: "fas fa-ship"
+    items:
+      #- name: "Jackett"
+      #logo: "assets/icons/jackett-light.png"
+      #url: "https://jackett.cemdk.org"
+      ##url: "http://omv.local:8088"
+      #target: "_blank"
+
+      #- name: "Lidarr"
+      #logo: "assets/icons/lidarr.png"
+      #url: "https://lidarr.cemdk.org"
+      ##url: "http://omv.local:8083"
+      #target: "_blank"
+
+      - name: "Radarr"
+        logo: "assets/icons/radarr-light.png"
+        url: "https://radarr.cemdk.org"
+        #url: "http://omv.local:8086"
+        target: "_blank"
+
+        #      - name: "Readarr"
+        #logo: "assets/icons/readarr.png"
+        #url: "https://readarr.cemdk.org"
+        #url: "http://omv.local:8086"
+        #target: "_blank"
+
+      - name: "Sonarr"
+        logo: "assets/icons/sonarr.svg"
+        url: "https://sonarr.cemdk.org"
+        #url: "http://omv.local:8085"
+        target: "_blank"
+
+      - name: "SABnzbd"
+        logo: "assets/icons/sabnzbd.png"
+        url: "https://nzb.cemdk.org"
+        #url: "http://omv.local:8082"
+        target: "_blank"
+
+      - name: "qBittorrent"
+        logo: "assets/icons/qbittorrent.png"
+        url: "https://torrent.cemdk.org"
+        #url: "http://omv.local:8084"
+        target: "_blank"
+
+  - name: "Media"
+    icon: "fas fa-film"
+    items:
+      - name: "AudioBookShelf"
+        logo: "assets/icons/audiobookshelf.png"
+        url: "https://audiobookshelf.cemdk.org"
+        target: "_blank"
+
+      - name: "Calibre"
+        logo: "assets/icons/calibreweb.svg"
+        url: "https://calibre.cemdk.org"
+        target: "_blank"
+
+      - name: "Music"
+        logo: "assets/icons/spotify.png"
+        url: "https://music.cemdk.org"
+        target: "_blank"
+
+      - name: "Plex"
+        logo: "assets/icons/plex.png"
+        url: "https://plex.cemdk.org/web/index.html"
+        #url: "https://omv.local:32400/web/index.html"
+        target: "_blank"
+
+  - name: "Services"
+    icon: "fas fa-stream"
+    items:
+      - name: "IT - Tools"
+        logo: "assets/icons/it-tools.png"
+        url: "https://it-tools.cemdk.org"
+        target: "_blank"
+
+      - name: "Mealie"
+        logo: "assets/icons/mealie.png"
+        url: "https://mealie.cemdk.org"
+        target: "_blank"
+
+      - name: "Paperless"
+        logo: "assets/icons/paperless-ng.png"
+        url: "https://paperless.cemdk.org"
+        target: "_blank"
+
+      - name: "Stirling PDF"
+        logo: "assets/icons/stirling-pdf.svg"
+        url: "https://stirling.cemdk.org"
+        target: "_blank"
+
+  - name: "Requesting"
+    icon: "fas fa-download"
+    items:
+      - name: "Overseerr"
+        logo: "assets/icons/overseerr.png"
+        url: "https://overseerr.cemdk.org"
+        target: "_blank"
+
+        #- name: ""
+        #logo: "assets/icons/ghost.png"
+        #url: ""
+        #target: "_blank"
+
+  # intentionally blank
+  - name: "Network"
+    icon: "fas fa-sitemap"
+    items:
+      - name: "NPM"
+        logo: "assets/icons/nginxproxymanager.png"
+        url: "https://npm.cemdk.org"
+        target:
+          "_blank"
+
+          #- name: "Traefik"
+          #logo: "assets/icons/traefik.png"
+          #url: "https://traefik.cemdk.org"
+          #target: "_blank"
+
+      - name: "Pi-hole"
+        logo: "assets/icons/pihole.svg"
+        url: "https://pihole.cemdk.org/admin"
+        target: "_blank"
+
+      - name: "FritzBox"
+        logo: "assets/icons/avmfritzbox.png"
+        url: "http://fritz.box"
+        target: "_blank"
+
+  - name: "Systems"
+    icon: "fas fa-cog"
+    items:
+      - name: "OpenMediaVault"
+        logo: "assets/icons/openmediavault.svg"
+        url: "https://omv.cemdk.org"
+        #url: "http://omv.local:8443"
+        target: "_blank"
+
+      - name: "Portainer"
+        logo: "assets/icons/portainer.svg"
+        url: "https://portainer.cemdk.org"
+        #url: "http://omv.local:9000"
+        target: "_blank"
+
+      - name: "Syncthing"
+        logo: "assets/icons/syncthing.png"
+        url: "https://syncthing.cemdk.org"
+        target: "_blank"
+
+  - name: "Home Automation"
+    icon: "fas fa-home"
+    items:
+      - name: "Home Assistant"
+        logo: "assets/icons/home-assistant.png"
+        url: "https://home.cemdk.org"
+        target: "_blank"
+
+      - name: "Mainsail"
+        logo: "assets/icons/mainsail.png"
+        url: "https://192.168.178.42"
+        target: "_blank"
+
+      - name: "n8n"
+        logo: "assets/icons/n8n.png"
+        url: "https://n8n.cemdk.org"
+        target: "_blank"
+
+  - name: "Observability"
+    icon: "fas fa-search"
+    items:
+      - name: "Grafana"
+        logo: "assets/icons/grafana.png"
+        url: "https://home.cemdk.org/a0d7b954_grafana/ingress"
+        target: "_blank"
+
+      - name: "Tautulli"
+        logo: "assets/icons/tautulli.png"
+        url: "https://tautulli.cemdk.org"
+        target: "_blank"
+
+      - name: "Wakapi"
+        logo: "assets/icons/wakapi.png"
+        url: "https://wakapi.cemdk.org"
+        target: "_blank"

@@ -21,6 +21,7 @@
     ngrok
     bun
     pastel
+    opencode
 
     # Stuff
     # miktex

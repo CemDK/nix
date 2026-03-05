@@ -4,8 +4,14 @@ http:
       redirectScheme:
         scheme: https
         permanent: true
+
+    dashboard-auth:
+      basicAuth:
+        usersFile: /etc/traefik/dynamic/dashboard-users
+
     vpn-whitelist:
       ipWhiteList:
         sourceRange:
           - 192.168.2.0/24
+          - 192.168.178.0/24
           - 127.0.0.1/8
