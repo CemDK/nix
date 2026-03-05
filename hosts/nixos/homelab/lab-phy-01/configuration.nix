@@ -87,10 +87,10 @@ in
         "map to guest" = "Bad User";
       };
       data = {
-        path = "/mnt/storage/data";
+        path = "${args.storagePath}";
         browseable = "yes";
         "read only" = "no";
-        "valid users" = "cemdk";
+        "valid users" = "${user}";
         "create mask" = "0644";
         "directory mask" = "0755";
       };

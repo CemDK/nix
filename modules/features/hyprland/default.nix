@@ -53,7 +53,7 @@
   security.rtkit.enable = true;
 
   # ============================================================================
-  # SECURITY
+  # ENVIRONMENT VARIABLES
   # ============================================================================
   environment.sessionVariables = {
     XDG_CURRENT_DESKTOP = "Hyprland";
@@ -86,10 +86,10 @@
     # xfce.thunar
 
     # Basic utilities
-    brightnessctl # Brightness control
+    brightnessctl
     networkmanagerapplet
     pavucontrol # Audio control
-    nautilus
+    nautilus # File manager
 
     # cursors
     rose-pine-cursor

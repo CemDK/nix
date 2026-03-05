@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   # ============================================================================
-  # NVIM STUFF
+  # MY NVIM DEPENDENCIES
   # ============================================================================
   home.packages = with pkgs; [
     # ---------------------------------
@@ -14,7 +14,7 @@
     ripgrep
 
     # ---------------------------------
-    # Packages managed by home-manager
+    # Managed by home-manager
     # ---------------------------------
     # fzf
 
@@ -59,8 +59,8 @@
     vscode-langservers-extracted
     yaml-language-server
 
-    # NVIM lsp stuff seems to use libuv-watchdirs, but this makes nvim rather slow when opening
-    # installing inotify-tools seems to fix this
+    # NVIM lsp stuff seems to use libuv-watchdirs, but this makes nvim rather slow when starting.
+    # installing inotify-tools seems to fix this. neovim message:
     #  File watch backend: libuv-watchdirs
     #  ⚠️ WARNING libuv-watchdirs has known performance issues. Consider installing inotify-tools.
     inotify-tools
