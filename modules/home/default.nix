@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
 let
+  scripts = import ./scripts.nix { inherit pkgs; };
+
   link = config.lib.file.mkOutOfStoreSymlink;
   localFiles = "${config.home.homeDirectory}/.config/nix/dotfiles";
   configs = {
@@ -58,6 +60,7 @@ in
         wget
 
       ]
+      ++ builtins.attrValues scripts
       ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
         # anki # using brew for macos
