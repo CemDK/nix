@@ -67,4 +67,13 @@
       (neovide --frame=none &)
     fi
   }
+
+
+  grabfiles() {
+    mkdir -p ./"$1" && \
+    rsync -avz \
+      cem-server@omv.local:/home/cem-server/DockerApps/"$1"/ \
+      ./"$1" \
+  }
+
 ''

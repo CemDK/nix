@@ -10,8 +10,9 @@ http:
         usersFile: /etc/traefik/dynamic/dashboard-users
 
     vpn-whitelist:
-      ipWhiteList:
+      ipAllowList:
         sourceRange:
           - 192.168.2.0/24
           - 192.168.178.0/24
+          - 100.64.0.0/10
           - 127.0.0.1/8

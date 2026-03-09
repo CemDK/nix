@@ -1,4 +1,5 @@
 {
+  user,
   config,
   host,
   pkgs,
@@ -45,7 +46,7 @@
   # ============================================================================
   # services.printing.enable = true;
   # services.openssh.enable = lib.mkDefault false;
-  services.getty.autologinUser = "cemdk";
+  services.getty.autologinUser = user;
 
   # ============================================================================
   # NETWORKING & FIREWALL

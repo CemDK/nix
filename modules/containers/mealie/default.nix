@@ -1,17 +1,19 @@
-{ configBase, ... }:
+{ config, user, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
   systemd.tmpfiles.rules = [
-    "d ${configBase}/mealie/data 0755 root root -"
+    "d ${cfg.configPath}/mealie/data 0755 ${user} users -"
   ];
 
   virtualisation.oci-containers.containers.mealie = {
     image = "ghcr.io/mealie-recipes/mealie:v3.11.0";
     pull = "newer";
     hostname = "mealie";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik ];
 
-    environment = {
-      "TZ" = "Europe/Berlin";
+    environment = cfg.commonEnv // {
       "ALLOW_SIGNUP" = "false";
       "MAX_WORKERS" = "1";
       "WEB_CONCURRENCY" = "1";
@@ -19,7 +21,7 @@
     };
 
     volumes = [
-      "${configBase}/mealie/data:/app/data/"
+      "${cfg.configPath}/mealie/data:/app/data/"
     ];
 
     labels = {

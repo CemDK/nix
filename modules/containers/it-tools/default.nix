@@ -1,10 +1,15 @@
-{ ... }:
+{ config, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
   virtualisation.oci-containers.containers.it-tools = {
     image = "ghcr.io/corentinth/it-tools:latest";
     pull = "newer";
     hostname = "it-tools";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik ];
+
+    environment = cfg.commonEnv;
 
     labels = {
       "traefik.enable" = "true";

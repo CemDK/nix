@@ -1,17 +1,22 @@
-{ configBase, ... }:
+{ config, user, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
+  systemd.tmpfiles.rules = [
+    "d ${cfg.configPath}/homer/data 0755 ${user} users -"
+  ];
+
   virtualisation.oci-containers.containers.homer = {
     image = "b4bz/homer:latest";
     pull = "newer";
     hostname = "homer";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik ];
 
-    environment = {
-      "TZ" = "Europe/Berlin";
-    };
+    environment = cfg.commonEnv;
 
     volumes = [
-      "${configBase}/homer/data:/www/assets"
+      "${cfg.configPath}/homer/data:/www/assets"
     ];
 
     labels = {

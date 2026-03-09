@@ -1,23 +1,24 @@
-{ configBase, storagePath, ... }:
+{ config, user, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
   systemd.tmpfiles.rules = [
-    "d ${configBase}/calibre-web/data/config 0755 root root -"
-    "d ${storagePath}/media/calibre 0755 root root -"
+    "d ${cfg.configPath}/calibre-web/data/config 0755 ${user} users -"
+    "d ${cfg.storagePath}/media/calibre 0755 root root -"
   ];
 
   virtualisation.oci-containers.containers.calibre-web = {
     image = "lscr.io/linuxserver/calibre-web:latest";
     pull = "newer";
     hostname = "calibre-web";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik ];
 
-    environment = {
-      "TZ" = "Europe/Berlin";
-    };
+    environment = cfg.commonEnv;
 
     volumes = [
-      "${configBase}/calibre-web/data/config:/config"
-      "${storagePath}/media/calibre:/books"
+      "${cfg.configPath}/calibre-web/data/config:/config"
+      "${cfg.storagePath}/media/calibre:/books"
     ];
 
     labels = {

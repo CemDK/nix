@@ -8,7 +8,7 @@
 
   # TODO: use colmena actually
   homelab = ''
-    rsync -avz --delete \
+    rsync -rltvz --mkpath --update \
       --exclude '.git' \
       --filter=':- .gitignore' \
       /home/cem/.config/nix/ \
@@ -20,7 +20,7 @@
   '';
 
   synchomelab = ''
-    rsync -avz --delete \
+    rsync -rltvz --mkpath --update \
         --exclude '.git' \
         --filter=':- .gitignore' \
         /home/cem/.config/nix/ \

@@ -1,9 +1,7 @@
-{ configBase, ... }:
-{
-  config,
-  self,
-  ...
-}:
+{ config, self, user, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
   # Define secrets on the host system
   # Secrets files will be in /run/secrets/traefik/...
@@ -17,18 +15,16 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d ${configBase}/traefik/data/acme 0755 root root -"
+    "d ${cfg.configPath}/traefik/data/acme 0755 ${user} users -"
   ];
 
   virtualisation.oci-containers.containers.traefik = {
     image = "traefik:v3.3";
     pull = "newer";
     hostname = "traefik";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik cfg.networks.vpnMedia ];
 
-    environment = {
-      "TZ" = "Europe/Berlin";
-    };
+    environment = cfg.commonEnv;
 
     # This makes ENV vars in the container from the file on the host /run/secrets/traefik/cloudflare-env
     environmentFiles = [
@@ -42,11 +38,13 @@
 
     volumes = [
       "/run/podman/podman.sock:/var/run/docker.sock:ro"
-      "${configBase}/traefik/data/traefik.yml:/etc/traefik/traefik.yml:ro"
-      "${configBase}/traefik/data/dynamic/middlewares.yml:/etc/traefik/dynamic/middlewares.yml:ro"
-      "${configBase}/traefik/data/acme:/etc/traefik/acme"
+      "${cfg.configPath}/traefik/data/traefik.yml:/etc/traefik/traefik.yml:ro"
+      "${cfg.configPath}/traefik/data/dynamic/middlewares.yml:/etc/traefik/dynamic/middlewares.yml:ro"
+      "${cfg.configPath}/traefik/data/acme:/etc/traefik/acme"
       "${config.sops.secrets."traefik/dashboard-users".path}:/etc/traefik/dynamic/dashboard-users:ro"
     ];
+
+    extraOptions = [ "--security-opt=no-new-privileges" ];
 
     labels = {
       "traefik.enable" = "true";

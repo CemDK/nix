@@ -1,18 +1,20 @@
-{ configBase, storagePath, ... }:
+{ config, user, ... }:
+let
+  cfg = config.homelab.containers;
+in
 {
   systemd.tmpfiles.rules = [
-    "d ${configBase}/navidrome/data 0755 root root -"
-    "d ${storagePath}/media/music 0755 root root -"
+    "d ${cfg.configPath}/navidrome/data 0755 ${user} users -"
+    "d ${cfg.storagePath}/media/music 0755 root root -"
   ];
 
   virtualisation.oci-containers.containers.navidrome = {
     image = "deluan/navidrome:latest";
     pull = "newer";
     hostname = "navidrome";
-    networks = [ "traefik_network" ];
+    networks = [ cfg.networks.traefik ];
 
-    environment = {
-      "TZ" = "Europe/Berlin";
+    environment = cfg.commonEnv // {
       "ND_SCANSCHEDULE" = "24h";
       "ND_LOGLEVEL" = "info";
       "ND_SESSIONTIMEOUT" = "24h";
@@ -20,8 +22,8 @@
     };
 
     volumes = [
-      "${configBase}/navidrome/data:/data"
-      "${storagePath}/media/music:/music:ro"
+      "${cfg.configPath}/navidrome/data:/data"
+      "${cfg.storagePath}/media/music:/music:ro"
     ];
 
     labels = {

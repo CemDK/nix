@@ -3,6 +3,7 @@
   lib,
   inputs,
   host,
+  user,
   ...
 }:
 {
@@ -47,7 +48,7 @@
   services = {
     # openssh.enable = lib.mkDefault false;
     # printing.enable = true;
-    getty.autologinUser = "cemdk";
+    getty.autologinUser = user;
     gvfs.enable = true;
     udisks2.enable = true;
 

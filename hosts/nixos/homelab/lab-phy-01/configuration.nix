@@ -8,11 +8,9 @@
   ...
 }:
 let
-  args = {
-    configBase = "/home/${user}/.config/nix/modules/containers";
-    storagePath = "/mnt/storage/data";
-  };
-  container = name: import "${self}/modules/containers/${name}" args;
+  cfg = config.homelab.containers;
+
+  container = name: import "${self}/modules/containers/${name}";
 in
 {
 
@@ -26,7 +24,9 @@ in
     # TODO: Enable after setting up /etc/restic-password on target
     # "${self}/modules/backup.nix"
 
-    # Import containers for this host
+    # Container options and modules
+    "${self}/modules/containers/options.nix"
+    (container "arr")
     (container "audiobookshelf")
     (container "calibre-web")
     (container "homer")
@@ -37,26 +37,47 @@ in
   ];
 
   # ============================================================================
-  # SECRETS (sops-nix)
-  # ============================================================================
-  sops = {
-    defaultSopsFile = "${self}/secrets/global.yaml";
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    age.keyFile = "~/.config/sops/age/keys.txt";
-    age.generateKey = true;
-    secrets = {
-      "example/token" = {
-        owner = config.users.users.${user}.name;
-      };
-    };
-  };
-
-  # ============================================================================
   # ENVIRONMENT
   # ============================================================================
   # environment.variables = {
   #   KEY = "VALUE";
   # };
+
+  # ============================================================================
+  # HOMELAB
+  # ============================================================================
+  homelab = {
+    containers = {
+      configPath = "/home/${user}/.config/nix/modules/containers";
+      storagePath = "/mnt/storage/data";
+      # networks = {
+      # traefik = "traefik_network";
+
+      # arr = {
+      #   vpn = {
+      #     egress = {
+      #       name = "vpn_egress_network";
+      #       subnet = "10.89.1.0/24";
+      #     };
+      #     media = {
+      #       name = "vpn_media_network";
+      #       subnet = "10.89.2.0/24";
+      #     };
+      #   };
+      # };
+
+      #   networkConsumers = [
+      #     "audiobookshelf"
+      #     "calibre-web"
+      #     "homer"
+      #     "it-tools"
+      #     "mealie"
+      #     "arr"
+      #     "navidrome"
+      #   ];
+      # };
+    };
+  };
 
   # ============================================================================
   # FILESYSTEMS
@@ -75,7 +96,8 @@ in
   # ============================================================================
   # SERVICES
   # ============================================================================
-  services.getty.autologinUser = "cemdk";
+  services.getty.autologinUser = user;
+  services.samba-wsdd.enable = true;
   services.samba = {
     enable = true;
     openFirewall = true; # opens ports 139, 445
@@ -87,7 +109,7 @@ in
         "map to guest" = "Bad User";
       };
       data = {
-        path = "${args.storagePath}";
+        path = "${cfg.storagePath}";
         browseable = "yes";
         "read only" = "no";
         "valid users" = "${user}";
@@ -100,23 +122,45 @@ in
   # Enable Podman socket so Traefik can discover containers
   systemd.sockets."podman".enable = true;
 
-  systemd.services.create-podman-network = with config.virtualisation.oci-containers; {
-    serviceConfig.Type = "oneshot";
-    serviceConfig.RemainAfterExit = true;
-    wantedBy = [
-      "${backend}-homer.service"
-      "${backend}-traefik.service"
-      "${backend}-audiobookshelf.service"
-      "${backend}-it-tools.service"
-      "${backend}-navidrome.service"
-      "${backend}-calibre-web.service"
-      "${backend}-mealie.service"
-    ];
-    script = ''
-      ${pkgs.podman}/bin/podman network exists traefik_network || \
-        ${pkgs.podman}/bin/podman network create --driver=bridge traefik_network
-    '';
-  };
+  systemd.services =
+    (builtins.listToAttrs (
+      map (name: {
+        name = "podman-${name}";
+        value = {
+          after = [
+            "systemd-tmpfiles-setup.service"
+            "create-podman-network.service"
+          ];
+          requires = [ "create-podman-network.service" ];
+        };
+      }) cfg.networkConsumers
+    ))
+    // {
+      create-podman-network = with config.virtualisation.oci-containers; {
+        serviceConfig.Type = "oneshot";
+        serviceConfig.RemainAfterExit = true;
+        wantedBy = [ "multi-user.target" ];
+        before = map (name: "${backend}-${name}.service") cfg.networkConsumers;
+        script = ''
+          # Create traefik_network
+          ${pkgs.podman}/bin/podman network exists ${cfg.networks.traefik} || \
+            ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.networks.traefik}
+          # Create VPN egress network
+          ${pkgs.podman}/bin/podman network exists ${cfg.networks.vpnEgress} || \
+            ${pkgs.podman}/bin/podman network create \
+              --driver=bridge \
+              --subnet ${cfg.networks.vpnEgressSubnet} \
+              ${cfg.networks.vpnEgress}
+          # Create VPN media internal network
+          ${pkgs.podman}/bin/podman network exists ${cfg.networks.vpnMedia} || \
+            ${pkgs.podman}/bin/podman network create \
+              --driver=bridge \
+              --internal \
+              --subnet ${cfg.networks.vpnMediaSubnet} \
+              ${cfg.networks.vpnMedia}
+        '';
+      };
+    };
 
   # ============================================================================
   # NETWORKING & FIREWALL
@@ -127,6 +171,21 @@ in
     443
     53317 # localsend
   ];
+
+  # ============================================================================
+  # SECRETS (sops-nix)
+  # ============================================================================
+  sops = {
+    defaultSopsFile = "${self}/secrets/global.yaml";
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    age.keyFile = "~/.config/sops/age/keys.txt";
+    age.generateKey = true;
+    secrets = {
+      "example/token" = {
+        owner = config.users.users.${user}.name;
+      };
+    };
+  };
 
   # ============================================================================
   # BOOTLOADER
