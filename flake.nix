@@ -14,6 +14,8 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    stylix.url = "github:nix-community/stylix";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -24,6 +26,7 @@
       nixpkgs,
       home-manager,
       sops-nix,
+      stylix,
       ...
     }:
     let
@@ -102,6 +105,7 @@
               ;
           };
           modules = [
+            stylix.nixosModules.stylix
             ./hosts/nixos/${host}/configuration.nix
             inputs.home-manager.nixosModules.home-manager
             {
@@ -115,6 +119,7 @@
               };
             }
             sops-nix.nixosModules.sops
+            # sops-nix.nixosModules.sops
           ];
         };
 
@@ -155,6 +160,7 @@
             }
 
             sops-nix.nixosModules.sops
+            # sops-nix.nixosModules.sops
           ];
         };
 

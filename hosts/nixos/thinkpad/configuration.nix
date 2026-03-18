@@ -17,6 +17,8 @@
 
     # Import hyprland module
     ../../../modules/features/hyprland
+    # Import stylix module
+    ../../../modules/features/stylix
 
     # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad
     # Power Efficiency: AMD P-State driver, TLP/power-profiles integration, SSD TRIM

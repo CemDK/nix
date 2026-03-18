@@ -23,7 +23,7 @@
         default_session = {
           command = ''
             ${pkgs.tuigreet}/bin/tuigreet --greeting 'SHOKUNIX' --asterisks --remember
-                    --remember-user-session --time --cmd Hyprland'';
+                    --remember-user-session --time --cmd start-hyprland'';
           user = "greeter";
         };
         initial_session = {
@@ -75,7 +75,7 @@
     hyprpaper # Wallpaper daemon
     # wlr-randr # Wayland display configuration tool (for resolution)
 
-    blueberry
+    blueman # Bluetooth manager
 
     # Screenshot and screen recording
     # grim # Screenshot

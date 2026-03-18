@@ -1,4 +1,12 @@
 {
+
+  stylix = {
+    targets = {
+      fzf.enable = false;
+      alacritty.enable = false;
+    };
+  };
+
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
