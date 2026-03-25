@@ -2,8 +2,8 @@
 
   stylix = {
     targets = {
-      fzf.enable = false;
-      alacritty.enable = false;
+      fzf.colors.enable = false;
+      alacritty.colors.enable = false;
     };
   };
 

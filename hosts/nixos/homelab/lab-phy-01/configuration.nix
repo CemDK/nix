@@ -24,6 +24,9 @@ in
     # TODO: Enable after setting up /etc/restic-password on target
     # "${self}/modules/backup.nix"
 
+    # Homelab options
+    ../options.nix
+
     # Container options and modules
     "${self}/modules/containers/options.nix"
     (container "arr")

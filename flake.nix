@@ -54,6 +54,7 @@
           };
           modules = [
             ./hosts/darwin/${host}/configuration.nix
+            stylix.darwinModules.stylix
             inputs.home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
@@ -105,8 +106,8 @@
               ;
           };
           modules = [
-            stylix.nixosModules.stylix
             ./hosts/nixos/${host}/configuration.nix
+            stylix.nixosModules.stylix
             inputs.home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
@@ -188,6 +189,7 @@
           };
           modules = [
             ./hosts/linux/${host}/home.nix
+            stylix.homeModules.stylix
             {
               home.username = user;
               home.homeDirectory = home;
@@ -269,13 +271,8 @@
 
       # NixOS configurations
       nixosConfigurations = {
+        # Personal devices
         "thinkpad" = mkNixOSConfig {
-          system = "x86_64-linux";
-          user = "cemdk";
-          host = "thinkpad";
-          home = "/home/cemdk";
-        };
-        "thinkpadISO" = mkIsoConfig {
           system = "x86_64-linux";
           user = "cemdk";
           host = "thinkpad";
@@ -285,6 +282,14 @@
           system = "x86_64-linux";
           user = "cemdk";
           host = "thinclient";
+          home = "/home/cemdk";
+        };
+
+        # ISOs
+        "thinkpadISO" = mkIsoConfig {
+          system = "x86_64-linux";
+          user = "cemdk";
+          host = "thinkpad";
           home = "/home/cemdk";
         };
 

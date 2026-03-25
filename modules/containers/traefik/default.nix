@@ -1,4 +1,9 @@
-{ config, self, user, ... }:
+{
+  config,
+  self,
+  user,
+  ...
+}:
 let
   cfg = config.homelab.containers;
 in
@@ -22,7 +27,10 @@ in
     image = "traefik:v3.3";
     pull = "newer";
     hostname = "traefik";
-    networks = [ cfg.networks.traefik cfg.networks.vpnMedia ];
+    networks = [
+      cfg.networks.traefik
+      cfg.networks.vpnMedia
+    ];
 
     environment = cfg.commonEnv;
 

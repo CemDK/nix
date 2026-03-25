@@ -1,6 +1,7 @@
 { config, user, ... }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   systemd.tmpfiles.rules = [
@@ -18,7 +19,7 @@ in
       "ND_SCANSCHEDULE" = "24h";
       "ND_LOGLEVEL" = "info";
       "ND_SESSIONTIMEOUT" = "24h";
-      "ND_BASEURL" = "https://music.cemdk.net";
+      "ND_BASEURL" = "https://music.${domain}";
     };
 
     volumes = [
@@ -28,7 +29,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.navidrome.rule" = "Host(`music.cemdk.net`)";
+      "traefik.http.routers.navidrome.rule" = "Host(`music.${domain}`)";
       "traefik.http.routers.navidrome.entrypoints" = "websecure";
       "traefik.http.routers.navidrome.tls.certresolver" = "letsencrypt";
       "traefik.http.services.navidrome.loadbalancer.server.port" = "4533";
