@@ -145,7 +145,7 @@
         "format-disabled": "󰂲",
         "format-connected": "",
         "tooltip-format": "Devices connected: {num_connections}",
-        "on-click": "blueman"
+        "on-click": "blueman-manager"
     },
 
     // ===== BATTERY CONFIGURATION =====

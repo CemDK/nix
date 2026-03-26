@@ -8,4 +8,6 @@
     playerctl # media control
     pulseaudio
   ];
+
+  services.blueman.enable = true;
 }

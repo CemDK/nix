@@ -45,6 +45,8 @@
       # project dependencies
       stripe-cli
       redis
+
+      prismlauncher
     ];
 
     file = { };
