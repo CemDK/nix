@@ -90,6 +90,7 @@ in
   # ============================================================================
   programs.git = {
     enable = true;
+    signing.format = null;
     lfs = {
       enable = true;
     };
