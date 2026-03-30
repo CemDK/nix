@@ -1,0 +1,7 @@
+sonarr/*
+radarr/*
+sabnzbd/*
+qbittorrent/*
+wireguard/*
+!/.gitignore
+!/wg0.conf.example

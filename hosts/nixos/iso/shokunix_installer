@@ -1,0 +1,342 @@
+#!/usr/bin/env bash
+# Minimal Shokunix Installer
+set -euo pipefail
+
+# Auto-elevate to root if not already running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Installer requires root privileges. Elevating with sudo..."
+    exec sudo -i "$0" "$@"
+fi
+
+# Show errors with context before exiting
+trap 'echo ""; gum style --foreground 196 "ERROR: Command failed at line $LINENO"; echo "Last command: $BASH_COMMAND"; exit 1' ERR
+
+# Colors and styling
+PURPLE="#845DF9"
+ORANGE="208"
+RED="196"
+
+# Helper function for styled headers
+header() {
+    gum style --foreground "$PURPLE" --bold "$1"
+}
+
+# Main installation flow
+main() {
+    clear
+    header "🔨 Shokunix Minimal Installer"
+    echo ""
+
+    # ============================================================================
+    # Check for internet connection
+    # ============================================================================
+    echo ""
+    gum spin --spinner dot --title "Checking internet connection..." -- sleep 1
+
+    if ! ping -c 1 -W 2 nixos.org &>/dev/null; then
+        gum style --foreground "$ORANGE" "⚠️  No internet connection detected."
+        echo ""
+        if gum confirm "Configure network now?"; then
+            nmtui
+            echo ""
+            # Check again after configuration
+            if ! ping -c 1 -W 2 nixos.org &>/dev/null; then
+                gum style --foreground "$RED" "Still no internet connection. Installation requires internet."
+                exit 1
+            fi
+            gum style --foreground 46 "✓ Connected to internet!"
+        else
+            gum style --foreground "$RED" "Installation requires internet connection."
+            exit 1
+        fi
+    else
+        gum style --foreground 46 "✓ Internet connection verified"
+    fi
+
+    echo ""
+
+    # ============================================================================
+    # Get User Inputs
+    # ============================================================================
+    # Step 1: Hostname
+    header "Step 1: System Configuration"
+    HOSTNAME=$(gum input --placeholder "Enter hostname (e.g., main-pc)" --prompt "Hostname: ")
+
+    if [ -z "$HOSTNAME" ]; then
+        gum style --foreground 196 "Hostname cannot be empty!"
+        exit 1
+    fi
+
+    # Step 2: Username
+    USERNAME=$(gum input --placeholder "Enter username (lowercase)" --prompt "Username: ")
+
+    if [ -z "$USERNAME" ]; then
+        gum style --foreground 196 "Username cannot be empty!"
+        exit 1
+    fi
+
+    # Step 3: Password
+    PASSWORD=$(gum input --password --placeholder "Enter password" --prompt "Password: ")
+    PASSWORD_CONFIRM=$(gum input --password --placeholder "Confirm password" --prompt "Confirm: ")
+
+    if [ "$PASSWORD" != "$PASSWORD_CONFIRM" ]; then
+        gum style --foreground 196 "Passwords don't match!"
+        exit 1
+    fi
+
+    # ============================================================================
+    # DISK STUFF
+    # ============================================================================
+    # Step 4: Disk selection
+    echo ""
+    header "Step 2: Disk Selection"
+    echo ""
+
+    # Helper function to format disk info (from Omarchy)
+    get_disk_info() {
+        local device="$1"
+        local size model
+
+        # Get basic disk information
+        size=$(lsblk -dno SIZE "$device" 2>/dev/null)
+        model=$(lsblk -dno MODEL "$device" 2>/dev/null | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+
+        # Format display string
+        local display="$device"
+        [[ -n "$size" ]] && display="$display ($size)"
+        [[ -n "$model" ]] && display="$display - $model"
+
+        echo "$display"
+    }
+
+    # List all installable disks (only device paths)
+    available_disks=$(
+        lsblk -dpno NAME,TYPE |
+            awk '$2=="disk"{print $1}' |
+            grep -E '/dev/(sd|hd|vd|nvme|mmcblk|xv)'
+    )
+
+    if [ -z "$available_disks" ]; then
+        gum style --foreground 196 "No disks found!"
+        exit 1
+    fi
+
+    # Build formatted disk options for gum
+    disk_options=""
+    while IFS= read -r device; do
+        if [[ -n "$device" ]]; then
+            disk_info=$(get_disk_info "$device")
+            disk_options="$disk_options$disk_info"$'\n'
+        fi
+    done <<<"$available_disks"
+
+    # Let user select with formatted display
+    selected_display=$(echo "$disk_options" | gum choose --header "Select install disk")
+    # Extract just the device path from the selection
+    DISK=$(echo "$selected_display" | awk '{print $1}')
+
+    # Step 5: Review and confirm
+    echo ""
+    header "Step 3: Review Configuration"
+    echo ""
+
+    gum style --border normal --padding "1 2" --border-foreground "$PURPLE" \
+        "Hostname: $HOSTNAME" \
+        "Username: $USERNAME" \
+        "Disk: $DISK" \
+        "" \
+        "⚠️  All data on $DISK will be ERASED!"
+
+    echo ""
+    gum confirm "Proceed with installation?" || exit 0
+
+    # ============================================================================
+    # Step 6: Prepare writable workspace
+    # ============================================================================
+    echo ""
+    header "Step 4: Preparing Installation"
+
+    # Define machine configuration early (TODO: make dynamic later)
+    MACHINE_CATEGORY="nixos"
+    MACHINE_NAME="thinkpad"
+    MACHINE_PATH="hosts/$MACHINE_CATEGORY/$MACHINE_NAME"
+
+    # Configuration is embedded in the ISO at /etc/shokunix (read-only)
+    # Copy it to a writable location in /tmp
+    WORK_DIR="/tmp/shokunix-install"
+
+    if [ ! -d "/etc/shokunix" ]; then
+        gum style --foreground "$RED" "ERROR! Configuration directory not found on ISO."
+        gum style "Expected location: /etc/shokunix"
+        exit 1
+    fi
+
+    # Clean up any previous attempts and copy to writable location
+    rm -rf "$WORK_DIR"
+
+    # Use -L to dereference symlinks (NixOS often symlinks /etc files to /nix/store)
+    # This ensures we get actual files, not symlinks to read-only store
+    echo "Copying configuration files from /etc/shokunix..."
+    cp -rL /etc/shokunix "$WORK_DIR"
+
+    # Fix permissions - copied files from Nix store are read-only
+    # Make all files and directories writable
+    chmod -R u+w "$WORK_DIR"
+
+    cd "$WORK_DIR"
+    gum style --foreground 46 "✓ Working in $WORK_DIR"
+
+    # Debug: Show what we have
+    echo "Contents of workspace:"
+    ls -la "$WORK_DIR"
+    echo ""
+    echo "Machine path: $MACHINE_PATH"
+    ls -la "$WORK_DIR/$MACHINE_PATH" 2>/dev/null || echo "Warning: Machine path not found yet"
+
+    # Step 7: Partition and format disk
+    echo ""
+    header "Step 5: Partitioning Disk"
+    echo ""
+
+    # ============================================================================
+    # OPTION A: Using disko (Recommended - Declarative NixOS Way) - DISABLED
+    # ============================================================================
+    # # Update disks.nix with the selected disk path
+    # gum spin --spinner dot --title "Updating disk configuration..." -- \
+    #     sed -i "s|device = \"/dev/.*\";|device = \"$DISK\";|g" "$MACHINE_PATH/disks.nix"
+    #
+    # gum style --foreground 46 "✓ Updated disks.nix to use $DISK"
+    #
+    # # Run disko to partition, format, and mount
+    # gum spin --spinner dot --title "Partitioning $DISK with disko..." -- \
+    #     nix run github:nix-community/disko \
+    #     --extra-experimental-features "nix-command flakes" \
+    #     --no-write-lock-file \
+    #     -- \
+    #     --mode zap_create_mount \
+    #     "$MACHINE_PATH/disks.nix"
+    #
+    # gum style --foreground 46 "✓ Disk partitioned and mounted"
+    # ============================================================================
+
+    # ============================================================================
+    # OPTION B: Manual Partitioning (ACTIVE)
+    # ============================================================================
+    # This approach follows the NixOS manual for simple, reliable partitioning.
+    # Uses ext4 for maximum compatibility.
+
+    gum style --foreground "$ORANGE" "Creating partitions on $DISK..."
+
+    # Create GPT partition table
+    parted "$DISK" -- mklabel gpt
+
+    # Create partitions (NixOS manual approach):
+    # 1. Root partition (ext4) - from 512MB to -8GB from end
+    # 2. Swap partition - last 8GB
+    # 3. ESP (boot) partition - first 512MB (created last, partition 3)
+    parted "$DISK" -- mkpart primary 512MB -8GB
+    parted "$DISK" -- mkpart primary linux-swap -8GB 100%
+    parted "$DISK" -- mkpart ESP fat32 1MB 512MB
+    parted "$DISK" -- set 3 esp on
+
+    # Detect partition paths (works for sda, nvme0n1, vda, etc.)
+    sleep 2 # Give kernel time to register partitions
+    partprobe "$DISK" || true
+
+    # Find partitions by disk pattern
+    if [[ "$DISK" == *"nvme"* ]] || [[ "$DISK" == *"mmcblk"* ]]; then
+        # NVMe/eMMC uses p1, p2, p3
+        ROOT_PART="${DISK}p1"
+        SWAP_PART="${DISK}p2"
+        BOOT_PART="${DISK}p3"
+    else
+        # SATA/SCSI/VirtIO uses 1, 2, 3
+        ROOT_PART="${DISK}1"
+        SWAP_PART="${DISK}2"
+        BOOT_PART="${DISK}3"
+    fi
+
+    gum style --foreground 46 "✓ Partitions created"
+
+    # Format partitions with labels
+    gum spin --spinner dot --title "Formatting partitions..." -- bash -c "
+        mkfs.ext4 -L nixos $ROOT_PART
+        mkswap -L swap $SWAP_PART
+        mkfs.fat -F 32 -n boot $BOOT_PART
+    "
+
+    gum style --foreground 46 "✓ Partitions formatted"
+
+    # Mount partitions
+    mount /dev/disk/by-label/nixos /mnt
+    mkdir -p /mnt/boot
+    mount -o umask=077 /dev/disk/by-label/boot /mnt/boot
+    swapon "$SWAP_PART"
+
+    gum style --foreground 46 "✓ Partitions mounted"
+    # ============================================================================
+
+    # Step 8: Generate hardware config and install NixOS
+    echo ""
+    header "Step 6: Installing NixOS"
+    echo ""
+
+    # Machine variables already defined at top of main()
+    # MACHINE_CATEGORY, MACHINE_NAME, MACHINE_PATH
+
+    # Generate hardware-configuration.nix directly in the correct flake location
+    # This OVERWRITES the placeholder hardware-configuration.nix from the repo
+    echo "Detecting hardware configuration..."
+    nixos-generate-config --root /mnt --show-hardware-config >"$WORK_DIR/$MACHINE_PATH/hardware-configuration.nix"
+
+    gum style --foreground 46 "✓ Generated hardware-configuration.nix (replaced placeholder)"
+
+    # Debug: Check what was generated
+    echo "Hardware config location: $WORK_DIR/$MACHINE_PATH/hardware-configuration.nix"
+    ls -lh "$WORK_DIR/$MACHINE_PATH/hardware-configuration.nix"
+
+    # Copy entire flake structure (including new hardware config) to /mnt for installation
+    echo "Copying flake configuration to /mnt/etc/nixos/..."
+    echo "Source: $WORK_DIR/*"
+    echo "Destination: /mnt/etc/nixos/"
+
+    mkdir -p /mnt/etc/nixos
+    cp -rv "$WORK_DIR"/* /mnt/etc/nixos/
+
+    gum style --foreground 46 "✓ Flake copied to /mnt/etc/nixos/"
+
+    # Debug: Verify copy
+    echo "Verifying installation files:"
+    ls -la /mnt/etc/nixos/
+    echo ""
+    ls -la /mnt/etc/nixos/hosts/nixos/thinkpad/ 2>/dev/null || echo "Warning: Machine directory not found in /mnt"
+
+    # Install using flake
+    gum style --foreground "$ORANGE" "Installing NixOS with flake configuration..."
+    echo "Running: nixos-install --flake /mnt/etc/nixos#$MACHINE_NAME --no-root-password"
+    echo ""
+    nixos-install --flake "/mnt/etc/nixos#$MACHINE_NAME" --no-root-password
+
+    # Step 9: Set user password in installed system
+    echo ""
+    header "Step 7: Finalizing"
+    echo ""
+
+    # Set password for the user in the installed system
+    gum style --foreground "$ORANGE" "Setting password for $USERNAME..."
+    echo ""
+    echo "$USERNAME:$PASSWORD" | nixos-enter --root /mnt -c "chpasswd"
+
+    gum style --foreground 46 "✓ Password set for $USERNAME"
+
+    # Done!
+    echo ""
+    gum style --foreground 46 --bold "✓ Installation complete!"
+    echo ""
+    gum style "You can now reboot into your new system."
+    echo ""
+
+    gum confirm "Reboot now?" && sudo reboot || true
+}
+
+main "$@"

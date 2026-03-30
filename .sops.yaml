@@ -1,0 +1,36 @@
+# See https://github.com/Mic92/dotfiles/blob/d6114726d859df36ccaa32891c4963ae5717ef7f/nixos/.sops.yaml
+# for a more complex example.
+#
+# Adding a new machine for decrypting (new keys entry) requires to update all secrets like this:
+# nix-shell -p sops --run "sops updatekeys secrets/<secret-file>.yaml"
+#
+# Adding a new secret looks like this:
+# nix-shell -p sops --run "sops secrets/<secret-file>.yaml"
+#
+# cem_ryzen is my main workstation, add this to every rule to ensure I can decrypt and add new secrets from this
+# machine always... (right?)
+#
+# Keys are age keys generated from my id_ed25519 keys in ~/.ssh/ on the relevant machines
+keys:
+  - &cem_ryzen age1hffev0dhgqnr9l4wh8maaeyzzlgdtkv9nv6p95akxfuxlkm3w3ssqdexyh
+  - &lab_phy_01 age10mkxj6m3l33lzfwntx939msnmemedlsvlqzurqc90sjhp0xe5p6qcupz3j
+
+creation_rules:
+  # Machine-specific secrets (matched first — order matters)
+  - path_regex: secrets/homelab/.*\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *cem_ryzen
+          - *lab_phy_01
+
+  - path_regex: secrets/linux/cem-ryzen/.*\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *cem_ryzen
+
+  # Global secrets
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+          - *cem_ryzen
+          - *lab_phy_01

@@ -1,0 +1,30 @@
+[general]
+import = ["~/.config/alacritty/themes/orange-and-teal.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+decorations = "Buttonless"
+opacity = 0.75
+blur = true
+option_as_alt = "Both"
+padding = { x = 10, y = 10 }
+
+[font]
+size = 10
+offset.x = 0
+offset.y = -2
+
+[font.normal]
+family = "MesloLGS Nerd Font"
+
+[terminal]
+shell = "zsh"
+
+[keyboard]
+bindings = [
+  { key = "V", mods = "Control|Shift", action = "Paste" },
+  { key = "C", mods = "Control|Shift", action = "Copy" },
+  # { key = "Return", mods = "Shift", chars = "\\\r" },
+]
