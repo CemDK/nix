@@ -40,7 +40,7 @@
     biome
     eslint
     nixfmt
-    nodePackages.prettier
+    prettier
     statix # nix linter
     treefmt
 

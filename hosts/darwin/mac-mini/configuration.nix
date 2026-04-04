@@ -16,6 +16,9 @@
     #
     ./packages.nix
     ./brew.nix
+
+    # Import stylix module
+    ../../../modules/features/stylix
   ];
 
   # ============================================================================

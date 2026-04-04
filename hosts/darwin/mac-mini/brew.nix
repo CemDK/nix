@@ -1,7 +1,7 @@
 {
   homebrew = {
     enable = true;
-    caskArgs.no_quarantine = true;
+    # caskArgs.no_quarantine = true;
     onActivation = {
       cleanup = "zap";
       autoUpdate = true;
@@ -14,6 +14,7 @@
       # "bitwarden-cli"
       "direnv"
       "winetricks"
+      "llama.cpp"
       # "ollama"
       # "tailscale"
       # "borders"
@@ -43,8 +44,8 @@
       # "balenaetcher"
       # "bambu-studio"
       # "bentobox"
-      # "claude"
-      # "claude-code"
+      "claude"
+      "claude-code"
       # "cleanshot"
       # "clop"
       # "discord"
@@ -59,7 +60,7 @@
       # "firefox"
       # "flameshot"
       # "ghostty"
-      # "google-chrome"
+      "google-chrome"
       # "hammerspoon"
       # "iina"
       # "istat-menus"
@@ -78,7 +79,7 @@
       # "notion"
       # "obs"
       # "obsidian"
-      # "ollama-app"
+      "ollama-app"
       # "omnidisksweeper"
       # "openscad"
       # "openttd"
@@ -104,10 +105,10 @@
       # "AutoMounter" = 1160435653;
       # "Bitwarden" = 1352778147;
       # "Creator's Best Friend" = 1524172135;
-      "DaVinci Resolve" = 571213070;
+      # "DaVinci Resolve" = 571213070;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
-      "Home Assistant Companion" = 1099568401;
+      # "Home Assistant Companion" = 1099568401;
       # "Ivory for Mastodon by Tapbots" = 6444602274;
       # "Microsoft Remote Desktop" = 1295203466;
       # "Perplexity" = 6714467650;

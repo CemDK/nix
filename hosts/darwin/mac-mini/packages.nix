@@ -25,6 +25,7 @@
     wakatime-cli
     nix-search-tv
     fastfetch
+    opencode
   ];
 
   # Add home-manager managed packages here
