@@ -1,6 +1,7 @@
 { config, user, ... }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   systemd.tmpfiles.rules = [
@@ -17,7 +18,7 @@ in
       "ALLOW_SIGNUP" = "false";
       "MAX_WORKERS" = "1";
       "WEB_CONCURRENCY" = "1";
-      "BASE_URL" = "https://mealie.cemdk.net";
+      "BASE_URL" = "https://mealie.${domain}";
     };
 
     volumes = [
@@ -26,7 +27,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.mealie.rule" = "Host(`mealie.cemdk.net`)";
+      "traefik.http.routers.mealie.rule" = "Host(`mealie.${domain}`)";
       "traefik.http.routers.mealie.entrypoints" = "websecure";
       "traefik.http.routers.mealie.tls.certresolver" = "letsencrypt";
       "traefik.http.services.mealie.loadbalancer.server.port" = "9000";

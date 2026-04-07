@@ -1,6 +1,7 @@
 { config, ... }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   virtualisation.oci-containers.containers.it-tools = {
@@ -13,7 +14,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.it-tools.rule" = "Host(`it-tools.cemdk.net`)";
+      "traefik.http.routers.it-tools.rule" = "Host(`it-tools.${domain}`)";
       "traefik.http.routers.it-tools.entrypoints" = "websecure";
       "traefik.http.routers.it-tools.tls.certresolver" = "letsencrypt";
       "traefik.http.services.it-tools.loadbalancer.server.port" = "80";

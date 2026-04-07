@@ -1,6 +1,7 @@
 { config, user, ... }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   systemd.tmpfiles.rules = [
@@ -23,7 +24,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.calibre.rule" = "Host(`calibre.cemdk.net`)";
+      "traefik.http.routers.calibre.rule" = "Host(`calibre.${domain}`)";
       "traefik.http.routers.calibre.entrypoints" = "websecure";
       "traefik.http.routers.calibre.tls.certresolver" = "letsencrypt";
       "traefik.http.services.calibre.loadbalancer.server.port" = "8083";

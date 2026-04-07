@@ -6,6 +6,7 @@
 }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   # Define secrets on the host system
@@ -56,7 +57,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.dashboard.rule" = "Host(`traefik.cemdk.net`)";
+      "traefik.http.routers.dashboard.rule" = "Host(`traefik.${domain}`)";
       "traefik.http.routers.dashboard.service" = "api@internal";
       "traefik.http.routers.dashboard.middlewares" = "dashboard-auth@file,vpn-whitelist@file";
       "traefik.http.routers.dashboard.tls" = "true";

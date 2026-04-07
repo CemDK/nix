@@ -1,6 +1,7 @@
 { config, user, ... }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 in
 {
   systemd.tmpfiles.rules = [
@@ -27,7 +28,7 @@ in
 
     labels = {
       "traefik.enable" = "true";
-      "traefik.http.routers.abs.rule" = "Host(`audiobookshelf.cemdk.net`)";
+      "traefik.http.routers.abs.rule" = "Host(`audiobookshelf.${domain}`)";
       "traefik.http.routers.abs.entrypoints" = "websecure";
       "traefik.http.routers.abs.tls.certresolver" = "letsencrypt";
       "traefik.http.services.abs.loadbalancer.server.port" = "80";

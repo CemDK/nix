@@ -7,6 +7,7 @@
 }:
 let
   cfg = config.homelab.containers;
+  domain = config.homelab.domain;
 
   vpnServiceNames = [
     "sabnzbd"
@@ -55,7 +56,7 @@ in
     "d ${cfg.configPath}/arr/wireguard/data/config 0755 ${user} users -"
     "d ${cfg.configPath}/arr/sabnzbd/data/config 0755 ${user} users -"
     "d ${cfg.configPath}/arr/sonarr/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/arr/radarr 0755 ${user} users -"
+    "d ${cfg.configPath}/arr/radarr/data/config 0755 ${user} users -"
     "d ${cfg.configPath}/arr/seerr/data/config 0755 ${user} users -"
     "d ${cfg.storagePath} 0755 root root -"
     "d ${cfg.storagePath}/media/tv 0755 root root -"
@@ -123,7 +124,7 @@ in
       "traefik.docker.network" = cfg.networks.vpnMedia;
 
       # sabnzbd
-      "traefik.http.routers.sabnzbd.rule" = "Host(`nzb.cemdk.net`)";
+      "traefik.http.routers.sabnzbd.rule" = "Host(`nzb.${domain}`)";
       "traefik.http.routers.sabnzbd.entrypoints" = "websecure";
       "traefik.http.routers.sabnzbd.tls.certresolver" = "letsencrypt";
       "traefik.http.routers.sabnzbd.middlewares" = "vpn-whitelist@file";
@@ -131,7 +132,7 @@ in
       "traefik.http.services.sabnzbd.loadbalancer.server.port" = "8080";
 
       # sonarr
-      "traefik.http.routers.sonarr.rule" = "Host(`sonarr.cemdk.net`)";
+      "traefik.http.routers.sonarr.rule" = "Host(`sonarr.${domain}`)";
       "traefik.http.routers.sonarr.entrypoints" = "websecure";
       "traefik.http.routers.sonarr.tls.certresolver" = "letsencrypt";
       "traefik.http.routers.sonarr.middlewares" = "vpn-whitelist@file";
@@ -139,7 +140,7 @@ in
       "traefik.http.services.sonarr.loadbalancer.server.port" = "8989";
 
       # radarr
-      "traefik.http.routers.radarr.rule" = "Host(`radarr.cemdk.net`)";
+      "traefik.http.routers.radarr.rule" = "Host(`radarr.${domain}`)";
       "traefik.http.routers.radarr.entrypoints" = "websecure";
       "traefik.http.routers.radarr.tls.certresolver" = "letsencrypt";
       "traefik.http.routers.radarr.middlewares" = "vpn-whitelist@file";
@@ -147,7 +148,7 @@ in
       "traefik.http.services.radarr.loadbalancer.server.port" = "7878";
 
       # seerr
-      "traefik.http.routers.seerr.rule" = "Host(`seerr.cemdk.net`)";
+      "traefik.http.routers.seerr.rule" = "Host(`seerr.${domain}`)";
       "traefik.http.routers.seerr.entrypoints" = "websecure";
       "traefik.http.routers.seerr.tls.certresolver" = "letsencrypt";
       "traefik.http.routers.seerr.middlewares" = "vpn-whitelist@file";
@@ -156,14 +157,14 @@ in
 
       # --- UNCOMMENT TO ENABLE ---
       # # qbittorrent
-      # "traefik.http.routers.qbittorrent.rule" = "Host(`qbittorrent.cemdk.net`)";
+      # "traefik.http.routers.qbittorrent.rule" = "Host(`qbittorrent.${domain}`)";
       # "traefik.http.routers.qbittorrent.entrypoints" = "websecure";
       # "traefik.http.routers.qbittorrent.tls.certresolver" = "letsencrypt";
       # "traefik.http.routers.qbittorrent.middlewares" = "vpn-whitelist@file";
       # "traefik.http.services.qbittorrent.loadbalancer.server.port" = "8084";
 
       # # jackett
-      # "traefik.http.routers.jackett.rule" = "Host(`jackett.cemdk.net`)";
+      # "traefik.http.routers.jackett.rule" = "Host(`jackett.${domain}`)";
       # "traefik.http.routers.jackett.entrypoints" = "websecure";
       # "traefik.http.routers.jackett.tls.certresolver" = "letsencrypt";
       # "traefik.http.routers.jackett.middlewares" = "vpn-whitelist@file";
@@ -211,7 +212,7 @@ in
     environment = cfg.commonEnv;
 
     volumes = [
-      "${cfg.configPath}/arr/radarr:/config"
+      "${cfg.configPath}/arr/radarr/data/config:/config"
       "${cfg.storagePath}:/data"
     ];
   }
