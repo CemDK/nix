@@ -100,6 +100,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     if.app-id = 'com.blackmagic-design.DaVinciResolveLite'
     run = ['move-node-to-workspace 5']
 
+[[on-window-detected]]
+    if.app-id = 'com.anthropic.claudefordesktop'
+    run = ['move-node-to-workspace 5']
+
 # ---------------------------------------------------------------------------
 # WORKSPACE 6
 # ---------------------------------------------------------------------------

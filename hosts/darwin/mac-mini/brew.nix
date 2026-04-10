@@ -4,10 +4,10 @@
     # caskArgs.no_quarantine = true;
     onActivation = {
       cleanup = "zap";
-      autoUpdate = true;
+      autoUpdate = false;
       upgrade = true;
     };
-    global.autoUpdate = true;
+    global.autoUpdate = false;
 
     # CLI-TOOLS, LIBRARIES, ETC.
     brews = [
@@ -44,6 +44,7 @@
       # "balenaetcher"
       # "bambu-studio"
       # "bentobox"
+      "betterdisplay"
       "claude"
       "claude-code"
       # "cleanshot"
