@@ -76,7 +76,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # ---------------------------------------------------------------------------
 [[on-window-detected]]
     if.app-name-regex-substring = 'neovide'
-    run = ['move-node-to-workspace 3']
+    run = ['layout tiling', 'move-node-to-workspace 3']
 
 # ---------------------------------------------------------------------------
 # WORKSPACE 4
