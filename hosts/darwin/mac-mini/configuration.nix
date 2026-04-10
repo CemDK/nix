@@ -204,6 +204,20 @@
         "com.apple.AdLib" = {
           allowApplePersonalizedAdvertising = false;
         };
+
+        # Disable Ctrl+Space / Ctrl+Option+Space for input source switching
+        # so that Ctrl+Space can be used for zsh autosuggestion-accept
+        "com.apple.symbolichotkeys" = {
+          AppleSymbolicHotKeys = {
+            "60" = {
+              enabled = false;
+            };
+            "61" = {
+              enabled = false;
+            };
+          };
+        };
+
       };
     };
   };

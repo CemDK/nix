@@ -12,7 +12,7 @@ option_as_alt = "Both"
 padding = { x = 10, y = 10 }
 
 [font]
-size = 10
+size = 14
 offset.x = 0
 offset.y = -2
 

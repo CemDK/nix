@@ -7,7 +7,7 @@
       autoUpdate = false;
       upgrade = true;
     };
-    global.autoUpdate = false;
+    global.autoUpdate = true;
 
     # CLI-TOOLS, LIBRARIES, ETC.
     brews = [
@@ -109,7 +109,7 @@
       # "DaVinci Resolve" = 571213070;
       # "Disk Speed Test" = 425264550;
       # "Fantastical" = 975937182;
-      # "Home Assistant Companion" = 1099568401;
+      "Home Assistant Companion" = 1099568401;
       # "Ivory for Mastodon by Tapbots" = 6444602274;
       # "Microsoft Remote Desktop" = 1295203466;
       # "Perplexity" = 6714467650;

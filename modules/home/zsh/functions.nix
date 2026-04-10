@@ -64,7 +64,7 @@
     if [[ $(uname -r) == *WSL* ]]; then
       (neovide.exe --frame=none --wsl &)
     else
-      (neovide --frame=none &)
+      open -a "$HOME/Applications/Home Manager Apps/Neovide.app" --args --frame=none -- "$(pwd)"
     fi
   }
 
