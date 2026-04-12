@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   scripts = import ./scripts.nix { inherit pkgs; };
 
@@ -138,7 +138,7 @@ in
     ];
   };
 
-  programs.direnv = pkgs.lib.mkIf pkgs.stdenv.isLinux {
+  programs.direnv = lib.mkIf pkgs.stdenv.isLinux {
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;

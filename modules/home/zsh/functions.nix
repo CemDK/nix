@@ -1,3 +1,4 @@
+{ pkgs, lib }:
 ''
   _fzf_compgen_path() {
     fd --hidden --follow --exclude ".git" . "$1"
@@ -15,15 +16,10 @@
   }
 
   gssh() {
-    # Select project
     local project=$(gcloud projects list | tail -n +2 | awk '{print $1}' | fzf)
-
     local instance_zone=$(gcloud compute instances list --project="$project" | fzf)
-
     local instance=$(echo "$instance_zone" | awk '{print $1}')
     local zone=$(echo "$instance_zone" | awk '{print $2}')
-
-    # SSH into the instance
     gcloud compute ssh "$instance" --zone="$zone" --project="$project"
   }
 
@@ -42,32 +38,14 @@
     for i in {0..255}; do  printf "\x1b[38;5;''${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done
   }
 
-  fs(){
-    # if in wsl linux then execute else don't
-    if [ -f /proc/sys/fs/binfmt_misc/WSLInterop ]; then
-      powershell.exe -command '$wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys("{F11}")' > /dev/null 2>&1
-      powershell.exe -command '$wshell = New-Object -ComObject Shell.Application; $wshell.minimizeall()' > /dev/null 2>&1
-    fi
-  }
-
   explain() {
     local query="$*"
     if [ -z "$query" ]; then
       echo "Usage: explain <query>"
       return 1
     fi
-
     gh copilot explain "$query"
   }
-
-  nv() {
-    if [[ $(uname -r) == *WSL* ]]; then
-      (neovide.exe --frame=none --wsl &)
-    else
-      open -a "$HOME/Applications/Home Manager Apps/Neovide.app" --args --frame=none -- "$(pwd)"
-    fi
-  }
-
 
   grabfiles() {
     mkdir -p ./"$1" && \
@@ -75,5 +53,16 @@
       cem-server@omv.local:/home/cem-server/DockerApps/"$1"/ \
       ./"$1" \
   }
-
+''
++ lib.optionalString pkgs.stdenv.isLinux ''
+  nv() {
+    if [[ $(uname -r) == *WSL* ]]; then
+      (neovide.exe --frame=none --wsl &)
+    fi
+  }
+''
++ lib.optionalString pkgs.stdenv.isDarwin ''
+  nv() {
+    open -a "$HOME/Applications/Home Manager Apps/Neovide.app" --args --frame=none -- "$(pwd)"
+  }
 ''

@@ -104,6 +104,6 @@
 
     ''
     + import ./init.nix { inherit pkgs config lib; }
-    + import ./functions.nix;
+    + import ./functions.nix { inherit pkgs lib; };
   };
 }

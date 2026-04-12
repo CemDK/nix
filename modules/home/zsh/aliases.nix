@@ -2,9 +2,9 @@
   tgrey = ''tmux set-option -g status-bg "#282c34"'';
   torange = ''tmux set-option -g status-bg "#005F60"'';
 
-  nixup = "pushd ~/.config/nix; nix flake update; nixswitch; popd";
+  nixup = "(cd ~/.config/nix && nix flake update && nixswitch)";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
-  nixe = "pushd ~/.config/nix >/dev/null && nvim && nixswitch --impure && popd >/dev/null && clear";
+  nixe = "(cd ~/.config/nix && nvim && nixswitch --impure) && clear";
 
   # TODO: use colmena actually
   homelab = ''
@@ -27,7 +27,7 @@
         cemdk@nixos.local:/home/cemdk/.config/nix/ \
   '';
 
-  nvime = "pushd ~/.config/nvim >/dev/null && nvim && popd >/dev/null && clear";
+  nvime = "(cd ~/.config/nvim && nvim) && clear";
 
   cat = "bat";
 
@@ -50,7 +50,7 @@
 
   # neovide = "(neovide.exe --frame=none --wsl &)";
 
-  cfile = "cat $(fzf) | pbcopy";
+  cfile = ''\cat "$(fzf)" | pbcopy'';
 
   tadev = "ENV=dev terragrunt apply";
   tddev = "ENV=dev terragrunt destroy";
