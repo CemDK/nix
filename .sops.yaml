@@ -14,6 +14,7 @@
 keys:
   - &cem_ryzen age1hffev0dhgqnr9l4wh8maaeyzzlgdtkv9nv6p95akxfuxlkm3w3ssqdexyh
   - &lab_phy_01 age10mkxj6m3l33lzfwntx939msnmemedlsvlqzurqc90sjhp0xe5p6qcupz3j
+  - &macbookpro age1hc7cvq603n66qtpl45w5yau9ryzz908lrug0cd6263smsxxxx3mqr59dc2
   # <<< ADD KEY >>>
 
 creation_rules:
@@ -37,4 +38,5 @@ creation_rules:
       - age:
           - *cem_ryzen
           - *lab_phy_01
+          - *macbookpro
           # <<< ADD GLOBAL KEY >>>
