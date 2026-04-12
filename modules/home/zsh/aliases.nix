@@ -2,30 +2,13 @@
   tgrey = ''tmux set-option -g status-bg "#282c34"'';
   torange = ''tmux set-option -g status-bg "#005F60"'';
 
+  nixswitch = "make -C ~/.config/nix switch";
   nixup = "(cd ~/.config/nix && nix flake update && nixswitch)";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
   nixe = "(cd ~/.config/nix && nvim && nixswitch --impure) && clear";
 
-  # TODO: use colmena actually
-  homelab = ''
-    rsync -rltvz --mkpath --update \
-      --exclude '.git' \
-      --filter=':- .gitignore' \
-      /home/cem/.config/nix/ \
-      cemdk@nixos.local:/home/cemdk/.config/nix/;
-    nix shell nixpkgs#nixos-rebuild --command nixos-rebuild switch \
-      --flake .#wyse-5070 \
-      --target-host cemdk@nixos.local \
-      --sudo
-  '';
-
-  synchomelab = ''
-    rsync -rltvz --mkpath --update \
-        --exclude '.git' \
-        --filter=':- .gitignore' \
-        /home/cem/.config/nix/ \
-        cemdk@nixos.local:/home/cemdk/.config/nix/ \
-  '';
+  homelab = "make -C ~/.config/nix deploy";
+  synchomelab = "make -C ~/.config/nix sync";
 
   nvime = "(cd ~/.config/nvim && nvim) && clear";
 
