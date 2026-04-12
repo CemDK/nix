@@ -5,7 +5,7 @@ UNAME    := $(shell uname)
 LOG      := /tmp/nixos-build.log
 
 ifeq ($(UNAME),Darwin)
-  SWITCH_CMD := darwin-rebuild switch --flake .\#$(HOSTNAME)
+  SWITCH_CMD := sudo darwin-rebuild switch --flake .\#$(HOSTNAME)
 else ifneq ($(wildcard /etc/NIXOS),)
   SWITCH_CMD := sudo nixos-rebuild switch --flake .\#$(HOSTNAME)
 else ifeq ($(shell grep -q '^ID=nixos$$' /etc/os-release 2>/dev/null && echo yes),yes)
