@@ -21,8 +21,7 @@ in
     ../common.nix
     ./hardware-configuration.nix
 
-    # TODO: Enable after setting up /etc/restic-password on target
-    # "${self}/modules/backup.nix"
+    "${self}/modules/backup.nix"
 
     # Homelab options
     ../options.nix
@@ -96,6 +95,16 @@ in
     ];
   };
 
+  fileSystems."/mnt/backups/containers" = {
+    device = "/dev/disk/by-uuid/024b126d-17fb-41e8-8652-b00ecc2da3c6";
+    fsType = "ext4";
+    options = [
+      "nofail" # don't block boot if USB is unplugged
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=600"
+    ];
+  };
+
   # ============================================================================
   # SERVICES
   # ============================================================================
@@ -131,7 +140,7 @@ in
         name = "podman-${name}";
         value = {
           after = [
-            "systemd-tmpfiles-setup.service"
+            "ensure-container-dirs.service"
             "create-podman-network.service"
           ];
           requires = [ "create-podman-network.service" ];

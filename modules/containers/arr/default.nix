@@ -2,7 +2,6 @@
   config,
   pkgs,
   lib,
-  user,
   ...
 }:
 let
@@ -52,23 +51,32 @@ in
   # ==========================================================================
   # DIRECTORIES
   # ==========================================================================
-  systemd.tmpfiles.rules = [
-    "d ${cfg.configPath}/arr/wireguard/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/arr/sabnzbd/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/arr/sonarr/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/arr/radarr/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/arr/seerr/data/config 0755 ${user} users -"
-    "d ${cfg.storagePath} 0755 root root -"
-    "d ${cfg.storagePath}/media/tv 0755 root root -"
-    "d ${cfg.storagePath}/media/movies 0755 root root -"
-    "d ${cfg.storagePath}/usenet/complete 0755 root root -"
-
-    # Uncomment as needed:
-    # "d ${cfg.configPath}/arr/qbittorrent 0755 ${user} users -"
-    # "d ${cfg.configPath}/arr/jackett 0755 ${user} users -"
-    # "d ${cfg.configPath}/arr/readarr 0755 ${user} users -"
-    # "d ${cfg.configPath}/arr/lidarr 0755 ${user} users -"
-    # "d ${cfg.configPath}/arr/bazarr 0755 ${user} users -"
+  homelab.containers.requiredDirs = [
+    { directory = "${cfg.configPath}/arr/wireguard/data/config"; }
+    { directory = "${cfg.configPath}/arr/sabnzbd/data/config"; }
+    { directory = "${cfg.configPath}/arr/sonarr/data/config"; }
+    { directory = "${cfg.configPath}/arr/radarr/data/config"; }
+    { directory = "${cfg.configPath}/arr/seerr/data/config"; }
+    {
+      directory = "${cfg.storagePath}";
+      owner = "root";
+      group = "root";
+    }
+    {
+      directory = "${cfg.storagePath}/media/tv";
+      owner = "root";
+      group = "root";
+    }
+    {
+      directory = "${cfg.storagePath}/media/movies";
+      owner = "root";
+      group = "root";
+    }
+    {
+      directory = "${cfg.storagePath}/usenet/complete";
+      owner = "root";
+      group = "root";
+    }
   ];
 
   # ==========================================================================
@@ -299,7 +307,10 @@ in
     map (name: {
       name = "podman-${name}";
       value = {
-        after = [ "podman-wireguard.service" ];
+        after = [
+          "podman-wireguard.service"
+          "ensure-container-dirs.service"
+        ];
         requires = [ "podman-wireguard.service" ];
         bindsTo = [ "podman-wireguard.service" ];
         partOf = [ "podman-wireguard.service" ];

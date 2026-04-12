@@ -1,11 +1,11 @@
-{ config, user, ... }:
+{ config, ... }:
 let
   cfg = config.homelab.containers;
   domain = config.homelab.domain;
 in
 {
-  systemd.tmpfiles.rules = [
-    "d ${cfg.configPath}/mealie/data 0755 ${user} users -"
+  homelab.containers.requiredDirs = [
+    { directory = "${cfg.configPath}/mealie/data"; }
   ];
 
   virtualisation.oci-containers.containers.mealie = {

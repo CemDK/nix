@@ -1,14 +1,22 @@
-{ config, user, ... }:
+{ config, ... }:
 let
   cfg = config.homelab.containers;
   domain = config.homelab.domain;
 in
 {
-  systemd.tmpfiles.rules = [
-    "d ${cfg.storagePath}/media/audiobooks/books 0755 root root -"
-    "d ${cfg.storagePath}/media/podcasts 0755 root root -"
-    "d ${cfg.configPath}/audiobookshelf/data/config 0755 ${user} users -"
-    "d ${cfg.configPath}/audiobookshelf/data/metadata 0755 ${user} users -"
+  homelab.containers.requiredDirs = [
+    {
+      directory = "${cfg.storagePath}/media/audiobooks/books";
+      owner = "root";
+      group = "root";
+    }
+    {
+      directory = "${cfg.storagePath}/media/podcasts";
+      owner = "root";
+      group = "root";
+    }
+    { directory = "${cfg.configPath}/audiobookshelf/data/config"; }
+    { directory = "${cfg.configPath}/audiobookshelf/data/metadata"; }
   ];
 
   virtualisation.oci-containers.containers.audiobookshelf = {

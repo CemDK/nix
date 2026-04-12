@@ -1,4 +1,8 @@
-{ pkgs, config, lib }:
+{
+  pkgs,
+  config,
+  lib,
+}:
 lib.optionalString pkgs.stdenv.isDarwin ''
   alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
   alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"

@@ -85,4 +85,3 @@ deploy: sync
 		--build-host $(HOMELAB_HOST) \
 		--sudo \
 		2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
-	$(on-failure)

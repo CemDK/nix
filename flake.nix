@@ -42,8 +42,7 @@
           host,
           home,
         }:
-        assert lib.assertMsg
-          (builtins.pathExists ./hosts/darwin/${host})
+        assert lib.assertMsg (builtins.pathExists ./hosts/darwin/${host})
           "No darwin configuration found for host '${host}' — check the directory name in flake.nix";
         nix-darwin.lib.darwinSystem {
           inherit system;
@@ -98,8 +97,7 @@
           host,
           home,
         }:
-        assert lib.assertMsg
-          (builtins.pathExists ./hosts/nixos/${host})
+        assert lib.assertMsg (builtins.pathExists ./hosts/nixos/${host})
           "No nixos configuration found for host '${host}' — check the directory name in flake.nix";
         nixpkgs.lib.nixosSystem {
           inherit system;

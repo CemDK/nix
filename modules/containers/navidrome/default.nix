@@ -1,12 +1,16 @@
-{ config, user, ... }:
+{ config, ... }:
 let
   cfg = config.homelab.containers;
   domain = config.homelab.domain;
 in
 {
-  systemd.tmpfiles.rules = [
-    "d ${cfg.configPath}/navidrome/data 0755 ${user} users -"
-    "d ${cfg.storagePath}/media/music 0755 root root -"
+  homelab.containers.requiredDirs = [
+    { directory = "${cfg.configPath}/navidrome/data"; }
+    {
+      directory = "${cfg.storagePath}/media/music";
+      owner = "root";
+      group = "root";
+    }
   ];
 
   virtualisation.oci-containers.containers.navidrome = {

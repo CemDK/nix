@@ -1,12 +1,16 @@
-{ config, user, ... }:
+{ config, ... }:
 let
   cfg = config.homelab.containers;
   domain = config.homelab.domain;
 in
 {
-  systemd.tmpfiles.rules = [
-    "d ${cfg.configPath}/calibre-web/data/config 0755 ${user} users -"
-    "d ${cfg.storagePath}/media/calibre 0755 root root -"
+  homelab.containers.requiredDirs = [
+    { directory = "${cfg.configPath}/calibre-web/data/config"; }
+    {
+      directory = "${cfg.storagePath}/media/calibre";
+      owner = "root";
+      group = "root";
+    }
   ];
 
   virtualisation.oci-containers.containers.calibre-web = {

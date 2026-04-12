@@ -1,7 +1,6 @@
 {
   config,
   self,
-  user,
   ...
 }:
 let
@@ -20,8 +19,8 @@ in
     };
   };
 
-  systemd.tmpfiles.rules = [
-    "d ${cfg.configPath}/traefik/data/acme 0755 ${user} users -"
+  homelab.containers.requiredDirs = [
+    { directory = "${cfg.configPath}/traefik/data/acme"; }
   ];
 
   virtualisation.oci-containers.containers.traefik = {
