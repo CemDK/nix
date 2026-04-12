@@ -19,41 +19,16 @@ else
   SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch --flake .\#$(HOSTNAME)" $(LOG)
 endif
 
-define on-failure
-	if [ $$EXIT_CODE -ne 0 ]; then \
-		echo ""; \
-		echo "========================================"; \
-		echo " Failed"; \
-		echo "========================================"; \
-		echo ""; \
-		col -b < $(LOG) | claude --output-format text -p \
-			"The nix command failed. Diagnose the root cause and explain what went wrong. Respond with plain text only - do not attempt to edit or create files." \
-			> /tmp/nixos-claude.txt & \
-		CLAUDE_PID=$$!; \
-		printf "Asking Claude"; \
-		while kill -0 $$CLAUDE_PID 2>/dev/null; do \
-			printf "."; \
-			sleep 1.5; \
-		done; \
-		wait $$CLAUDE_PID; \
-		printf "\n\n"; \
-		cat /tmp/nixos-claude.txt; \
-		echo ""; \
-	fi
-endef
-
 .PHONY: check switch secrets secrets-homelab rekey sync deploy
 
 # ============================================================================
 # NIX
 # ============================================================================
 check:
-	@nix flake check --all-systems 2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
-	$(on-failure)
+	@nix flake check --all-systems 2>&1 | tee $(LOG)
 
 switch:
-	@$(SWITCH_CMD); EXIT_CODE=$$?; \
-	$(on-failure)
+	@$(SWITCH_CMD)
 
 # ============================================================================
 # SECRETS (sops)

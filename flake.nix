@@ -40,7 +40,7 @@
           host,
           home,
         }:
-        # -- let bindings --
+        # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir ./hosts/darwin/${host};
           hmModule = {
@@ -61,7 +61,7 @@
             nix-homebrew.user = "${user}";
           };
         in
-        # -- system configuration --
+        # ----------------------------------------------------------------------
         nix-darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
@@ -96,7 +96,7 @@
           home,
           isHomelab ? false,
         }:
-        # -- let bindings --
+        # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir (
             if isHomelab then ./hosts/nixos/homelab/${host} else ./hosts/nixos/${host}
@@ -112,7 +112,7 @@
             };
           };
         in
-        # -- system configuration --
+        # ----------------------------------------------------------------------
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
@@ -146,7 +146,7 @@
           host,
           home,
         }:
-        # -- let bindings --
+        # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir ./hosts/linux/${host};
           hmConfig = {
@@ -155,7 +155,7 @@
             targets.genericLinux.enable = true;
           };
         in
-        # -- system configuration --
+        # ----------------------------------------------------------------------
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
           extraSpecialArgs = {
