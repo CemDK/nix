@@ -15,9 +15,10 @@
   };
 
   nix.gc = {
-    automatic = true;
-    dates = "weekly";
+    automatic = lib.mkDefault true;
     options = "--delete-older-than 30d";
+  } // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    dates = "weekly";
   };
 
   nixpkgs.config.allowUnfree = true;
