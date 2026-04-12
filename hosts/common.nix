@@ -1,4 +1,9 @@
-{ lib, pkgs, options, ... }:
+{
+  lib,
+  pkgs,
+  options,
+  ...
+}:
 {
   # ============================================================================
   # NIX CONFIGURATION
@@ -17,7 +22,8 @@
   nix.gc = {
     automatic = lib.mkDefault true;
     options = "--delete-older-than 30d";
-  } // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+  }
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
     dates = "weekly";
   };
 

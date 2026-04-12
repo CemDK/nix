@@ -14,7 +14,7 @@ in
     "traefik/dashboard-users" = {
       sopsFile = "${self}/secrets/homelab/secrets.yaml";
     };
-    "traefik/cloudflare-env" = {
+    "traefik/env" = {
       sopsFile = "${self}/secrets/homelab/secrets.yaml";
     };
   };
@@ -34,9 +34,9 @@ in
 
     environment = cfg.commonEnv;
 
-    # This makes ENV vars in the container from the file on the host /run/secrets/traefik/cloudflare-env
+    # This makes ENV vars in the container from the file on the host /run/secrets/traefik/env
     environmentFiles = [
-      config.sops.secrets."traefik/cloudflare-env".path
+      config.sops.secrets."traefik/env".path
     ];
 
     ports = [
