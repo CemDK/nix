@@ -2,9 +2,6 @@
   description = "Shokunix - Multi platform Nix configuration";
 
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    # nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
-    # home-manager.url = "github:nix-community/home-manager/release-25.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -22,7 +19,6 @@
     inputs@{
       self,
       nix-darwin,
-      nixos-hardware,
       nixpkgs,
       home-manager,
       sops-nix,
@@ -31,6 +27,8 @@
     }:
     let
       lib = nixpkgs.lib;
+      helpers = import ./lib/helpers.nix { inherit lib; };
+      inherit (helpers) assertHostDir;
 
       # ========================================================================
       # Nix-Darwin configuration
@@ -42,8 +40,28 @@
           host,
           home,
         }:
-        assert lib.assertMsg (builtins.pathExists ./hosts/darwin/${host})
-          "No darwin configuration found for host '${host}' — check the directory name in flake.nix";
+        # -- let bindings --
+        let
+          hostDir = assertHostDir ./hosts/darwin/${host};
+          hmModule = {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.users.${user} = {
+              imports = [ (hostDir + "/home.nix") ];
+              home.username = user;
+              home.homeDirectory = home;
+            };
+          };
+          brewConfig = {
+            nix-homebrew.enable = true;
+            nix-homebrew.enableRosetta = true;
+            nix-homebrew.autoMigrate = true;
+            nix-homebrew.mutableTaps = true;
+            nix-homebrew.user = "${user}";
+          };
+        in
+        # -- system configuration --
         nix-darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
@@ -57,33 +75,13 @@
               ;
           };
           modules = [
-            ./hosts/darwin/${host}/configuration.nix
+            (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
             inputs.home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.${user} = {
-                imports = [ ./hosts/darwin/${host}/home.nix ];
-                home.username = user;
-                home.homeDirectory = home;
-              };
-            }
+            hmModule
             inputs.nix-homebrew.darwinModules.nix-homebrew
-            {
-              nix-homebrew.enable = true;
-              nix-homebrew.enableRosetta = true;
-              nix-homebrew.autoMigrate = true;
-              nix-homebrew.mutableTaps = true;
-              nix-homebrew.user = "${user}";
-              # nix-homebrew.taps = with inputs; {
-              #   "homebrew/homebrew-core" = homebrew-core;
-              #   "homebrew/homebrew-cask" = homebrew-cask;
-              #   "homebrew/homebrew-bundle" = homebrew-bundle;
-              # };
-            }
-            # sops-nix.darwinModules.sops
+            brewConfig
+            sops-nix.darwinModules.sops
           ];
         };
 
@@ -96,9 +94,25 @@
           user,
           host,
           home,
+          isHomelab ? false,
         }:
-        assert lib.assertMsg (builtins.pathExists ./hosts/nixos/${host})
-          "No nixos configuration found for host '${host}' — check the directory name in flake.nix";
+        # -- let bindings --
+        let
+          hostDir = assertHostDir (
+            if isHomelab then ./hosts/nixos/homelab/${host} else ./hosts/nixos/${host}
+          );
+          hmModule = {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.users.${user} = {
+              imports = [ (hostDir + "/home.nix") ];
+              home.username = user;
+              home.homeDirectory = home;
+            };
+          };
+        in
+        # -- system configuration --
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
@@ -112,60 +126,13 @@
               ;
           };
           modules = [
-            ./hosts/nixos/${host}/configuration.nix
+            (hostDir + "/configuration.nix")
+            inputs.home-manager.nixosModules.home-manager
+            hmModule
+            sops-nix.nixosModules.sops
+          ]
+          ++ lib.optionals (!isHomelab) [
             stylix.nixosModules.stylix
-            inputs.home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.${user} = {
-                imports = [ ./hosts/nixos/${host}/home.nix ];
-                home.username = user;
-                home.homeDirectory = home;
-              };
-            }
-            sops-nix.nixosModules.sops
-          ];
-        };
-
-      # ========================================================================
-      # Homelab NixOS configuration
-      # ========================================================================
-      mkHomelabConfig =
-        {
-          system,
-          user,
-          host,
-          home,
-        }:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit
-              self
-              system
-              user
-              host
-              home
-              inputs
-              ;
-          };
-          modules = [
-            ./hosts/nixos/homelab/${host}/configuration.nix
-            inputs.home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.${user} = {
-                imports = [ ./hosts/nixos/homelab/${host}/home.nix ];
-                home.username = user;
-                home.homeDirectory = home;
-              };
-            }
-
-            sops-nix.nixosModules.sops
           ];
         };
 
@@ -179,6 +146,16 @@
           host,
           home,
         }:
+        # -- let bindings --
+        let
+          hostDir = assertHostDir ./hosts/linux/${host};
+          hmConfig = {
+            home.username = user;
+            home.homeDirectory = home;
+            targets.genericLinux.enable = true;
+          };
+        in
+        # -- system configuration --
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
           extraSpecialArgs = {
@@ -192,54 +169,16 @@
               ;
           };
           modules = [
-            ./hosts/linux/${host}/home.nix
+            (hostDir + "/home.nix")
             stylix.homeModules.stylix
-            {
-              home.username = user;
-              home.homeDirectory = home;
-              targets.genericLinux.enable = true;
-            }
+            hmConfig
           ];
         };
 
       # ========================================================================
-      # ISO installer configuration
+      # ISO configuration
       # ========================================================================
-      mkIsoConfig =
-        {
-          system,
-          user,
-          host,
-          home,
-        }:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit
-              user
-              host
-              home
-              inputs
-              ;
-          };
-          modules = [
-            (
-              { modulesPath, ... }:
-              {
-                imports = [
-                  (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
-                  "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
-                  ./hosts/nixos/iso/configuration.nix
-                ];
-
-                # Include target system packages in ISO for offline installation
-                isoImage.storeContents = [
-                  self.nixosConfigurations.${host}.config.system.build.toplevel
-                ];
-              }
-            )
-          ];
-        };
+      mkIsoConfig = import ./hosts/nixos/iso/mkIsoConfig.nix { inherit self nixpkgs inputs; };
     in
     {
       # ========================================================================
@@ -254,7 +193,7 @@
       ] (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # ========================================================================
-      # CONFIG DEFINTIONS
+      # CONFIG DEFINITIONS
       # ========================================================================
       # Darwin configurations (macOS)
       darwinConfigurations = {
@@ -298,11 +237,12 @@
         };
 
         # Homelab
-        "wyse-5070" = mkHomelabConfig {
+        "wyse-5070" = mkNixOSConfig {
           system = "x86_64-linux";
           user = "cemdk";
           host = "lab-phy-01";
           home = "/home/cemdk";
+          isHomelab = true;
         };
       };
 
