@@ -23,6 +23,10 @@
     pastel
     opencode
 
+    # Sandboxing related
+    socat
+    bubblewrap
+
     # Stuff
     # miktex
     conda
@@ -37,6 +41,10 @@
     # use this to mount a remote filesystem on my VPS via SSH
     fuse
     sshfs
+
+    chromium
+    uv
+    esphome
   ];
 
 }

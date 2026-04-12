@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, lib, ... }:
 {
 
   programs.zoxide.enable = true;
@@ -103,7 +103,7 @@
 
 
     ''
-    + import ./init.nix
+    + import ./init.nix { inherit pkgs config lib; }
     + import ./functions.nix;
   };
 }

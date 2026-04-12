@@ -1,20 +1,17 @@
+{ pkgs, config, lib }:
+lib.optionalString pkgs.stdenv.isDarwin ''
+  alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
+  alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"
+  eval "$(/usr/local/bin/brew shellenv)"
 ''
-  if [[ $(uname) == "Darwin" ]]; then
-    alias activate-settings="/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u"
-      alias nixswitch="sudo darwin-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"
-      eval "$(/usr/local/bin/brew shellenv)"
-  else
-    # Check if we're running NixOS by looking for the NixOS marker file
-    if [[ -f /etc/NIXOS ]] || grep -q "^ID=nixos$" /etc/os-release 2>/dev/null; then
-        # NixOS system
-        alias nixswitch="sudo nixos-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"
-    else
-        # Other Linux distributions
-        alias pbcopy='xclip -selection clipboard'
-        alias nixswitch="nix run nixpkgs#home-manager --extra-experimental-features \"nix-command flakes\" -- switch --flake ~/.config/nix/.#$(hostname -s)"
-    fi
-  fi
-
++ lib.optionalString (pkgs.stdenv.isLinux && !config.targets.genericLinux.enable) ''
+  alias nixswitch="sudo nixos-rebuild switch --flake ~/.config/nix/.#$(hostname -s)"
+''
++ lib.optionalString config.targets.genericLinux.enable ''
+  alias pbcopy='xclip -selection clipboard'
+  alias nixswitch="nix --extra-experimental-features nix-command --extra-experimental-features flakes run nixpkgs#home-manager -- switch --flake ~/.config/nix/.#$(hostname -s)"
+''
++ ''
 
   # >>> conda initialize >>>
      # !! Contents within this block are managed by 'conda init' !!
