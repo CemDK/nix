@@ -23,8 +23,6 @@ in
   ];
 
   home = {
-    stateVersion = "25.05";
-
     packages =
       with pkgs;
       [
@@ -143,4 +141,6 @@ in
     enableZshIntegration = true;
     nix-direnv.enable = true;
   };
+
+  gtk.gtk4.theme = null;
 }

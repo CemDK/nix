@@ -34,7 +34,7 @@
   # HOME SETTINGS
   # ============================================================================
   home = {
-    stateVersion = lib.mkForce "21.11";
+    stateVersion = "25.11";
     file = { };
   };
 }

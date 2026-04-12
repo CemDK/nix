@@ -22,7 +22,7 @@ else
 endif
 
 check:
-	@nix flake check 2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
+	@nix flake check --all-systems 2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
 	if [ $$EXIT_CODE -ne 0 ]; then \
 		echo ""; \
 		echo "========================================"; \

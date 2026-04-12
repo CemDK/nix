@@ -28,6 +28,8 @@
   programs.lutris.enable = true;
 
   home = {
+    stateVersion = "25.05";
+
     packages = with pkgs; [
       # local apps
       obs-studio

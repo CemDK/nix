@@ -14,6 +14,8 @@
   # PACKAGES
   # ============================================================================
   home = {
+    stateVersion = "25.05";
+
     packages = with pkgs; [
       # local apps
       # libva-utils

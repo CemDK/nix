@@ -5,4 +5,6 @@
     ./packages.nix
     ./brew.nix
   ];
+
+  system.stateVersion = 6;
 }

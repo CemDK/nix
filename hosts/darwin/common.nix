@@ -76,7 +76,6 @@
   # ============================================================================
   system = {
     primaryUser = user;
-    stateVersion = 6;
     configurationRevision = self.rev or self.dirtyRev or null;
 
     startup.chime = false;
@@ -200,7 +199,6 @@
           AppleSymbolicHotKeys = {
             "60".enabled = false;
             "61".enabled = false;
-            };
           };
         };
       };

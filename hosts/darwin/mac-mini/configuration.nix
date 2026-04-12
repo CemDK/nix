@@ -6,5 +6,6 @@
     ./brew.nix
   ];
 
+  system.stateVersion = 6;
   system.defaults.CustomUserPreferences.NSGlobalDomain."com.apple.swipescrolldirection" = false;
 }
