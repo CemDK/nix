@@ -1,7 +1,7 @@
-{ ... }:
+{ self, ... }:
 {
   imports = [
-    ../common.nix
+    "${self}/hosts/darwin/common.nix"
     ./packages.nix
     ./brew.nix
   ];

@@ -1,4 +1,5 @@
 {
+  self,
   user,
   config,
   host,
@@ -12,11 +13,11 @@
   # IMPORTS
   # ============================================================================
   imports = [
-    ../common.nix
+    "${self}/hosts/nixos/common.nix"
     ./hardware-configuration.nix
-    ../../../modules/features/stylix
-    ../../../modules/features/hyprland
-    ../../../modules/features/steam
+    "${self}/modules/features/stylix"
+    "${self}/modules/features/hyprland"
+    "${self}/modules/features/steam"
   ];
 
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];

@@ -1,5 +1,7 @@
 result
 result-*
+nix.conf
+nix.conf.backup
 *.iso
 *.qcow2
 .ready-tmux

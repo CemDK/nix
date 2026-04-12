@@ -1,8 +1,7 @@
-{ ... }:
+{ self, ... }:
 {
   imports = [
-    # Import home-manager modules
-    ../../../modules/home
+    "${self}/modules/home"
   ];
 
   home.stateVersion = "25.05";

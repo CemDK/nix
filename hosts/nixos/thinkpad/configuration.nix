@@ -1,4 +1,5 @@
 {
+  self,
   pkgs,
   lib,
   inputs,
@@ -12,13 +13,11 @@
   # IMPORTS
   # ============================================================================
   imports = [
-    ../common.nix
+    "${self}/hosts/nixos/common.nix"
     ./hardware-configuration.nix
 
-    # Import hyprland module
-    ../../../modules/features/hyprland
-    # Import stylix module
-    ../../../modules/features/stylix
+    "${self}/modules/features/hyprland"
+    "${self}/modules/features/stylix"
 
     # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad
     # Power Efficiency: AMD P-State driver, TLP/power-profiles integration, SSD TRIM

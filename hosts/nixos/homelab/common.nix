@@ -1,31 +1,15 @@
-{ pkgs, lib, ... }:
+{ self, pkgs, lib, ... }:
 {
   # ============================================================================
   # IMPORTS
   # ============================================================================
-  imports = [ ];
+  imports = [ "${self}/hosts/common.nix" ];
 
   # ============================================================================
   # NIX CONFIGURATION
   # ============================================================================
-  # nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  nix = {
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      auto-optimise-store = true;
-      trusted-users = [ "@wheel" ];
-    };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
-    };
-  };
-
-  nixpkgs.config.allowUnfree = true;
+  nix.settings.auto-optimise-store = true;
+  nix.settings.trusted-users = [ "@wheel" ];
 
   # ============================================================================
   # USER MANAGEMENT

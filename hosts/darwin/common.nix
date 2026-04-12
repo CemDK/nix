@@ -14,7 +14,8 @@
   # IMPORTS
   # ============================================================================
   imports = [
-    ../../modules/features/stylix
+    "${self}/hosts/common.nix"
+    "${self}/modules/features/stylix"
   ];
 
   # ============================================================================
@@ -23,7 +24,6 @@
   nix.enable = false;
 
   nixpkgs.hostPlatform = system;
-  nixpkgs.config.allowUnfree = true;
 
   # ============================================================================
   # USER MANAGEMENT

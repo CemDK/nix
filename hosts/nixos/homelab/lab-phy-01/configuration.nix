@@ -18,13 +18,13 @@ in
   # IMPORTS
   # ============================================================================
   imports = [
-    ../common.nix
+    "${self}/hosts/nixos/homelab/common.nix"
     ./hardware-configuration.nix
 
     "${self}/modules/backup.nix"
 
     # Homelab options
-    ../options.nix
+    "${self}/hosts/nixos/homelab/options.nix"
 
     # Container options and modules
     "${self}/modules/containers/options.nix"

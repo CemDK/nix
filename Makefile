@@ -16,7 +16,7 @@ else ifneq ($(wildcard /etc/NIXOS),)
   SWITCH_CMD := script -q --return -c "sudo nixos-rebuild switch --flake .\#$(HOSTNAME)" $(LOG)
 # GENERIC LINUX (home-manager):
 else
-  SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch --flake .\#$(HOSTNAME)" $(LOG)
+  SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch -b backup --flake .\#$(HOSTNAME)" $(LOG)
 endif
 
 .PHONY: check switch iso secrets secrets-homelab rekey sync deploy
