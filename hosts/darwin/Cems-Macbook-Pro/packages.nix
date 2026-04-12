@@ -23,24 +23,23 @@
   # This installs into $HOME/.nix-profile
   users.users.cemdk.packages = with pkgs; [
     wakatime-cli
-
-    (google-cloud-sdk.withExtraComponents [ google-cloud-sdk.components.gke-gcloud-auth-plugin ])
-    cloudfoundry-cli
-    gotools
-    k9s
-    kubectl
-    kubernetes-helm
-    kubevela
-
-    minikube
-    postman
-    yarn
-
-    go
-    opentofu
-    podman
-    podman-desktop
-    terragrunt
+    # (google-cloud-sdk.withExtraComponents [ google-cloud-sdk.components.gke-gcloud-auth-plugin ])
+    # cloudfoundry-cli
+    # gotools
+    # k9s
+    # kubectl
+    # kubernetes-helm
+    # kubevela
+    #
+    # minikube
+    # postman
+    # yarn
+    #
+    # go
+    # opentofu
+    # podman
+    # podman-desktop
+    # terragrunt
     nix-search-tv
     fastfetch
     opencode
