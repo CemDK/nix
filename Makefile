@@ -19,7 +19,7 @@ else
   SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch --flake .\#$(HOSTNAME)" $(LOG)
 endif
 
-.PHONY: check switch secrets secrets-homelab rekey sync deploy
+.PHONY: check switch iso secrets secrets-homelab rekey sync deploy
 
 # ============================================================================
 # NIX
@@ -29,6 +29,27 @@ check:
 
 switch:
 	@$(SWITCH_CMD)
+
+iso:
+	@HOST=$${HOST:-thinkpad}; \
+	echo "Building ISO for $$HOST..."; \
+	nix build --impure --expr " \
+		let flake = builtins.getFlake \"path:$(CURDIR)\"; \
+		in (flake.inputs.nixpkgs.lib.nixosSystem { \
+			system = \"x86_64-linux\"; \
+			modules = [({ modulesPath, ... }: { \
+				imports = [ \
+					(modulesPath + \"/installer/cd-dvd/installation-cd-minimal.nix\") \
+					\"\$${flake.inputs.nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix\" \
+					$(CURDIR)/hosts/nixos/iso/configuration.nix \
+				]; \
+				isoImage.storeContents = [ \
+					flake.nixosConfigurations.$$HOST.config.system.build.toplevel \
+				]; \
+			})]; \
+		}).config.system.build.isoImage" \
+		-o result-iso 2>&1 | tee $(LOG); \
+	echo "ISO written to result-iso/iso/"
 
 # ============================================================================
 # SECRETS (sops)

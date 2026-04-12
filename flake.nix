@@ -175,10 +175,6 @@
           ];
         };
 
-      # ========================================================================
-      # ISO configuration
-      # ========================================================================
-      mkIsoConfig = import ./hosts/nixos/iso/mkIsoConfig.nix { inherit self nixpkgs inputs; };
     in
     {
       # ========================================================================
@@ -225,14 +221,6 @@
           system = "x86_64-linux";
           user = "cemdk";
           host = "thinclient";
-          home = "/home/cemdk";
-        };
-
-        # ISOs
-        "thinkpadISO" = mkIsoConfig {
-          system = "x86_64-linux";
-          user = "cemdk";
-          host = "thinkpad";
           home = "/home/cemdk";
         };
 
