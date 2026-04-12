@@ -254,11 +254,11 @@
       # ========================================================================
       # Darwin configurations (macOS)
       darwinConfigurations = {
-        "CemDK-MBP" = mkDarwinConfig {
-          system = "x86_64-darwin";
-          user = "cem";
-          host = "CemDK-MBP";
-          home = "/Users/cem";
+        "Cems-MacBook-Pro" = mkDarwinConfig {
+          system = "aarch64-darwin";
+          user = "cemdk";
+          host = "Cems-MacBook-Pro";
+          home = "/Users/cemdk";
         };
 
         "mac-mini" = mkDarwinConfig {

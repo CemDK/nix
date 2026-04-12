@@ -16,6 +16,9 @@
     #
     ./packages.nix
     ./brew.nix
+
+    # Import stylix module
+    ../../../modules/features/stylix
   ];
 
   # ============================================================================
@@ -173,6 +176,13 @@
         NSWindowResizeTime = 0.0;
       };
 
+      WindowManager = {
+        StandardHideWidgets = true;
+      };
+
+      controlcenter.BatteryShowPercentage = true;
+      controlcenter.NowPlaying = true;
+
       # ============================================================================
       # OTHER PREFERENCES
       # ============================================================================
@@ -184,7 +194,7 @@
         # TODO: check if this is contained to mouse options
         # or if this messs with trackpad options
         NSGlobalDomain."com.apple.mouse.linear" = true;
-        NSGlobalDomain."com.apple.swipescrolldirection" = false;
+        NSGlobalDomain."com.apple.swipescrolldirection" = true;
 
         "com.apple.desktopservices" = {
           # Avoid creating .DS_Store files on network or USB volumes
@@ -201,6 +211,20 @@
         "com.apple.AdLib" = {
           allowApplePersonalizedAdvertising = false;
         };
+
+        # Disable Ctrl+Space / Ctrl+Option+Space for input source switching
+        # so that Ctrl+Space can be used for zsh autosuggestion-accept
+        "com.apple.symbolichotkeys" = {
+          AppleSymbolicHotKeys = {
+            "60" = {
+              enabled = false;
+            };
+            "61" = {
+              enabled = false;
+            };
+          };
+        };
+
       };
     };
   };

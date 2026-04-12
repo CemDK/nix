@@ -1,7 +1,6 @@
 {
   homebrew = {
     enable = true;
-    caskArgs.no_quarantine = true;
     onActivation = {
       cleanup = "zap";
       autoUpdate = true;
@@ -29,7 +28,7 @@
       "anki"
       # "playonmac"
       # "plex"
-      "visual-studio-code"
+      # "visual-studio-code"
       # "vlc"
       # "wine-stable"
       # "whisky"
@@ -95,7 +94,7 @@
       # "steam"
       # "viscosity"
       # "wireshark"
-      # rogue amoeba
+      "zen"
     ];
 
     # APPSTORE APPS

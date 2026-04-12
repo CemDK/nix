@@ -64,6 +64,10 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     if.app-id = 'org.mozilla.firefox'
     run = ['move-node-to-workspace 1']
 
+[[on-window-detected]]
+    if.app-id = 'com.apple.safari'
+    run = ['move-node-to-workspace 1']
+
 # ---------------------------------------------------------------------------
 # WORKSPACE 2
 # ---------------------------------------------------------------------------
