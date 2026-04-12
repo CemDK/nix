@@ -1,14 +1,29 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }:
 let
   containerData = config.homelab.containers.configPath;
+  systemctl = lib.getExe' pkgs.systemd "systemctl";
+
+  # Services to stop before backup (have mutable databases or state)
+  servicesToStop = [
+    "podman-navidrome"
+    "podman-audiobookshelf"
+    "podman-sonarr"
+    "podman-radarr"
+    "podman-sabnzbd"
+    "podman-seerr"
+    "podman-mealie"
+    "podman-calibre-web"
+  ];
+
+  stopAll = lib.concatMapStrings (s: "${systemctl} stop ${s}.service || true\n") servicesToStop;
+  startAll = lib.concatMapStrings (s: "${systemctl} start ${s}.service || true\n") servicesToStop;
 in
 {
-  # TODO: Add to secrets/global.yaml before enabling:
-  #   restic/password: <your-secure-password>
   sops.secrets."restic/password" = { };
 
   services.restic.backups.containers = {
@@ -17,16 +32,21 @@ in
     paths = [
       "${containerData}/navidrome/data"
       "${containerData}/audiobookshelf/data"
+      "${containerData}/arr/sonarr/data"
+      "${containerData}/arr/radarr/data"
+      "${containerData}/arr/sabnzbd/data"
+      "${containerData}/arr/seerr/data"
+      "${containerData}/arr/wireguard/data"
+      "${containerData}/traefik/data"
+      "${containerData}/mealie/data"
+      "${containerData}/calibre-web/data"
+      "${containerData}/homer/data"
     ];
 
     exclude = [
-      # Caches — regenerated automatically
       "*/cache/*"
-      # Logs — not worth backing up
       "*/logs/*"
-      # Migrations — shipped with the app
       "*/migrations/*"
-      # SQLite temp files — regenerated on DB open
       "*.db-shm"
       "*.db-wal"
     ];
@@ -37,20 +57,15 @@ in
 
     timerConfig = {
       OnCalendar = "daily";
-      Persistent = true; # Run if machine was off at scheduled time
+      Persistent = true;
     };
 
-    # Stop containers before backup to prevent SQLite corruption
     backupPrepareCommand = ''
-      ${pkgs.lib.getExe' pkgs.systemd "systemctl"} stop podman-navidrome.service || true
-      ${pkgs.lib.getExe' pkgs.systemd "systemctl"} stop podman-audiobookshelf.service || true
+      ${stopAll}
       sleep 2
     '';
 
-    backupCleanupCommand = ''
-      ${pkgs.lib.getExe' pkgs.systemd "systemctl"} start podman-navidrome.service || true
-      ${pkgs.lib.getExe' pkgs.systemd "systemctl"} start podman-audiobookshelf.service || true
-    '';
+    backupCleanupCommand = startAll;
 
     pruneOpts = [
       "--keep-daily 30"

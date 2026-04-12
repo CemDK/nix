@@ -5,7 +5,7 @@
   nixswitch = "make -C ~/.config/nix switch";
   nixup = "(cd ~/.config/nix && nix flake update && nixswitch)";
   nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
-  nixe = "(cd ~/.config/nix && nvim && nixswitch --impure) && clear";
+  nixe = "(cd ~/.config/nix && nvim && nixswitch) && clear";
 
   homelab = "make -C ~/.config/nix deploy";
   synchomelab = "make -C ~/.config/nix sync";
