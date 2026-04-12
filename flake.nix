@@ -120,7 +120,6 @@
               };
             }
             sops-nix.nixosModules.sops
-            # sops-nix.nixosModules.sops
           ];
         };
 
@@ -161,7 +160,6 @@
             }
 
             sops-nix.nixosModules.sops
-            # sops-nix.nixosModules.sops
           ];
         };
 

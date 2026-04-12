@@ -21,6 +21,29 @@ else
   SCRIPT_CMD := script -q --return -c "$(SWITCH_CMD)" $(LOG)
 endif
 
+check:
+	@nix flake check 2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
+	if [ $$EXIT_CODE -ne 0 ]; then \
+		echo ""; \
+		echo "========================================"; \
+		echo " Check failed"; \
+		echo "========================================"; \
+		echo ""; \
+		col -b < $(LOG) | claude --output-format text -p \
+			"The Nix flake check failed with the following output. Diagnose the root cause and explain what went wrong. Respond with plain text only — do not attempt to edit or create files." \
+			> /tmp/nixos-claude.txt & \
+		CLAUDE_PID=$$!; \
+		printf "Asking Claude"; \
+		while kill -0 $$CLAUDE_PID 2>/dev/null; do \
+			printf "."; \
+			sleep 1.5; \
+		done; \
+		wait $$CLAUDE_PID; \
+		printf "\n\n"; \
+		cat /tmp/nixos-claude.txt; \
+		echo ""; \
+	fi
+
 switch:
 	@$(SCRIPT_CMD); EXIT_CODE=$$?; \
 	if [ $$EXIT_CODE -ne 0 ]; then \
@@ -36,7 +59,7 @@ switch:
 		printf "Asking Claude"; \
 		while kill -0 $$CLAUDE_PID 2>/dev/null; do \
 			printf "."; \
-			sleep 0.5; \
+			sleep 1.5; \
 		done; \
 		wait $$CLAUDE_PID; \
 		printf "\n\n"; \

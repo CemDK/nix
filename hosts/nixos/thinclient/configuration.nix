@@ -14,9 +14,9 @@
   imports = [
     ../common.nix
     ./hardware-configuration.nix
+    ../../../modules/features/stylix
     ../../../modules/features/hyprland
     ../../../modules/features/steam
-
   ];
 
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
