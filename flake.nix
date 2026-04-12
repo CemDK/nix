@@ -30,6 +30,8 @@
       ...
     }:
     let
+      lib = nixpkgs.lib;
+
       # ========================================================================
       # Nix-Darwin configuration
       # ========================================================================
@@ -40,6 +42,9 @@
           host,
           home,
         }:
+        assert lib.assertMsg
+          (builtins.pathExists ./hosts/darwin/${host})
+          "No darwin configuration found for host '${host}' — check the directory name in flake.nix";
         nix-darwin.lib.darwinSystem {
           inherit system;
           specialArgs = {
@@ -93,6 +98,9 @@
           host,
           home,
         }:
+        assert lib.assertMsg
+          (builtins.pathExists ./hosts/nixos/${host})
+          "No nixos configuration found for host '${host}' — check the directory name in flake.nix";
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
