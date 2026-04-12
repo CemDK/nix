@@ -14,6 +14,7 @@
 keys:
   - &cem_ryzen age1hffev0dhgqnr9l4wh8maaeyzzlgdtkv9nv6p95akxfuxlkm3w3ssqdexyh
   - &lab_phy_01 age10mkxj6m3l33lzfwntx939msnmemedlsvlqzurqc90sjhp0xe5p6qcupz3j
+  # <<< ADD KEY >>>
 
 creation_rules:
   # Machine-specific secrets (matched first — order matters)
@@ -28,9 +29,12 @@ creation_rules:
       - age:
           - *cem_ryzen
 
+  # <<< ADD CREATION RULE >>>
+
   # Global secrets
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
       - age:
           - *cem_ryzen
           - *lab_phy_01
+          # <<< ADD GLOBAL KEY >>>

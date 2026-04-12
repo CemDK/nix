@@ -19,7 +19,7 @@ else
   SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch -b backup --flake .\#$(HOSTNAME)" $(LOG)
 endif
 
-.PHONY: check switch iso secrets secrets-homelab rekey sync deploy
+.PHONY: check switch iso new-host new-secret new-key secrets secrets-homelab rekey sync deploy
 
 # ============================================================================
 # NIX
@@ -51,17 +51,26 @@ iso:
 		-o result-iso 2>&1 | tee $(LOG); \
 	echo "ISO written to result-iso/iso/"
 
+new-host:
+	-@nix run .#new-host
+
+new-secret:
+	-@nix run .#new-secret
+
+new-key:
+	-@nix run .#new-key
+
 # ============================================================================
 # SECRETS (sops)
 # ============================================================================
 secrets:
-	sops $(SECRETS_DIR)/global.yaml
+	@nix shell nixpkgs\#sops --command sops $(SECRETS_DIR)/global.yaml
 
 secrets-homelab:
-	sops $(SECRETS_DIR)/homelab/secrets.yaml
+	@nix shell nixpkgs\#sops --command sops $(SECRETS_DIR)/homelab/secrets.yaml
 
 rekey:
-	@find $(SECRETS_DIR) -name "*.yaml" | xargs -I{} sops updatekeys --yes {}
+	@nix shell nixpkgs\#sops --command bash -c 'find $(SECRETS_DIR) -name "*.yaml" | xargs -I{} sops updatekeys --yes {}'
 
 # ============================================================================
 # HOMELAB DEPLOY
@@ -81,3 +90,4 @@ deploy: sync
 		--build-host $(HOMELAB_HOST) \
 		--sudo \
 		2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
+

@@ -194,6 +194,12 @@
       ] (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # ========================================================================
+      # APPS
+      # ========================================================================
+      # Run with: nix run .#new-host | nix run .#new-secret | nix run .#new-key
+      apps = import ./apps { inherit lib nixpkgs; };
+
+      # ========================================================================
       # CONFIG DEFINITIONS
       # ========================================================================
       # Darwin configurations (macOS)
@@ -211,6 +217,7 @@
           host = "mac-mini";
           home = "/Users/cemdk";
         };
+        # <<< ADD DARWIN HOST >>>
       };
 
       # NixOS configurations
@@ -228,6 +235,7 @@
           host = "thinclient";
           home = "/home/cemdk";
         };
+        # <<< ADD NIXOS HOST >>>
 
         # Homelab
         "wyse-5070" = mkNixOSConfig {
@@ -237,6 +245,7 @@
           home = "/home/cemdk";
           isHomelab = true;
         };
+        # <<< ADD HOMELAB HOST >>>
       };
 
       # Home-manager standalone configurations (for non-NixOS Linux)
@@ -247,6 +256,7 @@
           host = "Cem-Ryzen";
           home = "/home/cem";
         };
+        # <<< ADD HOME HOST >>>
       };
     };
 }
