@@ -52,13 +52,13 @@ iso:
 	echo "ISO written to result-iso/iso/"
 
 new-host:
-	-@nix run .#new-host
+	@nix run .#new-host
 
 new-secret:
-	-@nix run .#new-secret
+	@nix run .#new-secret
 
 new-key:
-	-@nix run .#new-key
+	@nix run .#new-key
 
 # ============================================================================
 # SECRETS (sops)

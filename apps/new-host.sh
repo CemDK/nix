@@ -277,7 +277,9 @@ flake_add_nixos() {
         error "Marker '$marker' not found in flake.nix"
     fi
 
-    sed -i "s|$marker|$entry\n$marker|" "$flake"
+    awk -v entry="$entry" -v marker="$marker" \
+        '{if (index($0, marker)) print entry; print}' \
+        "$flake" > "$flake.tmp" && mv "$flake.tmp" "$flake"
     success "Added $name to flake.nix nixosConfigurations"
 }
 
@@ -291,7 +293,9 @@ flake_add_darwin() {
         error "Marker '$marker' not found in flake.nix"
     fi
 
-    sed -i "s|$marker|$entry\n$marker|" "$flake"
+    awk -v entry="$entry" -v marker="$marker" \
+        '{if (index($0, marker)) print entry; print}' \
+        "$flake" > "$flake.tmp" && mv "$flake.tmp" "$flake"
     success "Added $name to flake.nix darwinConfigurations"
 }
 
@@ -305,7 +309,9 @@ flake_add_home() {
         error "Marker '$marker' not found in flake.nix"
     fi
 
-    sed -i "s|$marker|$entry\n$marker|" "$flake"
+    awk -v entry="$entry" -v marker="$marker" \
+        '{if (index($0, marker)) print entry; print}' \
+        "$flake" > "$flake.tmp" && mv "$flake.tmp" "$flake"
     success "Added $name to flake.nix homeConfigurations"
 }
 

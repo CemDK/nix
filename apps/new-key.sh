@@ -108,8 +108,9 @@ add_key() {
         error "Marker '$marker' not found in .sops.yaml"
     fi
 
-    # Escape & for sed
-    sed -i "s|$marker|  - \&$name $age_key\n$marker|" "$SOPS_YAML"
+    awk -v entry="  - &$name $age_key" -v marker="$marker" \
+        '{if (index($0, marker)) print entry; print}' \
+        "$SOPS_YAML" > "$SOPS_YAML.tmp" && mv "$SOPS_YAML.tmp" "$SOPS_YAML"
     success "Added &$name to keys list"
 }
 
@@ -121,7 +122,9 @@ add_to_global() {
         error "Marker '$marker' not found in .sops.yaml"
     fi
 
-    sed -i "s|$marker|          - *$name\n$marker|" "$SOPS_YAML"
+    awk -v entry="          - *$name" -v marker="$marker" \
+        '{if (index($0, marker)) print entry; print}' \
+        "$SOPS_YAML" > "$SOPS_YAML.tmp" && mv "$SOPS_YAML.tmp" "$SOPS_YAML"
     success "Added *$name to global secrets"
 }
 
@@ -144,7 +147,7 @@ add_creation_rule() {
     rule_block=$(printf '  - path_regex: %s\n    key_groups:\n      - age:\n          - *cem_ryzen\n          - *%s\n' "$PATH_REGEX" "$name")
 
     awk -v block="$rule_block" -v marker="$marker" \
-        '{print} index($0, marker) {print block}' \
+        '{if (index($0, marker)) print block; print}' \
         "$SOPS_YAML" > "$SOPS_YAML.tmp" && mv "$SOPS_YAML.tmp" "$SOPS_YAML"
 
     success "Added creation_rule for $PATH_REGEX"
