@@ -91,6 +91,8 @@ in
   # ============================================================================
   # EXTRA PROGRAMS
   # ============================================================================
+  programs.home-manager.enable = true;
+
   programs.git = {
     enable = true;
     signing.format = null;
@@ -145,6 +147,45 @@ in
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
+  };
+
+  # ============================================================================
+  # NIX GENERATION CLEANUP
+  # ============================================================================
+  # The nix.gc timer in common.nix handles nix-collect-garbage, but doesn't
+  # expire home-manager generations or nix profile history. This timer covers
+  # those two so old generations don't keep the store bloated.
+  systemd.user.services.nix-generation-cleanup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Expire old Nix and home-manager generations";
+    Service = {
+      Type = "oneshot";
+      ExecStart = toString (
+        pkgs.writeShellScript "nix-generation-cleanup" ''
+          MIN_KEEP=5
+
+          # Expire home-manager generations older than 30 days, but always keep $MIN_KEEP
+          total=$(${pkgs.home-manager}/bin/home-manager generations | ${pkgs.coreutils}/bin/wc -l)
+          if [ "$total" -gt "$MIN_KEEP" ]; then
+            ${pkgs.home-manager}/bin/home-manager expire-generations "-30 days" 2>/dev/null || true
+          fi
+
+          # Wipe old nix profile history, keeping at least $MIN_KEEP
+          total=$(${pkgs.nix}/bin/nix profile history 2>/dev/null | ${pkgs.gnugrep}/bin/grep -c "^Version" || echo "0")
+          if [ "$total" -gt "$MIN_KEEP" ]; then
+            ${pkgs.nix}/bin/nix profile wipe-history --older-than 30d 2>/dev/null || true
+          fi
+        ''
+      );
+    };
+  };
+
+  systemd.user.timers.nix-generation-cleanup = lib.mkIf pkgs.stdenv.isLinux {
+    Unit.Description = "Expire old Nix and home-manager generations";
+    Timer = {
+      OnCalendar = "weekly";
+      Persistent = true;
+    };
+    Install.WantedBy = [ "timers.target" ];
   };
 
   gtk.gtk4.theme = null;

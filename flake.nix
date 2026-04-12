@@ -43,10 +43,21 @@
         # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir ./hosts/darwin/${host};
+          args = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
           hmModule = {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = args;
             home-manager.users.${user} = {
               imports = [ (hostDir + "/home.nix") ];
               home.username = user;
@@ -64,16 +75,7 @@
         # ----------------------------------------------------------------------
         nix-darwin.lib.darwinSystem {
           inherit system;
-          specialArgs = {
-            inherit
-              self
-              system
-              user
-              host
-              home
-              inputs
-              ;
-          };
+          specialArgs = args;
           modules = [
             (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
@@ -101,10 +103,21 @@
           hostDir = assertHostDir (
             if isHomelab then ./hosts/nixos/homelab/${host} else ./hosts/nixos/${host}
           );
+          args = {
+            inherit
+              self
+              system
+              user
+              host
+              home
+              inputs
+              ;
+          };
           hmModule = {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = args;
             home-manager.users.${user} = {
               imports = [ (hostDir + "/home.nix") ];
               home.username = user;
@@ -115,16 +128,7 @@
         # ----------------------------------------------------------------------
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = {
-            inherit
-              self
-              system
-              user
-              host
-              home
-              inputs
-              ;
-          };
+          specialArgs = args;
           modules = [
             (hostDir + "/configuration.nix")
             inputs.home-manager.nixosModules.home-manager
@@ -149,16 +153,7 @@
         # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir ./hosts/linux/${host};
-          hmConfig = {
-            home.username = user;
-            home.homeDirectory = home;
-            targets.genericLinux.enable = true;
-          };
-        in
-        # ----------------------------------------------------------------------
-        home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
-          extraSpecialArgs = {
+          args = {
             inherit
               self
               system
@@ -168,6 +163,16 @@
               inputs
               ;
           };
+          hmConfig = {
+            home.username = user;
+            home.homeDirectory = home;
+            targets.genericLinux.enable = true;
+          };
+        in
+        # ----------------------------------------------------------------------
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${system};
+          extraSpecialArgs = args;
           modules = [
             (hostDir + "/home.nix")
             stylix.homeModules.stylix
