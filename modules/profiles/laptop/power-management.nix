@@ -1,14 +1,21 @@
 # Laptop-specific power management
+{ ... }:
 {
-  config,
-  pkgs,
-  lib,
-  ...
-}:
-{
-
-  # TODO: Add laptop power management configuration
-  # services.tlp.enable = true;
-  # services.auto-cpufreq.enable = true;
-
+  services = {
+    auto-cpufreq = {
+      enable = true;
+      settings = {
+        charger = {
+          governor = "performance";
+          turbo = "auto";
+        };
+        battery = {
+          governor = "powersave";
+          turbo = "auto";
+        };
+      };
+    };
+    tlp.enable = true;
+    power-profiles-daemon.enable = false;
+  };
 }
