@@ -21,8 +21,7 @@
   # ============================================================================
   # NIX CONFIGURATION
   # ============================================================================
-  nix.enable = false;
-  nix.gc.automatic = false;
+  nix.enable = true;
 
   nixpkgs.hostPlatform = system;
 
