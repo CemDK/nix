@@ -57,5 +57,17 @@ lib.genAttrs
         script = ./new-key.sh;
         description = "Onboard a machine's age key for sops decryption";
       };
+
+      init-sops = mkApp {
+        name = "shokunix-init-sops";
+        runtimeInputs = with pkgs; [
+          gum
+          openssh
+          age
+          ssh-to-age
+        ];
+        script = ./init-sops.sh;
+        description = "Initialize this machine for sops secret decryption";
+      };
     }
   )

@@ -19,7 +19,7 @@ else
   SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch -b backup --flake .\#$(HOSTNAME)" $(LOG)
 endif
 
-.PHONY: check switch iso new-host new-secret new-key secrets secrets-homelab rekey sync deploy
+.PHONY: check switch iso new-host new-secret new-key init-sops add-secret add-homelab-secret rekey sync deploy
 
 # ============================================================================
 # NIX
@@ -60,13 +60,16 @@ new-secret:
 new-key:
 	@nix run .#new-key
 
+init-sops:
+	@nix run .#init-sops
+
 # ============================================================================
 # SECRETS (sops)
 # ============================================================================
-secrets:
+add-secret:
 	@nix shell nixpkgs\#sops --command sops $(SECRETS_DIR)/global.yaml
 
-secrets-homelab:
+add-homelab-secret:
 	@nix shell nixpkgs\#sops --command sops $(SECRETS_DIR)/homelab/secrets.yaml
 
 rekey:

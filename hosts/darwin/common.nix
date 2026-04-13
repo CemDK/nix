@@ -26,6 +26,19 @@
   nixpkgs.hostPlatform = system;
 
   # ============================================================================
+  # SOPS (secrets)
+  # ============================================================================
+  sops = {
+    defaultSopsFile = "${self}/secrets/global.yaml";
+    age.sshKeyPaths = [
+      "${home}/.ssh/id_ed25519"
+      "/etc/ssh/ssh_host_ed25519_key"
+    ];
+    age.keyFile = "${home}/.config/sops/age/keys.txt";
+    age.generateKey = true;
+  };
+
+  # ============================================================================
   # USER MANAGEMENT
   # ============================================================================
   users.users.${user}.home = "${home}";

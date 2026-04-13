@@ -196,7 +196,7 @@
       # ========================================================================
       # APPS
       # ========================================================================
-      # Run with: nix run .#new-host | nix run .#new-secret | nix run .#new-key
+      # Run with: nix run .#new-host | nix run .#new-secret | nix run .#new-key | nix run .#init-sops
       apps = import ./apps { inherit lib nixpkgs; };
 
       # ========================================================================

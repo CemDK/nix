@@ -68,6 +68,10 @@ in
         # Linux-only packages
         # anki # using brew for macos
       ];
+
+    sessionVariables = {
+      EDITOR = "vi";
+    };
   };
 
   xdg = {
