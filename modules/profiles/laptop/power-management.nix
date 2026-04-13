@@ -1,20 +1,9 @@
 # Laptop-specific power management
 { ... }:
 {
+
   services = {
-    auto-cpufreq = {
-      enable = true;
-      settings = {
-        charger = {
-          governor = "performance";
-          turbo = "auto";
-        };
-        battery = {
-          governor = "powersave";
-          turbo = "auto";
-        };
-      };
-    };
+    auto-cpufreq.enable = true;
     tlp.enable = true;
     power-profiles-daemon.enable = false;
   };
