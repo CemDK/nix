@@ -193,13 +193,19 @@
           allowApplePersonalizedAdvertising = false;
         };
 
-        # Disable Ctrl+Space / Ctrl+Option+Space for input source switching
-        # so that Ctrl+Space can be used for zsh autosuggestion-accept
         "com.apple.symbolichotkeys" = {
           AppleSymbolicHotKeys = {
-            "60".enabled = false;
-            "61".enabled = false;
+            "60".enabled = false; # Disable input source switching (Ctrl+Space) for zsh autosuggestion-accept
+            "61".enabled = false; # Disable input source switching (Ctrl+Option+Space)
+            "64".enabled = false; # Disable Spotlight search (Cmd+Space) for Raycast
           };
+        };
+
+        "com.raycast.macos" = {
+          raycastGlobalHotkey = "Command-49"; # Cmd+Space
+          raycastPreferredWindowMode = "compact";
+          raycastShouldFollowSystemAppearance = true;
+          showFavoritesInCompactMode = true;
         };
       };
     };
