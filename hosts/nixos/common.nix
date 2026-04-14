@@ -1,7 +1,8 @@
 {
-  self,
-  pkgs,
   lib,
+  pkgs,
+  self,
+  host,
   ...
 }:
 {
@@ -49,6 +50,24 @@
   };
 
   # ============================================================================
+  # VIRTUALIZATION
+  # ============================================================================
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      autoPrune.enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
+
+    oci-containers = {
+      backend = "podman";
+      containers = { };
+    };
+  };
+
+  # ============================================================================
   # SECURITY
   # ============================================================================
   security.sudo.wheelNeedsPassword = false;
@@ -56,6 +75,7 @@
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
+  networking.hostName = host;
   networking.networkmanager.enable = true;
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 ]; # SSH

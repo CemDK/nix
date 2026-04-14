@@ -1,7 +1,5 @@
 {
-  host,
   inputs,
-  lib,
   self,
   user,
   ...
@@ -45,39 +43,19 @@
   # SERVICES
   # ============================================================================
   services = {
-    # openssh.enable = lib.mkDefault false;
-    # printing.enable = true;
     getty.autologinUser = user;
     gvfs.enable = true;
     udisks2.enable = true;
-
     dbus.enable = true;
   };
 
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
-  networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
     5900 # vnc port
   ];
-  # networking.wireless.iwd.enable = true;
-
-  # ============================================================================
-  # VIRTUALIZATION
-  # ============================================================================
-  virtualisation = {
-    containers.enable = true;
-    podman = {
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
-    };
-  };
-
-  virtualisation.oci-containers.containers = { };
-  virtualisation.oci-containers.backend = "podman";
 
   # ============================================================================
   # BOOTLOADER
@@ -103,5 +81,5 @@
   # ============================================================================
   # SYSTEM
   # ============================================================================
-  system.stateVersion = lib.mkDefault "25.05";
+  system.stateVersion = "25.05";
 }

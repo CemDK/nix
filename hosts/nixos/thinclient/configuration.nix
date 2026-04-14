@@ -1,6 +1,4 @@
 {
-  host,
-  lib,
   self,
   user,
   ...
@@ -42,34 +40,16 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
-  # services.printing.enable = true;
-  # services.openssh.enable = lib.mkDefault false;
-  services.getty.autologinUser = user;
+  services = {
+    getty.autologinUser = user;
+  };
 
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
-  networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
   ];
-  # networking.wireless.enable = true;
-  # networking.wireless.iwd.enable = true;
-
-  # ============================================================================
-  # VIRTUALIZATION
-  # ============================================================================
-  virtualisation = {
-    containers.enable = true;
-    podman = {
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
-    };
-  };
-
-  virtualisation.oci-containers.containers = { };
-  virtualisation.oci-containers.backend = "podman";
 
   # ============================================================================
   # BOOTLOADER
@@ -87,9 +67,6 @@
   # ============================================================================
   # HARDWARE
   # ============================================================================
-  # Enable TPlink Archer Nano Wifi Dongle
-  # boot.extraModulePackages = [ config.boot.kernelPackages.rtl88xxau-aircrack ];
-
   hardware.bluetooth.enable = true;
   hardware.uinput.enable = true;
 
@@ -108,5 +85,5 @@
   # ============================================================================
   # SYSTEM
   # ============================================================================
-  system.stateVersion = lib.mkDefault "25.05";
+  system.stateVersion = "25.05";
 }

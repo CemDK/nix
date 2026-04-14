@@ -23,24 +23,6 @@
   services.udisks2.enable = true;
 
   # ============================================================================
-  # VIRTUALIZATION
-  # ============================================================================
-  virtualisation = {
-    containers.enable = true;
-    podman = {
-      autoPrune.enable = true;
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
-    };
-
-    oci-containers = {
-      backend = "podman";
-      containers = { };
-    };
-  };
-
-  # ============================================================================
   # PACKAGES
   # ============================================================================
   programs.git.enable = true;
