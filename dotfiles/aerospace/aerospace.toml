@@ -160,100 +160,100 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # Main binding mode (equivalent to glazewm keybindings)
 [mode.main.binding]
     # Focus navigation (matching glazewm focus bindings)
-    alt-left = 'focus left'
-    alt-right = 'focus right'
-    alt-up = 'focus up'
-    alt-down = 'focus down'
+    cmd-left = 'focus left'
+    cmd-right = 'focus right'
+    cmd-up = 'focus up'
+    cmd-down = 'focus down'
 
     # Alternative focus bindings (ctrl+alt+hjkl like in glazewm)
-    ctrl-alt-h = 'focus left'
-    ctrl-alt-l = 'focus right'
-    ctrl-alt-k = 'focus up'
-    ctrl-alt-j = 'focus down'
+    ctrl-cmd-h = 'focus left'
+    ctrl-cmd-l = 'focus right'
+    ctrl-cmd-k = 'focus up'
+    ctrl-cmd-j = 'focus down'
 
     # Move windows (matching glazewm move bindings)
-    alt-shift-h = 'move left'
-    alt-shift-l = 'move right'
-    alt-shift-k = 'move up'
-    alt-shift-j = 'move down'
-    alt-shift-left = 'move left'
-    alt-shift-right = 'move right'
-    alt-shift-up = 'move up'
-    alt-shift-down = 'move down'
+    cmd-shift-h = 'move left'
+    cmd-shift-l = 'move right'
+    cmd-shift-k = 'move up'
+    cmd-shift-j = 'move down'
+    cmd-shift-left = 'move left'
+    cmd-shift-right = 'move right'
+    cmd-shift-up = 'move up'
+    cmd-shift-down = 'move down'
 
     # Resize windows
-    alt-u = 'resize smart -50'
-    alt-o = 'resize smart +50'
+    cmd-u = 'resize smart -50'
+    cmd-o = 'resize smart +50'
 
-    # Toggle floating (matching glazewm alt+shift+space and alt+c)
-    alt-shift-space = 'layout floating tiling'
-    alt-c = 'layout floating tiling'
+    # Toggle floating (matching glazewm left-alt+shift+space and left-alt+c)
+    cmd-shift-space = 'layout floating tiling'
+    cmd-c = 'layout floating tiling'
 
     # Toggle tiling
-    alt-t = 'layout tiling'
+    cmd-t = 'layout tiling'
 
-    # Toggle layout direction (matching glazewm alt+v)
-    alt-v = 'layout tiles horizontal vertical'
+    # Toggle layout direction (matching glazewm left-alt+v)
+    cmd-v = 'layout tiles horizontal vertical'
 
-    # Close window (matching glazewm alt+q)
-    alt-q = 'close'
+    # Close window (matching glazewm left-alt+q)
+    # cmd-q reserved for macOS quit
 
     # Workspace navigation (matching glazewm workspace bindings)
-    alt-f = 'workspace 1'
-    alt-h = 'workspace 0'
-    alt-j = 'workspace 2'
-    alt-k = 'workspace 3'
-    alt-l = 'workspace 4'
-    alt-semicolon = 'workspace 5'
+    cmd-f = 'workspace 1'
+    cmd-h = 'workspace 0'
+    cmd-j = 'workspace 2'
+    cmd-k = 'workspace 3'
+    cmd-l = 'workspace 4'
+    cmd-semicolon = 'workspace 5'
 
-    alt-0 = 'workspace 0'
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
-    alt-4 = 'workspace 4'
-    alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
+    cmd-0 = 'workspace 0'
+    cmd-1 = 'workspace 1'
+    cmd-2 = 'workspace 2'
+    cmd-3 = 'workspace 3'
+    cmd-4 = 'workspace 4'
+    cmd-5 = 'workspace 5'
+    cmd-6 = 'workspace 6'
+    cmd-7 = 'workspace 7'
+    cmd-8 = 'workspace 8'
+    cmd-9 = 'workspace 9'
 
     # Move window to workspace and follow (matching glazewm behavior)
-    alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
-    alt-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
-    alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
-    alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
-    alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
-    alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
-    alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
-    alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
-    alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+    cmd-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+    cmd-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+    cmd-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+    cmd-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+    cmd-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+    cmd-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+    cmd-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+    cmd-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+    cmd-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
 
-    # Navigate between workspaces (matching glazewm alt+s/alt+n and alt+a/alt+p)
-    alt-s = 'workspace --wrap-around next'
-    alt-n = 'workspace --wrap-around next'
-    alt-a = 'workspace --wrap-around prev'
-    alt-p = 'workspace --wrap-around prev'
+    # Navigate between workspaces (matching glazewm left-alt+s/left-alt+n and left-alt+a/left-alt+p)
+    cmd-s = 'workspace --wrap-around next'
+    cmd-n = 'workspace --wrap-around next'
+    cmd-a = 'workspace --wrap-around prev'
+    cmd-p = 'workspace --wrap-around prev'
 
-    # Focus recent workspace (matching glazewm alt+d)
-    alt-d = 'workspace-back-and-forth'
+    # Focus recent workspace (matching glazewm left-alt+d)
+    cmd-d = 'workspace-back-and-forth'
 
     # Move workspace between monitors (matching glazewm workspace movement)
-    alt-shift-a = 'move-workspace-to-monitor --wrap-around next'
-    alt-shift-f = 'move-workspace-to-monitor --wrap-around next'
-    alt-shift-d = 'move-workspace-to-monitor --wrap-around next'
-    alt-shift-s = 'move-workspace-to-monitor --wrap-around next'
+    cmd-shift-a = 'move-workspace-to-monitor --wrap-around next'
+    cmd-shift-f = 'move-workspace-to-monitor --wrap-around next'
+    cmd-shift-d = 'move-workspace-to-monitor --wrap-around next'
+    cmd-shift-s = 'move-workspace-to-monitor --wrap-around next'
 
-    # Enter resize mode (matching glazewm alt+r)
-    alt-r = 'mode resize'
+    # Enter resize mode (matching glazewm left-alt+r)
+    cmd-r = 'mode resize'
 
-    # Reload config (matching glazewm alt+shift+r)
-    alt-shift-r = 'reload-config'
+    # Reload config (matching glazewm left-alt+shift+r)
+    cmd-shift-r = 'reload-config'
 
     # Service mode for advanced operations
-    alt-shift-semicolon = 'mode service'
+    cmd-shift-semicolon = 'mode service'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-    alt-tab = 'workspace-back-and-forth'
+    # cmd-tab reserved for macOS app switcher
 
 # Resize mode (matching glazewm resize mode)
 [mode.resize.binding]
