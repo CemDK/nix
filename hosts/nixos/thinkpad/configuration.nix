@@ -1,9 +1,8 @@
 {
-  self,
-  pkgs,
-  lib,
-  inputs,
   host,
+  inputs,
+  lib,
+  self,
   user,
   ...
 }:
@@ -14,10 +13,11 @@
   # ============================================================================
   imports = [
     "${self}/hosts/nixos/common.nix"
+    "${self}/hosts/nixos/desktop.nix"
     ./hardware-configuration.nix
-
-    "${self}/modules/features/hyprland"
     "${self}/modules/features/stylix"
+    "${self}/modules/features/hyprland"
+    "${self}/modules/features/steam"
 
     # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad
     # Power Efficiency: AMD P-State driver, TLP/power-profiles integration, SSD TRIM
@@ -27,8 +27,6 @@
     # Automatic Kernel Updates: Ensures minimum kernel versions for hardware support
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
   ];
-
-  fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   # ============================================================================
   # USER

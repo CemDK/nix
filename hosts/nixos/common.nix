@@ -32,12 +32,6 @@
     ];
   };
 
-  programs.firefox.enable = true;
-
-  # enable zsh and set it as default user shell
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-
   # ============================================================================
   # SERVICES
   # ============================================================================
@@ -51,6 +45,7 @@
 
     };
     gnome.gnome-keyring.enable = true;
+    fwupd.enable = true;
   };
 
   # ============================================================================
@@ -94,13 +89,8 @@
   # PACKAGES
   # ============================================================================
   environment.systemPackages = with pkgs; [
-    cifs-utils
     curl
-    gcc
     lazygit
     wget
-    seahorse
-    pix
-    linuxPackages.cpupower
   ];
 }
