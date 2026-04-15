@@ -1,13 +1,18 @@
 {
+  inputs,
   lib,
-  pkgs,
   options,
+  pkgs,
   ...
 }:
 {
   # ============================================================================
   # NIX CONFIGURATION
   # ============================================================================
+
+  nix.nixPath = [
+    "nixpkgs=${inputs.nixpkgs}"
+  ];
   # home-manager requires nix.package when nix.settings is used
   nix.package = lib.mkIf (options.nix ? package) pkgs.nix;
 
@@ -28,4 +33,5 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+
 }

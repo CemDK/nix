@@ -4,11 +4,11 @@
   # ============================================================================
   # PACKAGES
   # ============================================================================
-  # INFO: everything in ./linux is managed via home-manager
+  # INFO: everything in /hosts/linux is managed via home-manager
   # so we only add packages to home.packages
   # neither environment.systemPackages = ...
   # nor users.users.<username>.packages = ...
-  # are used here
+  # are used for generic linux systems
 
   # Add home-manager packages here
   # This installs into $HOME/.nix-profile
@@ -45,6 +45,8 @@
     chromium
     uv
     esphome
+
+    google-chrome
   ];
 
 }
