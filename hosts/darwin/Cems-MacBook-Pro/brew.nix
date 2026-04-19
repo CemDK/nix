@@ -58,7 +58,7 @@
       # "firefox"
       # "flameshot"
       # "ghostty"
-      # "google-chrome"
+      "google-chrome"
       # "hammerspoon"
       # "iina"
       # "istat-menus"

@@ -13,6 +13,8 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     stylix.url = "github:nix-community/stylix";
     stylix.inputs.nixpkgs.follows = "nixpkgs";
+    nix-keylayout.url = "git+ssh://git@github.com/CemDK/nix-keylayout";
+    nix-keylayout.flake = true;
   };
 
   outputs =
@@ -84,6 +86,7 @@
             inputs.nix-homebrew.darwinModules.nix-homebrew
             brewConfig
             sops-nix.darwinModules.sops
+            inputs.nix-keylayout.darwinModules.default
           ];
         };
 
