@@ -56,6 +56,7 @@ in
         obsidian
         ripgrep
         starship
+        statix
         tldr
         tmux
         unzip
@@ -143,7 +144,7 @@ in
     ];
   };
 
-  programs.direnv = lib.mkIf pkgs.stdenv.isLinux {
+  programs.direnv = {
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;

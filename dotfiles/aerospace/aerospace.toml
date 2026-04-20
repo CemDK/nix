@@ -187,13 +187,13 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
     # Toggle floating (matching glazewm left-alt+shift+space and left-alt+c)
     cmd-shift-space = 'layout floating tiling'
-    cmd-c = 'layout floating tiling'
+    # cmd-c = 'layout floating tiling'
 
     # Toggle tiling
     cmd-t = 'layout tiling'
 
     # Toggle layout direction (matching glazewm left-alt+v)
-    cmd-v = 'layout tiles horizontal vertical'
+    # cmd-v = 'layout tiles horizontal vertical'
 
     # Close window (matching glazewm left-alt+q)
     # cmd-q reserved for macOS quit
