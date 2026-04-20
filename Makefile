@@ -20,7 +20,28 @@ else
   SWITCH_CMD := $(NH) home switch .
 endif
 
-.PHONY: check lint switch update clean iso secrets secrets-homelab rekey sync deploy
+.PHONY: bootstrap check lint switch update clean iso secrets secrets-homelab rekey sync deploy
+
+# ============================================================================
+# BOOTSTRAP
+# ============================================================================
+# One-time setup for generic Linux: ensures the system-wide nix.conf has the
+# experimental features the daemon needs (NixOS/Darwin manage this declaratively).
+bootstrap:
+	@if [ "$(UNAME)" = "Darwin" ]; then \
+		echo "Skip: nix-darwin manages /etc/nix/nix.conf"; exit 0; \
+	fi; \
+	if [ -f /etc/NIXOS ]; then \
+		echo "Skip: NixOS manages /etc/nix/nix.conf via nix.settings"; exit 0; \
+	fi; \
+	if sudo grep -Eq '^experimental-features[[:space:]]*=.*\bnix-command\b.*\bflakes\b' /etc/nix/nix.conf 2>/dev/null; then \
+		echo "experimental-features already set in /etc/nix/nix.conf"; \
+	else \
+		echo 'experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf >/dev/null; \
+		echo "Appended experimental-features to /etc/nix/nix.conf"; \
+		sudo systemctl restart nix-daemon; \
+		echo "nix-daemon restarted"; \
+	fi
 
 # ============================================================================
 # NIX
