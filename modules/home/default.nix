@@ -70,6 +70,10 @@ in
         # Linux-only packages
         # anki # using brew for macos
       ];
+
+    sessionVariables = {
+      NH_FLAKE = "${config.home.homeDirectory}/.config/nix";
+    };
   };
 
   xdg = {
