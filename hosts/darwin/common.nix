@@ -60,13 +60,31 @@
     enable = true;
     name = "U.S. Custom";
     baseLayout = "us";
-    swapKeys = { y = "z"; z = "y"; };
+    swapKeys = {
+      y = "z";
+      z = "y";
+    };
     optionOverrides = {
-      a = { lower = "ä"; upper = "Ä"; };
-      o = { lower = "ö"; upper = "Ö"; };
-      u = { lower = "ü"; upper = "Ü"; };
-      d = { lower = "ö"; upper = "Ö"; };
-      f = { lower = "ü"; upper = "Ü"; };
+      a = {
+        lower = "ä";
+        upper = "Ä";
+      };
+      o = {
+        lower = "ö";
+        upper = "Ö";
+      };
+      u = {
+        lower = "ü";
+        upper = "Ü";
+      };
+      d = {
+        lower = "ö";
+        upper = "Ö";
+      };
+      f = {
+        lower = "ü";
+        upper = "Ü";
+      };
     };
     inherit user;
     inherit home;

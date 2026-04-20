@@ -20,13 +20,17 @@ else
   SWITCH_CMD := $(NH) home switch .
 endif
 
-.PHONY: check switch update clean iso secrets secrets-homelab rekey sync deploy
+.PHONY: check lint switch update clean iso secrets secrets-homelab rekey sync deploy
 
 # ============================================================================
 # NIX
 # ============================================================================
 check:
 	@nix flake check --all-systems 2>&1 | tee $(LOG)
+
+lint:
+	@statix check .
+	@nix fmt -- --fail-on-change .
 
 switch:
 	@$(SWITCH_CMD)

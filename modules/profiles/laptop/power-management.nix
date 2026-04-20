@@ -1,6 +1,5 @@
 # Laptop-specific power management
-_:
-{
+_: {
   services = {
     auto-cpufreq = {
       enable = true;
