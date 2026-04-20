@@ -51,6 +51,7 @@ in
         jq
         lazygit
         localsend
+        nh
         neovide
         neovim
         obsidian

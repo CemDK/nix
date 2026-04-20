@@ -7,19 +7,20 @@ SECRETS_DIR   := secrets
 HOMELAB_USER  := cemdk
 HOMELAB_HOST  := $(HOMELAB_USER)@nixos.local
 HOMELAB_FLAKE := wyse-5070
+NH            := $(shell command -v nh 2>/dev/null || echo "nix run nixpkgs\#nh --")
 
 # DARWIN:
 ifeq ($(UNAME),Darwin)
-  SWITCH_CMD := script -q $(LOG) sudo darwin-rebuild switch --flake .\#$(HOSTNAME)
+  SWITCH_CMD := $(NH) darwin switch .
 # NIXOS:
 else ifneq ($(wildcard /etc/NIXOS),)
-  SWITCH_CMD := script -q --return -c "sudo nixos-rebuild switch --flake .\#$(HOSTNAME)" $(LOG)
+  SWITCH_CMD := $(NH) os switch .
 # GENERIC LINUX (home-manager):
 else
-  SWITCH_CMD := script -q --return -c "nix --extra-experimental-features 'nix-command flakes' run nixpkgs\#home-manager -- switch -b backup --flake .\#$(HOSTNAME)" $(LOG)
+  SWITCH_CMD := $(NH) home switch .
 endif
 
-.PHONY: check switch iso secrets secrets-homelab rekey sync deploy
+.PHONY: check switch update clean iso secrets secrets-homelab rekey sync deploy
 
 # ============================================================================
 # NIX
@@ -29,6 +30,13 @@ check:
 
 switch:
 	@$(SWITCH_CMD)
+
+update:
+	@nix flake update
+	@$(SWITCH_CMD)
+
+clean:
+	@$(NH) clean all --keep 5 --keep-since 7d
 
 iso:
 	@HOST=$${HOST:-thinkpad}; \

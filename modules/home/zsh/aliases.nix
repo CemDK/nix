@@ -3,8 +3,8 @@
   torange = ''tmux set-option -g status-bg "#005F60"'';
 
   nixswitch = "make -C ~/.config/nix switch";
-  nixup = "(cd ~/.config/nix && nix flake update && nixswitch)";
-  nixclean = "nix-store --gc && nix-collect-garbage --delete-older-than 30d";
+  nixup = "make -C ~/.config/nix update";
+  nixclean = "make -C ~/.config/nix clean";
   nixe = "(cd ~/.config/nix && nvim && nixswitch) && clear";
 
   homelab = "make -C ~/.config/nix deploy";
