@@ -25,13 +25,15 @@
   # ============================================================================
   # PACKAGES
   # ============================================================================
-  programs.git.enable = true;
-  programs.htop.enable = true;
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    defaultEditor = true;
+  programs = {
+    git.enable = true;
+    htop.enable = true;
+    neovim = {
+      enable = true;
+      viAlias = true;
+      vimAlias = true;
+      defaultEditor = true;
+    };
   };
 
   environment.systemPackages = with pkgs; [

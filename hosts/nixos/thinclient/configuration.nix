@@ -57,29 +57,35 @@
   # boot.loader.grub.device = "/dev/vda";
   # boot.loader.grub.enable = true;
   # boot.loader.grub.useOSProber = true;
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelParams = [ "i915.fastboot=1" ];
-  boot.initrd.kernelModules = [ "i915" ];
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelParams = [ "i915.fastboot=1" ];
+    initrd.kernelModules = [ "i915" ];
+  };
 
   # powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   # ============================================================================
   # HARDWARE
   # ============================================================================
-  hardware.bluetooth.enable = true;
-  hardware.uinput.enable = true;
+  hardware = {
+    bluetooth.enable = true;
+    uinput.enable = true;
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
+    graphics = {
+      enable = true;
+      enable32Bit = true;
 
-    # extraPackages = with pkgs; [
-    #   intel-media-driver # VAAPI for Gemini Lake+
-    #   intel-compute-runtime-legacy1 # OpenCL
-    #   # vaapiVdpau
-    #   libvdpau-va-gl
-    # ];
+      # extraPackages = with pkgs; [
+      #   intel-media-driver # VAAPI for Gemini Lake+
+      #   intel-compute-runtime-legacy1 # OpenCL
+      #   # vaapiVdpau
+      #   libvdpau-va-gl
+      # ];
+    };
   };
 
   # ============================================================================

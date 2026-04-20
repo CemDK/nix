@@ -1,7 +1,7 @@
 { config, ... }:
 let
   cfg = config.homelab.containers;
-  domain = config.homelab.domain;
+  inherit (config.homelab) domain;
 in
 {
   virtualisation.oci-containers.containers.it-tools = {

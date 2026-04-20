@@ -5,7 +5,7 @@
 }:
 let
   cfg = config.homelab.containers;
-  domain = config.homelab.domain;
+  inherit (config.homelab) domain;
 in
 {
   # Define secrets on the host system

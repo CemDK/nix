@@ -107,25 +107,27 @@ in
   # ============================================================================
   # SERVICES
   # ============================================================================
-  services.getty.autologinUser = user;
-  services.samba-wsdd.enable = true;
-  services.samba = {
-    enable = true;
-    openFirewall = true; # opens ports 139, 445
-    settings = {
-      global = {
-        "workgroup" = "WORKGROUP";
-        "server string" = "lab-phy-01";
-        "security" = "user";
-        "map to guest" = "Bad User";
-      };
-      data = {
-        path = "${cfg.storagePath}";
-        browseable = "yes";
-        "read only" = "no";
-        "valid users" = "${user}";
-        "create mask" = "0644";
-        "directory mask" = "0755";
+  services = {
+    getty.autologinUser = user;
+    samba-wsdd.enable = true;
+    samba = {
+      enable = true;
+      openFirewall = true; # opens ports 139, 445
+      settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "lab-phy-01";
+          "security" = "user";
+          "map to guest" = "Bad User";
+        };
+        data = {
+          path = "${cfg.storagePath}";
+          browseable = "yes";
+          "read only" = "no";
+          "valid users" = "${user}";
+          "create mask" = "0644";
+          "directory mask" = "0755";
+        };
       };
     };
   };
@@ -188,9 +190,11 @@ in
   # ============================================================================
   sops = {
     defaultSopsFile = "${self}/secrets/global.yaml";
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    age.keyFile = "~/.config/sops/age/keys.txt";
-    age.generateKey = true;
+    age = {
+      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      keyFile = "~/.config/sops/age/keys.txt";
+      generateKey = true;
+    };
     secrets = {
       "example/token" = {
         owner = config.users.users.${user}.name;
@@ -201,10 +205,14 @@ in
   # ============================================================================
   # BOOTLOADER
   # ============================================================================
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelParams = [ "i915.fastboot=1" ];
-  boot.initrd.kernelModules = [ "i915" ];
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelParams = [ "i915.fastboot=1" ];
+    initrd.kernelModules = [ "i915" ];
+  };
 
   # ============================================================================
   # HARDWARE

@@ -10,26 +10,30 @@
   # NIX CONFIGURATION
   # ============================================================================
 
-  nix.nixPath = [
-    "nixpkgs=${inputs.nixpkgs}"
-  ];
-  # home-manager requires nix.package when nix.settings is used
-  nix.package = lib.mkIf (options.nix ? package) pkgs.nix;
-
-  nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
+  nix = {
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs}"
     ];
-    warn-dirty = false;
-  };
+    # home-manager requires nix.package when nix.settings is used
+    package = lib.mkIf (options.nix ? package) pkgs.nix;
 
-  nix.gc = {
-    automatic = lib.mkDefault true;
-    options = "--delete-older-than 30d";
-  }
-  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
-    dates = "weekly";
+    # SETTINGS
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      warn-dirty = false;
+    };
+
+    # GARBAGE COLLEcTION
+    gc = {
+      automatic = lib.mkDefault true;
+      options = "--delete-older-than 30d";
+    }
+    // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+      dates = "weekly";
+    };
   };
 
   nixpkgs.config.allowUnfree = true;

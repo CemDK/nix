@@ -48,6 +48,11 @@
     pkgs.zsh
   ];
 
+  environment.variables = {
+    HOMEBREW_NO_ANALYTICS = "1";
+    HOMEBREW_NO_ENV_HINTS = "1";
+  };
+
   # ============================================================================
   # KEYBOARD
   # Declarative keyboard layout (US with z/y swapped for QWERTZ muscle memory)
@@ -63,8 +68,8 @@
       d = { lower = "ö"; upper = "Ö"; };
       f = { lower = "ü"; upper = "Ü"; };
     };
-    user = user;
-    home = home;
+    inherit user;
+    inherit home;
   };
 
   # ============================================================================

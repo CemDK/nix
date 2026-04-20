@@ -14,8 +14,10 @@
   # ============================================================================
   # NIX CONFIGURATION
   # ============================================================================
-  nix.settings.auto-optimise-store = true;
-  nix.settings.trusted-users = [ "@wheel" ];
+  nix.settings = {
+    auto-optimise-store = true;
+    trusted-users = [ "@wheel" ];
+  };
 
   # ============================================================================
   # USER MANAGEMENT
@@ -75,10 +77,14 @@
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
-  networking.hostName = host;
-  networking.networkmanager.enable = true;
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ]; # SSH
+  networking = {
+    hostName = host;
+    networkmanager.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 ]; # SSH
+    };
+  };
 
   # ============================================================================
   # LOCALIZATION & TIMEZONE

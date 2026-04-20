@@ -28,7 +28,7 @@
       ...
     }:
     let
-      lib = nixpkgs.lib;
+      inherit (nixpkgs) lib;
       helpers = import ./lib/helpers.nix { inherit lib; };
       inherit (helpers) assertHostDir;
 
@@ -56,22 +56,26 @@
               ;
           };
           hmModule = {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = args;
-            home-manager.users.${user} = {
-              imports = [ (hostDir + "/home.nix") ];
-              home.username = user;
-              home.homeDirectory = home;
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = args;
+              users.${user} = {
+                imports = [ (hostDir + "/home.nix") ];
+                home.username = user;
+                home.homeDirectory = home;
+              };
             };
           };
           brewConfig = {
-            nix-homebrew.enable = true;
-            nix-homebrew.enableRosetta = true;
-            nix-homebrew.autoMigrate = true;
-            nix-homebrew.mutableTaps = true;
-            nix-homebrew.user = "${user}";
+            nix-homebrew = {
+              enable = true;
+              enableRosetta = true;
+              autoMigrate = true;
+              mutableTaps = true;
+              user = "${user}";
+            };
           };
         in
         # ----------------------------------------------------------------------
@@ -117,14 +121,16 @@
               ;
           };
           hmModule = {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = args;
-            home-manager.users.${user} = {
-              imports = [ (hostDir + "/home.nix") ];
-              home.username = user;
-              home.homeDirectory = home;
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = args;
+              users.${user} = {
+                imports = [ (hostDir + "/home.nix") ];
+                home.username = user;
+                home.homeDirectory = home;
+              };
             };
           };
         in

@@ -63,18 +63,21 @@
   # boot.loader.grub.device = "/dev/vda";
   # boot.loader.grub.enable = true;
   # boot.loader.grub.useOSProber = true;
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
   # ============================================================================
   # HARDWARE
   # ============================================================================
-  hardware.bluetooth.enable = true;
-  hardware.uinput.enable = true;
-
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
+  hardware = {
+    bluetooth.enable = true;
+    uinput.enable = true;
+    graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
   };
   # input.touchpad.disable_while_typing = false;
 

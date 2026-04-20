@@ -1,5 +1,5 @@
 # Laptop-specific power management
-{ ... }:
+_:
 {
   services = {
     auto-cpufreq = {

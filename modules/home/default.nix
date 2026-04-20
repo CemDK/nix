@@ -92,62 +92,64 @@ in
   # ============================================================================
   # EXTRA PROGRAMS
   # ============================================================================
-  programs.home-manager.enable = true;
+  programs = {
+    home-manager.enable = true;
 
-  programs.git = {
-    enable = true;
-    signing.format = null;
-    lfs = {
+    git = {
       enable = true;
-    };
-    settings = {
-      user = {
-        name = "CemDK";
-        email = "25245902+CemDK@users.noreply.github.com";
+      signing.format = null;
+      lfs = {
+        enable = true;
       };
-      credential.helper = "store";
-      init.defaultBranch = "main";
-      core.editor = "vim";
-      core.autocrlf = "input";
-      # commit.gpgsign = true;
-      push = {
-        default = "simple";
-        followTags = true;
-        autoSetupRemote = true;
+      settings = {
+        user = {
+          name = "CemDK";
+          email = "25245902+CemDK@users.noreply.github.com";
+        };
+        credential.helper = "store";
+        init.defaultBranch = "main";
+        core.editor = "vim";
+        core.autocrlf = "input";
+        # commit.gpgsign = true;
+        push = {
+          default = "simple";
+          followTags = true;
+          autoSetupRemote = true;
+        };
+        pull.rebase = true;
+        rebase.autoStash = true;
       };
-      pull.rebase = true;
-      rebase.autoStash = true;
+      ignores = [
+        "**/.claude/settings.local.json"
+        ".DS_Store"
+        ".direnv"
+        ".env*"
+        ".envrc"
+        "zHide" # I have neo-tree rules to hide clutter under this file
+      ];
     };
-    ignores = [
-      "**/.claude/settings.local.json"
-      ".DS_Store"
-      ".direnv"
-      ".env*"
-      ".envrc"
-      "zHide" # I have neo-tree rules to hide clutter under this file
-    ];
-  };
 
-  programs.gh = {
-    enable = true;
-    gitCredentialHelper = {
+    gh = {
       enable = true;
+      gitCredentialHelper = {
+        enable = true;
+      };
     };
-  };
 
-  programs.eza = {
-    enable = true;
-    git = true;
-    extraOptions = [
-      "--group-directories-first"
-      "--header"
-    ];
-  };
+    eza = {
+      enable = true;
+      git = true;
+      extraOptions = [
+        "--group-directories-first"
+        "--header"
+      ];
+    };
 
-  programs.direnv = {
-    enable = true;
-    enableZshIntegration = true;
-    nix-direnv.enable = true;
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
   };
 
   # ============================================================================

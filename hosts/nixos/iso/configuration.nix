@@ -23,18 +23,22 @@
   # ============================================================================
   # BOOTLOADER
   # ============================================================================
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_6_6;
-  boot.supportedFilesystems = lib.mkForce [
-    "btrfs"
-    "reiserfs"
-    "vfat"
-    "f2fs"
-    "xfs"
-    "ntfs"
-    "cifs"
-  ];
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelPackages = pkgs.linuxPackages_6_6;
+    supportedFilesystems = lib.mkForce [
+      "btrfs"
+      "reiserfs"
+      "vfat"
+      "f2fs"
+      "xfs"
+      "ntfs"
+      "cifs"
+    ];
+  };
 
   # systemd = {
   #   services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
@@ -73,9 +77,11 @@
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
-  networking.wireless.enable = lib.mkForce false;
-  networking.networkmanager.enable = true;
-  networking.hostName = "nixos";
+  networking = {
+    wireless.enable = lib.mkForce false;
+    networkmanager.enable = true;
+    hostName = "nixos";
+  };
   #networking.wireless.iwd.enable = true; # impala dependency
 
   # ============================================================================
