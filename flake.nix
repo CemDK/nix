@@ -250,7 +250,7 @@
 
       # Home-manager standalone configurations (for non-NixOS Linux)
       homeConfigurations = {
-        "Cem-Ryzen" = mkHomeConfig {
+        "cem@Cem-Ryzen" = mkHomeConfig {
           system = "x86_64-linux";
           user = "cem";
           host = "Cem-Ryzen";
