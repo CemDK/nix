@@ -58,6 +58,8 @@
   nv() {
     if [[ $(uname -r) == *WSL* ]]; then
       (neovide.exe --frame=none --wsl &)
+    else
+      (neovide --frame=none &)
     fi
   }
 ''
