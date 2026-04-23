@@ -8,6 +8,7 @@
 
   programs.hyprland = {
     enable = true;
+    withUWSM = true;
     xwayland.enable = true;
   };
 
@@ -23,11 +24,11 @@
         default_session = {
           command = ''
             ${pkgs.tuigreet}/bin/tuigreet --greeting 'SHOKUNIX' --asterisks --remember
-                    --remember-user-session --time --cmd start-hyprland'';
+                    --remember-user-session --time --cmd 'uwsm start hyprland-uwsm.desktop' '';
           user = "greeter";
         };
         initial_session = {
-          command = "${pkgs.hyprland}/bin/Hyprland";
+          command = "uwsm start hyprland-uwsm.desktop";
           user = "cemdk";
         };
       };
@@ -87,6 +88,7 @@
 
     # Basic utilities
     brightnessctl
+    swayosd
     networkmanagerapplet
     pavucontrol # Audio control
     nautilus # File manager

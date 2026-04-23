@@ -4,7 +4,7 @@
   programs.steam = {
     enable = true;
     gamescopeSession.enable = true;
-    extraCompatPackages = [ pkgs.proton-ge-custom ];
+    # extraCompatPackages = [ pkgs.proton-ge-custom ];
   };
   programs.gamemode.enable = true;
 

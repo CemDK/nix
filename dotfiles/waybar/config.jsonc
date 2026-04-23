@@ -190,12 +190,6 @@
         "tooltip": false
     },
 
-    "custom/power": {
-        "format": " ",
-        "tooltip": false
-    },
-
-
     // ===== SYSTEM TRAY =====
     "tray": {
         "icon-size": 20,
