@@ -13,6 +13,8 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     stylix.url = "github:nix-community/stylix";
     stylix.inputs.nixpkgs.follows = "nixpkgs";
+    walker.url = "github:abenz1267/walker";
+    walker.inputs.nixpkgs.follows = "nixpkgs";
     nix-keylayout.url = "git+ssh://git@github.com/CemDK/nix-keylayout";
     nix-keylayout.flake = true;
   };
@@ -127,7 +129,10 @@
               backupFileExtension = "backup";
               extraSpecialArgs = args;
               users.${user} = {
-                imports = [ (hostDir + "/home.nix") ];
+                imports = [
+                  (hostDir + "/home.nix")
+                  inputs.walker.homeManagerModules.default
+                ];
                 home.username = user;
                 home.homeDirectory = home;
               };

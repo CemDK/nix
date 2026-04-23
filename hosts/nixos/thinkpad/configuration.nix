@@ -16,6 +16,7 @@
     "${self}/modules/features/stylix"
     "${self}/modules/features/hyprland"
     "${self}/modules/features/steam"
+    "${self}/modules/profiles/laptop/power-management.nix"
 
     # Hardware Support: WiFi, GPU, microphone, trackpoint, touchpad
     # Power Efficiency: AMD P-State driver, TLP/power-profiles integration, SSD TRIM
@@ -80,6 +81,20 @@
     };
   };
   # input.touchpad.disable_while_typing = false;
+
+  # ============================================================================
+  # NIX SETTINGS
+  # ============================================================================
+  nix.settings = {
+    extra-substituters = [
+      "https://walker.cachix.org"
+      "https://walker-git.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "walker.cachix.org-1:fG8q+uAaMqhsMxWjwvk0IMb4mFPFLqHjuvfwQxE4oJM="
+      "walker-git.cachix.org-1:vmC0ocfPWh0S/vRAQGtChuiZBTAe4wiKDeyyXM0/7pM="
+    ];
+  };
 
   # ============================================================================
   # SYSTEM
