@@ -150,7 +150,7 @@ in
       ];
     };
 
-    direnv = {
+    direnv = lib.mkIf pkgs.stdenv.isLinux {
       enable = true;
       enableZshIntegration = true;
       nix-direnv.enable = true;
