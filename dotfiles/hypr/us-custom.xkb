@@ -1,0 +1,25 @@
+xkb_keymap {
+    xkb_keycodes  { include "evdev+aliases(qwerty)" };
+    xkb_types     { include "complete" };
+    xkb_compat    { include "complete" };
+    xkb_symbols   {
+        include "pc+us+inet(evdev)"
+
+        // Swap Z and Y (QWERTZ muscle memory)
+        key <AD06> { [ z, Z ] };  // top row: was y, now z
+        key <AB01> { [ y, Y ] };  // bottom row: was z, now y
+
+        // German umlauts on AltGr (Right Alt) layer
+        key <AC01> { [ a, A, adiaeresis, Adiaeresis ] };  // AltGr+A -> ae/Ae
+        key <AD09> { [ o, O, odiaeresis, Odiaeresis ] };  // AltGr+O -> oe/Oe
+        key <AD07> { [ u, U, udiaeresis, Udiaeresis ] };  // AltGr+U -> ue/Ue
+        key <AC02> { [ s, S, ssharp,     U1E9E     ] };  // AltGr+S -> ss/SS
+        key <AC03> { [ d, D, odiaeresis, Odiaeresis ] };  // AltGr+D -> oe/Oe (alias)
+        key <AC04> { [ f, F, udiaeresis, Udiaeresis ] };  // AltGr+F -> ue/Ue (alias)
+
+        include "level3(ralt_switch)"
+        // Caps Lock -> Escape
+        key <CAPS> { [ Escape ] };
+    };
+    xkb_geometry  { include "pc(pc104)" };
+};
