@@ -56,6 +56,7 @@
   networking.firewall.allowedTCPPorts = [
     53317 # localsend port
     5900 # vnc port
+    8081 # expo go
   ];
 
   # ============================================================================
