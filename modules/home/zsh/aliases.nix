@@ -1,6 +1,6 @@
 {
   tgrey = ''tmux set-option -g status-bg "#282c34"'';
-  torange = ''tmux set-option -g status-bg "#005F60"'';
+  torange = ''tmux set-option -g status-bg "#062027"'';
 
   nixswitch = "make -C ~/.config/nix switch";
   nixup = "make -C ~/.config/nix update";
