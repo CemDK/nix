@@ -22,6 +22,7 @@
     bun
     pastel
     opencode
+    sops
 
     # Sandboxing related
     socat

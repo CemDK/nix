@@ -8,3 +8,5 @@ nix.conf.backup
 dotfiles/tmux/plugins/tpm
 *.db*
 *.sqlite
+TODO.md
+/devShells/*
