@@ -48,9 +48,21 @@ in
   # HOMELAB
   # ============================================================================
   homelab = {
+    domain = "cemdk.net";
+
     containers = {
       configPath = "/home/${user}/.config/nix/modules/containers";
       storagePath = "/mnt/storage/data";
+
+      arr.enable = true;
+      audiobookshelf.enable = true;
+      calibre-web.enable = true;
+      homer.enable = true;
+      it-tools.enable = true;
+      mealie.enable = true;
+      navidrome.enable = true;
+      traefik.enable = true;
+
       # networks = {
       # traefik = "traefik_network";
 

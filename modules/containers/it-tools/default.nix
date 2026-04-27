@@ -1,23 +1,27 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   cfg = config.homelab.containers;
   inherit (config.homelab) domain;
 in
 {
-  virtualisation.oci-containers.containers.it-tools = {
-    image = "ghcr.io/corentinth/it-tools:latest";
-    pull = "newer";
-    hostname = "it-tools";
-    networks = [ cfg.networks.traefik ];
+  options.homelab.containers.it-tools.enable = lib.mkEnableOption "it-tools";
 
-    environment = cfg.commonEnv;
+  config = lib.mkIf config.homelab.containers.it-tools.enable {
+    virtualisation.oci-containers.containers.it-tools = {
+      image = "ghcr.io/corentinth/it-tools:latest";
+      pull = "newer";
+      hostname = "it-tools";
+      networks = [ cfg.networks.traefik ];
 
-    labels = {
-      "traefik.enable" = "true";
-      "traefik.http.routers.it-tools.rule" = "Host(`it-tools.${domain}`)";
-      "traefik.http.routers.it-tools.entrypoints" = "websecure";
-      "traefik.http.routers.it-tools.tls.certresolver" = "letsencrypt";
-      "traefik.http.services.it-tools.loadbalancer.server.port" = "80";
+      environment = cfg.commonEnv;
+
+      labels = {
+        "traefik.enable" = "true";
+        "traefik.http.routers.it-tools.rule" = "Host(`it-tools.${domain}`)";
+        "traefik.http.routers.it-tools.entrypoints" = "websecure";
+        "traefik.http.routers.it-tools.tls.certresolver" = "letsencrypt";
+        "traefik.http.services.it-tools.loadbalancer.server.port" = "80";
+      };
     };
   };
 }

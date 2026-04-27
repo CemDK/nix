@@ -1,36 +1,40 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   cfg = config.homelab.containers;
   inherit (config.homelab) domain;
 in
 {
-  homelab.containers.requiredDirs = [
-    { directory = "${cfg.configPath}/mealie/data"; }
-  ];
+  options.homelab.containers.mealie.enable = lib.mkEnableOption "mealie";
 
-  virtualisation.oci-containers.containers.mealie = {
-    image = "ghcr.io/mealie-recipes/mealie:v3.11.0";
-    pull = "newer";
-    hostname = "mealie";
-    networks = [ cfg.networks.traefik ];
-
-    environment = cfg.commonEnv // {
-      "ALLOW_SIGNUP" = "false";
-      "MAX_WORKERS" = "1";
-      "WEB_CONCURRENCY" = "1";
-      "BASE_URL" = "https://mealie.${domain}";
-    };
-
-    volumes = [
-      "${cfg.configPath}/mealie/data:/app/data/"
+  config = lib.mkIf config.homelab.containers.mealie.enable {
+    homelab.containers.requiredDirs = [
+      { directory = "${cfg.configPath}/mealie/data"; }
     ];
 
-    labels = {
-      "traefik.enable" = "true";
-      "traefik.http.routers.mealie.rule" = "Host(`mealie.${domain}`)";
-      "traefik.http.routers.mealie.entrypoints" = "websecure";
-      "traefik.http.routers.mealie.tls.certresolver" = "letsencrypt";
-      "traefik.http.services.mealie.loadbalancer.server.port" = "9000";
+    virtualisation.oci-containers.containers.mealie = {
+      image = "ghcr.io/mealie-recipes/mealie:v3.11.0";
+      pull = "newer";
+      hostname = "mealie";
+      networks = [ cfg.networks.traefik ];
+
+      environment = cfg.commonEnv // {
+        "ALLOW_SIGNUP" = "false";
+        "MAX_WORKERS" = "1";
+        "WEB_CONCURRENCY" = "1";
+        "BASE_URL" = "https://mealie.${domain}";
+      };
+
+      volumes = [
+        "${cfg.configPath}/mealie/data:/app/data/"
+      ];
+
+      labels = {
+        "traefik.enable" = "true";
+        "traefik.http.routers.mealie.rule" = "Host(`mealie.${domain}`)";
+        "traefik.http.routers.mealie.entrypoints" = "websecure";
+        "traefik.http.routers.mealie.tls.certresolver" = "letsencrypt";
+        "traefik.http.services.mealie.loadbalancer.server.port" = "9000";
+      };
     };
   };
 }

@@ -1,33 +1,37 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   cfg = config.homelab.containers;
   inherit (config.homelab) domain;
 in
 {
-  homelab.containers.requiredDirs = [
-    { directory = "${cfg.configPath}/homer/data"; }
-  ];
+  options.homelab.containers.homer.enable = lib.mkEnableOption "homer dashboard";
 
-  virtualisation.oci-containers.containers.homer = {
-    image = "b4bz/homer:latest";
-    pull = "newer";
-    hostname = "homer";
-    networks = [ cfg.networks.traefik ];
-
-    environment = cfg.commonEnv;
-
-    volumes = [
-      "${cfg.configPath}/homer/data:/www/assets"
+  config = lib.mkIf config.homelab.containers.homer.enable {
+    homelab.containers.requiredDirs = [
+      { directory = "${cfg.configPath}/homer/data"; }
     ];
 
-    labels = {
-      "traefik.enable" = "true";
-      "traefik.http.routers.homer.rule" = "Host(`homer.${domain}`)";
-      "traefik.http.routers.homer.entrypoints" = "websecure";
-      "traefik.http.routers.homer.tls" = "true";
-      "traefik.http.routers.homer.tls.certresolver" = "letsencrypt";
-      "traefik.http.routers.homer.service" = "homer";
-      "traefik.http.services.homer.loadbalancer.server.port" = "8080";
+    virtualisation.oci-containers.containers.homer = {
+      image = "b4bz/homer:latest";
+      pull = "newer";
+      hostname = "homer";
+      networks = [ cfg.networks.traefik ];
+
+      environment = cfg.commonEnv;
+
+      volumes = [
+        "${cfg.configPath}/homer/data:/www/assets"
+      ];
+
+      labels = {
+        "traefik.enable" = "true";
+        "traefik.http.routers.homer.rule" = "Host(`homer.${domain}`)";
+        "traefik.http.routers.homer.entrypoints" = "websecure";
+        "traefik.http.routers.homer.tls" = "true";
+        "traefik.http.routers.homer.tls.certresolver" = "letsencrypt";
+        "traefik.http.routers.homer.service" = "homer";
+        "traefik.http.services.homer.loadbalancer.server.port" = "8080";
+      };
     };
   };
 }
