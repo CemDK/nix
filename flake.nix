@@ -31,8 +31,17 @@
     }:
     let
       inherit (nixpkgs) lib;
+
       helpers = import ./lib/helpers.nix { inherit lib; };
-      inherit (helpers) assertHostDir;
+      inherit (helpers) assertHostDir mapModules format;
+
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+
+      forAllSystems = lib.genAttrs supportedSystems;
 
       # ========================================================================
       # Nix-Darwin configuration
@@ -194,18 +203,44 @@
           ];
         };
 
+      # ========================================================================
+      # Auto-discovers and wraps all devShells from ./devShells/*.nix
+      # ========================================================================
+      mkDevShells =
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          shellDefs = mapModules ./devShells (path: import path { inherit pkgs system format; });
+        in
+        lib.mapAttrs (
+          name: shellArgs:
+          pkgs.mkShell (
+            shellArgs
+            // {
+              shellHook = ''
+                echo -e "Entering ${format.inline.yellow name} dev shell"
+                ${format.header "Packages:"}
+                ${pkgs.lib.concatMapStringsSep "\n" (pkg: format.green pkg.name) (shellArgs.packages or [ ])}
+                ${shellArgs.shellHook or ""}
+                exec zsh
+              '';
+            }
+          )
+        ) shellDefs;
+
     in
     {
+      # ========================================================================
+      # DEVSHELLS
+      # ========================================================================
+      # Run 'nix develop ~/.config/nix#<devShell>' to load a dev shell
+      devShells = forAllSystems mkDevShells;
+
       # ========================================================================
       # FORMATTER
       # ========================================================================
       # Run 'nix fmt' to format all .nix files in a project
-      formatter = nixpkgs.lib.genAttrs [
-        # "x86_64-darwin"
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ] (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # ========================================================================
       # CONFIG DEFINITIONS
