@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  user,
+  ...
+}:
 {
 
   # ============================================================================
@@ -21,7 +25,7 @@
 
   # Add user packages here
   # This installs into $HOME/.nix-profile
-  users.users.cemdk.packages = with pkgs; [
+  users.users.${user}.packages = with pkgs; [
     wakatime-cli
     nix-search-tv
     fastfetch

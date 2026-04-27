@@ -31,7 +31,7 @@
   # USER
   # ============================================================================
   users.motd = "There is no motd ;)";
-  users.users.cemdk = {
+  users.users.${user} = {
     isNormalUser = true;
     description = "CemDK";
     extraGroups = [
