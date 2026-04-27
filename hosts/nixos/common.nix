@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   self,
@@ -44,8 +45,14 @@
       settings = {
         PasswordAuthentication = false;
         PermitRootLogin = "no";
+        AllowUsers = [ "cemdk" ];
+        MaxAuthTries = 5;
+        LogLevel = "VERBOSE";
+        KbdInteractiveAuthentication = false;
       };
-
+      moduliFile = pkgs.runCommand "filter-moduli" { } ''
+        awk '$5 >= 3071' "${config.programs.ssh.package}/etc/ssh/moduli" > "$out"
+      '';
     };
     gnome.gnome-keyring.enable = true;
     fwupd.enable = true;

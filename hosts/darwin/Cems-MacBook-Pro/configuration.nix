@@ -14,6 +14,9 @@
       PasswordAuthentication no
       PermitRootLogin no
       KbdInteractiveAuthentication no
+      AllowUsers cemdk
+      MaxAuthTries 5
+      LogLevel VERBOSE
     '';
   };
 

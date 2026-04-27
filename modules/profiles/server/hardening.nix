@@ -26,7 +26,6 @@
     sshd = {
       enable = true;
       port = "ssh";
-      logpath = "/var/log/auth.log";
       maxretry = 5;
     };
   };
