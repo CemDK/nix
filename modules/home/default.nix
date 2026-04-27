@@ -21,9 +21,9 @@ let
 in
 {
   imports = [
-    #
-    ./nvim
     ./fzf
+    ./nvim
+    ./walker
     ./zsh
   ];
 
