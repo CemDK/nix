@@ -62,46 +62,13 @@ in
           default = "traefik_network";
           description = "Name of the Traefik network.";
         };
-
-        vpnEgress = lib.mkOption {
-          type = lib.types.str;
-          default = "vpn_egress";
-          description = "Name of the VPN egress network.";
-        };
-
-        vpnEgressSubnet = lib.mkOption {
-          type = lib.types.str;
-          default = "10.89.1.0/24";
-          description = "Subnet for the VPN egress network.";
-        };
-
-        vpnMedia = lib.mkOption {
-          type = lib.types.str;
-          default = "vpn_media_internal";
-          description = "Name of the VPN media internal network.";
-        };
-
-        vpnMediaSubnet = lib.mkOption {
-          type = lib.types.str;
-          default = "10.89.2.0/24";
-          description = "Subnet for the VPN media internal network.";
+        consumers = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+          description = "Container names that depend on podman networks being created first.";
         };
       };
 
-      networkConsumers = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [
-          "audiobookshelf"
-          "calibre-web"
-          "homer"
-          "it-tools"
-          "mealie"
-          "navidrome"
-          "traefik"
-          "wireguard"
-        ];
-        description = "Container names that depend on podman networks being created first.";
-      };
     };
   };
 

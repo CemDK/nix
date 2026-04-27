@@ -4,16 +4,12 @@
   ...
 }:
 let
-  container = "calibre-web";
+  stack = "arr-stack";
+  container = "sabnzbd";
 
   homelab = config.homelab;
   shared = config.homelab.containers;
   cfg = config.homelab.containers.${container};
-
-  helpers = import ../helpers.nix { inherit lib; };
-
-  image = "lscr.io/linuxserver/calibre-web:latest";
-  port = "8083";
 in
 {
 
@@ -21,46 +17,41 @@ in
   # OPTIONS
   # ============================================================================
   options.homelab.containers.${container} = {
-    enable = lib.mkEnableOption {
-      description = "Enable ${container}";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable ${container} (requires ${stack} stack).";
     };
     url = lib.mkOption {
       type = lib.types.str;
-      default = "calibre.${homelab.domain}";
+      default = "nzb.${homelab.domain}";
     };
     configDir = lib.mkOption {
       type = lib.types.str;
-      default = "${shared.configPath}/${container}";
+      default = "${shared.configPath}/${stack}/${container}";
     };
   };
 
   # ============================================================================
   # CONFIG
   # ============================================================================
-  config = lib.mkIf cfg.enable {
-    homelab.containers.networks.consumers = [ container ];
+  config = lib.mkIf (shared.${stack}.enable && cfg.enable) {
+    homelab.containers.${stack}.services.${container}.port = "8080";
+
     homelab.containers.requiredDirs = [
       { directory = "${cfg.configDir}/data/config"; }
-      { directory = "${shared.storagePath}/media/calibre"; }
     ];
 
     virtualisation.oci-containers.containers.${container} = {
-      inherit image;
+      image = "lscr.io/linuxserver/sabnzbd:latest";
       pull = "newer";
-      hostname = container;
-      networks = [ shared.networks.traefik ];
       environment = shared.commonEnv;
 
       volumes = [
         "${cfg.configDir}/data/config:/config"
-        "${shared.storagePath}/media/calibre:/books"
+        "${shared.storagePath}:/data"
       ];
-
-      labels = helpers.mkTraefikLabels {
-        name = "calibre";
-        url = cfg.url;
-        inherit port;
-      };
-    };
+    }
+    // shared.${stack}.wireguard.containerConfig;
   };
 }

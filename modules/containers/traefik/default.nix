@@ -36,6 +36,8 @@ in
   # CONFIG
   # ============================================================================
   config = lib.mkIf cfg.enable {
+    homelab.containers.networks.consumers = [ container ];
+
     sops.secrets = {
       "traefik/dashboard-users" = {
         sopsFile = "${self}/secrets/homelab/secrets.yaml";
@@ -55,7 +57,7 @@ in
       hostname = container;
       networks = [
         shared.networks.traefik
-        shared.networks.vpnMedia
+        shared.arr-stack.networks.media.name
       ];
 
       environment = shared.commonEnv;

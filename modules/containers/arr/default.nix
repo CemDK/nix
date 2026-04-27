@@ -5,225 +5,159 @@
   ...
 }:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  stack = "arr-stack";
 
-  vpnServiceNames = [
-    "sabnzbd"
-    "sonarr"
-    "radarr"
-    "seerr"
-  ];
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${stack};
 
-  waitForWireguardTunnel = pkgs.writeShellScript "wait-for-wireguard-tunnel" ''
-    set -eu
+  helpers = import ../helpers.nix { inherit lib; };
 
-    for _ in $(seq 1 30); do
-      if ${pkgs.podman}/bin/podman exec wireguard /bin/sh -c \
-        'ip link show wg0 >/dev/null 2>&1 && wg show wg0 >/dev/null 2>&1' \
-        2>/dev/null; then
-        exit 0
-      fi
+  labels =
+    lib.foldlAttrs
+      (
+        acc: name: svc:
+        acc
+        // helpers.mkTraefikLabels {
+          inherit name;
+          inherit (svc) port;
+          url = shared.${name}.url;
+          middlewares = [ "vpn-whitelist@file" ];
+        }
+      )
+      {
+        "traefik.docker.network" = cfg.networks.media.name;
+      }
+      cfg.services;
 
-      sleep 5
-    done
-
-    echo "wireguard tunnel did not become ready in time" >&2
-    exit 1
-  '';
-
-  vpnDependency = {
-    dependsOn = [ "wireguard" ];
-    extraOptions = [
-      "--network=container:wireguard"
-      "--cap-drop=ALL"
-      "--cap-add=CHOWN"
-      "--cap-add=DAC_OVERRIDE"
-      "--cap-add=FOWNER"
-      "--cap-add=SETUID"
-      "--cap-add=SETGID"
-      "--security-opt=no-new-privileges"
-    ];
-  };
 in
 {
-  options.homelab.containers.arr.enable =
-    lib.mkEnableOption "arr stack (wireguard, sabnzbd, sonarr, radarr, seerr)";
 
-  config = lib.mkIf config.homelab.containers.arr.enable {
-    # ==========================================================================
-    # DIRECTORIES
-    # ==========================================================================
+  # ============================================================================
+  # IMPORTS
+  # ============================================================================
+  imports = [
+    ./sabnzbd.nix
+    ./sonarr.nix
+    ./radarr.nix
+    ./seerr.nix
+  ];
+
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${stack} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${stack} (wireguard, sabnzbd, sonarr, radarr, seerr)";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${stack}";
+    };
+    services = lib.mkOption {
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+          options.port = lib.mkOption { type = lib.types.str; };
+        }
+      );
+      default = { };
+    };
+    networks = {
+      egress = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = "arr_egress";
+          description = "Name of the arr stack egress network.";
+        };
+        subnet = lib.mkOption {
+          type = lib.types.str;
+          default = "10.89.1.0/24";
+          description = "Subnet for the arr stack egress network.";
+        };
+      };
+      media = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = "arr_media_internal";
+          description = "Name of the arr stack internal media network.";
+        };
+        subnet = lib.mkOption {
+          type = lib.types.str;
+          default = "10.89.2.0/24";
+          description = "Subnet for the arr stack internal media network.";
+        };
+      };
+    };
+    wireguard.containerConfig = lib.mkOption {
+      type = lib.types.attrs;
+      readOnly = true;
+      default = {
+        dependsOn = [ "wireguard" ];
+        extraOptions = [
+          "--network=container:wireguard"
+          "--cap-drop=ALL"
+          "--cap-add=CHOWN"
+          "--cap-add=DAC_OVERRIDE"
+          "--cap-add=FOWNER"
+          "--cap-add=SETUID"
+          "--cap-add=SETGID"
+          "--security-opt=no-new-privileges"
+        ];
+      };
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
+    homelab.containers.networks.consumers = [ "wireguard" ];
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/arr/wireguard/data/config"; }
-      { directory = "${cfg.configPath}/arr/sabnzbd/data/config"; }
-      { directory = "${cfg.configPath}/arr/sonarr/data/config"; }
-      { directory = "${cfg.configPath}/arr/radarr/data/config"; }
-      { directory = "${cfg.configPath}/arr/seerr/data/config"; }
-      {
-        directory = "${cfg.storagePath}";
-        owner = "root";
-        group = "root";
-      }
-      {
-        directory = "${cfg.storagePath}/media/tv";
-        owner = "root";
-        group = "root";
-      }
-      {
-        directory = "${cfg.storagePath}/media/movies";
-        owner = "root";
-        group = "root";
-      }
-      {
-        directory = "${cfg.storagePath}/usenet/complete";
-        owner = "root";
-        group = "root";
-      }
+      { directory = "${cfg.configDir}/wireguard/data/config"; }
+      { directory = "${shared.storagePath}"; }
+      { directory = "${shared.storagePath}/media/tv"; }
+      { directory = "${shared.storagePath}/media/movies"; }
+      { directory = "${shared.storagePath}/usenet/complete"; }
     ];
 
-    # ==========================================================================
-    # CONTAINERS
-    # ==========================================================================
-    virtualisation.oci-containers.containers = {
+    virtualisation.oci-containers.containers.wireguard = {
+      image = "lscr.io/linuxserver/wireguard:latest";
+      pull = "newer";
+      hostname = "wireguard";
+      networks = [
+        cfg.networks.egress.name
+        cfg.networks.media.name
+      ];
 
-      # ========================================================================
-      # WIREGUARD (VPN gateway for all media services)
-      # ========================================================================
-      wireguard = {
-        image = "lscr.io/linuxserver/wireguard:latest";
-        pull = "newer";
-        hostname = "wireguard";
-        networks = [
-          cfg.networks.vpnEgress
-          cfg.networks.vpnMedia
-        ];
-
-        environment = cfg.commonEnv // {
-          "LOG_CONFS" = "true";
-        };
-
-        volumes = [
-          "${cfg.configPath}/arr/wireguard/data/config:/config"
-          "/run/booted-system/kernel-modules/lib/modules:/lib/modules:ro"
-        ];
-
-        capabilities = {
-          net_admin = true;
-          chown = true;
-          dac_override = true;
-          fowner = true;
-          setuid = true;
-          setgid = true;
-        };
-
-        extraOptions = [
-          "--cap-drop=ALL"
-          "--security-opt=no-new-privileges"
-          "--sysctl=net.ipv4.conf.all.src_valid_mark=1"
-          "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
-          "--dns=8.8.8.8"
-        ];
-
-        labels = {
-          "traefik.enable" = "true";
-          "traefik.docker.network" = cfg.networks.vpnMedia;
-
-          # sabnzbd
-          "traefik.http.routers.sabnzbd.rule" = "Host(`nzb.${domain}`)";
-          "traefik.http.routers.sabnzbd.entrypoints" = "websecure";
-          "traefik.http.routers.sabnzbd.tls.certresolver" = "letsencrypt";
-          "traefik.http.routers.sabnzbd.middlewares" = "vpn-whitelist@file";
-          "traefik.http.routers.sabnzbd.service" = "sabnzbd";
-          "traefik.http.services.sabnzbd.loadbalancer.server.port" = "8080";
-
-          # sonarr
-          "traefik.http.routers.sonarr.rule" = "Host(`sonarr.${domain}`)";
-          "traefik.http.routers.sonarr.entrypoints" = "websecure";
-          "traefik.http.routers.sonarr.tls.certresolver" = "letsencrypt";
-          "traefik.http.routers.sonarr.middlewares" = "vpn-whitelist@file";
-          "traefik.http.routers.sonarr.service" = "sonarr";
-          "traefik.http.services.sonarr.loadbalancer.server.port" = "8989";
-
-          # radarr
-          "traefik.http.routers.radarr.rule" = "Host(`radarr.${domain}`)";
-          "traefik.http.routers.radarr.entrypoints" = "websecure";
-          "traefik.http.routers.radarr.tls.certresolver" = "letsencrypt";
-          "traefik.http.routers.radarr.middlewares" = "vpn-whitelist@file";
-          "traefik.http.routers.radarr.service" = "radarr";
-          "traefik.http.services.radarr.loadbalancer.server.port" = "7878";
-
-          # seerr
-          "traefik.http.routers.seerr.rule" = "Host(`seerr.${domain}`)";
-          "traefik.http.routers.seerr.entrypoints" = "websecure";
-          "traefik.http.routers.seerr.tls.certresolver" = "letsencrypt";
-          "traefik.http.routers.seerr.middlewares" = "vpn-whitelist@file";
-          "traefik.http.routers.seerr.service" = "seerr";
-          "traefik.http.services.seerr.loadbalancer.server.port" = "5055";
-        };
-
+      environment = shared.commonEnv // {
+        "LOG_CONFS" = "true";
       };
 
-      # ========================================================================
-      # SABNZBD (usenet downloader)
-      # ========================================================================
-      sabnzbd = {
-        image = "lscr.io/linuxserver/sabnzbd:latest";
-        pull = "newer";
-        environment = cfg.commonEnv;
+      volumes = [
+        "${cfg.configDir}/wireguard/data/config:/config"
+        "/run/booted-system/kernel-modules/lib/modules:/lib/modules:ro"
+      ];
 
-        volumes = [
-          "${cfg.configPath}/arr/sabnzbd/data/config:/config"
-          "${cfg.storagePath}:/data"
-        ];
-      }
-      // vpnDependency;
+      capabilities = {
+        net_admin = true;
+        chown = true;
+        dac_override = true;
+        fowner = true;
+        setuid = true;
+        setgid = true;
+      };
 
-      # ========================================================================
-      # SONARR (tv shows)
-      # ========================================================================
-      sonarr = {
-        image = "lscr.io/linuxserver/sonarr:latest";
-        pull = "newer";
-        environment = cfg.commonEnv;
+      extraOptions = [
+        "--cap-drop=ALL"
+        "--security-opt=no-new-privileges"
+        "--sysctl=net.ipv4.conf.all.src_valid_mark=1"
+        "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+        "--dns=8.8.8.8"
+      ];
 
-        volumes = [
-          "${cfg.configPath}/arr/sonarr/data/config:/config"
-          "${cfg.storagePath}:/data"
-        ];
-      }
-      // vpnDependency;
-
-      # ========================================================================
-      # RADARR (movies)
-      # ========================================================================
-      radarr = {
-        image = "lscr.io/linuxserver/radarr:latest";
-        pull = "newer";
-        environment = cfg.commonEnv;
-
-        volumes = [
-          "${cfg.configPath}/arr/radarr/data/config:/config"
-          "${cfg.storagePath}:/data"
-        ];
-      }
-      // vpnDependency;
-
-      # ========================================================================
-      # seerr (media requests)
-      # ========================================================================
-      seerr = {
-        image = "ghcr.io/seerr-team/seerr:latest";
-        pull = "newer";
-        environment = cfg.commonEnv;
-
-        volumes = [
-          "${cfg.configPath}/arr/seerr/data/config:/app/config"
-        ];
-      }
-      // vpnDependency;
+      labels = labels;
     };
 
+    # Each arr service waits for the wireguard tunnel to be up before starting
     systemd.services = builtins.listToAttrs (
       map (name: {
         name = "podman-${name}";
@@ -236,11 +170,25 @@ in
           bindsTo = [ "podman-wireguard.service" ];
           partOf = [ "podman-wireguard.service" ];
           serviceConfig = {
-            ExecStartPre = [ waitForWireguardTunnel ];
+            ExecStartPre = [
+              (pkgs.writeShellScript "wait-for-wireguard-tunnel" ''
+                set -eu
+                for _ in $(seq 1 30); do
+                  if ${pkgs.podman}/bin/podman exec wireguard /bin/sh -c \
+                    'ip link show wg0 >/dev/null 2>&1 && wg show wg0 >/dev/null 2>&1' \
+                    2>/dev/null; then
+                    exit 0
+                  fi
+                  sleep 5
+                done
+                echo "wireguard tunnel did not become ready in time" >&2
+                exit 1
+              '')
+            ];
             TimeoutStartSec = lib.mkForce "180";
           };
         };
-      }) vpnServiceNames
+      }) (lib.attrNames cfg.services)
     );
   };
 }

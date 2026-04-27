@@ -4,16 +4,12 @@
   ...
 }:
 let
-  container = "it-tools";
+  stack = "arr-stack";
+  container = "seerr";
 
   homelab = config.homelab;
   shared = config.homelab.containers;
   cfg = config.homelab.containers.${container};
-
-  helpers = import ../helpers.nix { inherit lib; };
-
-  image = "ghcr.io/corentinth/it-tools:latest";
-  port = "80";
 in
 {
 
@@ -21,33 +17,39 @@ in
   # OPTIONS
   # ============================================================================
   options.homelab.containers.${container} = {
-    enable = lib.mkEnableOption {
-      description = "Enable ${container}";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable ${container} (requires ${stack} stack).";
     };
     url = lib.mkOption {
       type = lib.types.str;
       default = "${container}.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${stack}/${container}";
     };
   };
 
   # ============================================================================
   # CONFIG
   # ============================================================================
-  config = lib.mkIf cfg.enable {
-    homelab.containers.networks.consumers = [ container ];
+  config = lib.mkIf (shared.${stack}.enable && cfg.enable) {
+    homelab.containers.${stack}.services.${container}.port = "5055";
+
+    homelab.containers.requiredDirs = [
+      { directory = "${cfg.configDir}/data/config"; }
+    ];
 
     virtualisation.oci-containers.containers.${container} = {
-      inherit image;
+      image = "ghcr.io/seerr-team/seerr:latest";
       pull = "newer";
-      hostname = container;
-      networks = [ shared.networks.traefik ];
       environment = shared.commonEnv;
 
-      labels = helpers.mkTraefikLabels {
-        name = container;
-        url = cfg.url;
-        inherit port;
-      };
-    };
+      volumes = [
+        "${cfg.configDir}/data/config:/app/config"
+      ];
+    } // shared.${stack}.wireguard.containerConfig;
   };
 }

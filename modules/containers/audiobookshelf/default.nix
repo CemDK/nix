@@ -38,6 +38,7 @@ in
   # CONFIG
   # ============================================================================
   config = lib.mkIf cfg.enable {
+    homelab.containers.networks.consumers = [ container ];
     homelab.containers.requiredDirs = [
       { directory = "${shared.storagePath}/media/audiobooks/books"; }
       { directory = "${shared.storagePath}/media/podcasts"; }

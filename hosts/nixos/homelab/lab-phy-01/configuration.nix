@@ -54,7 +54,7 @@ in
       configPath = "/home/${user}/.config/nix/modules/containers";
       storagePath = "/mnt/storage/data";
 
-      arr.enable = true;
+      arr-stack.enable = true;
       audiobookshelf.enable = true;
       calibre-web.enable = true;
       homer.enable = true;
@@ -62,33 +62,6 @@ in
       mealie.enable = true;
       navidrome.enable = true;
       traefik.enable = true;
-
-      # networks = {
-      # traefik = "traefik_network";
-
-      # arr = {
-      #   vpn = {
-      #     egress = {
-      #       name = "vpn_egress_network";
-      #       subnet = "10.89.1.0/24";
-      #     };
-      #     media = {
-      #       name = "vpn_media_network";
-      #       subnet = "10.89.2.0/24";
-      #     };
-      #   };
-      # };
-
-      #   networkConsumers = [
-      #     "audiobookshelf"
-      #     "calibre-web"
-      #     "homer"
-      #     "it-tools"
-      #     "mealie"
-      #     "arr"
-      #     "navidrome"
-      #   ];
-      # };
     };
   };
 
@@ -158,31 +131,31 @@ in
           ];
           requires = [ "create-podman-network.service" ];
         };
-      }) cfg.networkConsumers
+      }) cfg.networks.consumers
     ))
     // {
       create-podman-network = with config.virtualisation.oci-containers; {
         serviceConfig.Type = "oneshot";
         serviceConfig.RemainAfterExit = true;
         wantedBy = [ "multi-user.target" ];
-        before = map (name: "${backend}-${name}.service") cfg.networkConsumers;
+        before = map (name: "${backend}-${name}.service") cfg.networks.consumers;
         script = ''
           # Create traefik_network
           ${pkgs.podman}/bin/podman network exists ${cfg.networks.traefik} || \
             ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.networks.traefik}
-          # Create VPN egress network
-          ${pkgs.podman}/bin/podman network exists ${cfg.networks.vpnEgress} || \
+          # Create arr stack egress network
+          ${pkgs.podman}/bin/podman network exists ${cfg.arr-stack.networks.egress.name} || \
             ${pkgs.podman}/bin/podman network create \
               --driver=bridge \
-              --subnet ${cfg.networks.vpnEgressSubnet} \
-              ${cfg.networks.vpnEgress}
-          # Create VPN media internal network
-          ${pkgs.podman}/bin/podman network exists ${cfg.networks.vpnMedia} || \
+              --subnet ${cfg.arr-stack.networks.egress.subnet} \
+              ${cfg.arr-stack.networks.egress.name}
+          # Create arr stack internal media network
+          ${pkgs.podman}/bin/podman network exists ${cfg.arr-stack.networks.media.name} || \
             ${pkgs.podman}/bin/podman network create \
               --driver=bridge \
               --internal \
-              --subnet ${cfg.networks.vpnMediaSubnet} \
-              ${cfg.networks.vpnMedia}
+              --subnet ${cfg.arr-stack.networks.media.subnet} \
+              ${cfg.arr-stack.networks.media.name}
         '';
       };
     };
