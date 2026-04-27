@@ -141,6 +141,7 @@
                 imports = [
                   (hostDir + "/home.nix")
                   inputs.walker.homeManagerModules.default
+                  ./modules/home/walker
                 ];
                 home.username = user;
                 home.homeDirectory = home;

@@ -23,7 +23,6 @@ in
   imports = [
     ./fzf
     ./nvim
-    ./walker
     ./zsh
   ];
 
