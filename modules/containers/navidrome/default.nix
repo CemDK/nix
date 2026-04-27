@@ -1,45 +1,70 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "navidrome";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "deluan/navidrome:latest";
+  port = "4533";
 in
 {
-  options.homelab.containers.navidrome.enable = lib.mkEnableOption "navidrome";
 
-  config = lib.mkIf config.homelab.containers.navidrome.enable {
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "music.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/navidrome/data"; }
-      {
-        directory = "${cfg.storagePath}/media/music";
-        owner = "root";
-        group = "root";
-      }
+      { directory = "${cfg.configDir}/data"; }
+      { directory = "${shared.storagePath}/media/music"; }
     ];
 
-    virtualisation.oci-containers.containers.navidrome = {
-      image = "deluan/navidrome:latest";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "navidrome";
-      networks = [ cfg.networks.traefik ];
+      hostname = container;
+      networks = [ shared.networks.traefik ];
 
-      environment = cfg.commonEnv // {
+      environment = shared.commonEnv // {
         "ND_SCANSCHEDULE" = "24h";
         "ND_LOGLEVEL" = "info";
         "ND_SESSIONTIMEOUT" = "24h";
-        "ND_BASEURL" = "https://music.${domain}";
+        "ND_BASEURL" = "https://${cfg.url}";
       };
 
       volumes = [
-        "${cfg.configPath}/navidrome/data:/data"
-        "${cfg.storagePath}/media/music:/music:ro"
+        "${cfg.configDir}/data:/data"
+        "${shared.storagePath}/media/music:/music:ro"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.navidrome.rule" = "Host(`music.${domain}`)";
-        "traefik.http.routers.navidrome.entrypoints" = "websecure";
-        "traefik.http.routers.navidrome.tls.certresolver" = "letsencrypt";
-        "traefik.http.services.navidrome.loadbalancer.server.port" = "4533";
+      labels = helpers.mkTraefikLabels {
+        name = container;
+        url = cfg.url;
+        inherit port;
       };
     };
   };

@@ -1,26 +1,50 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "it-tools";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "ghcr.io/corentinth/it-tools:latest";
+  port = "80";
 in
 {
-  options.homelab.containers.it-tools.enable = lib.mkEnableOption "it-tools";
 
-  config = lib.mkIf config.homelab.containers.it-tools.enable {
-    virtualisation.oci-containers.containers.it-tools = {
-      image = "ghcr.io/corentinth/it-tools:latest";
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "${container}.${homelab.domain}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "it-tools";
-      networks = [ cfg.networks.traefik ];
+      hostname = container;
+      networks = [ shared.networks.traefik ];
+      environment = shared.commonEnv;
 
-      environment = cfg.commonEnv;
-
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.it-tools.rule" = "Host(`it-tools.${domain}`)";
-        "traefik.http.routers.it-tools.entrypoints" = "websecure";
-        "traefik.http.routers.it-tools.tls.certresolver" = "letsencrypt";
-        "traefik.http.services.it-tools.loadbalancer.server.port" = "80";
+      labels = helpers.mkTraefikLabels {
+        name = container;
+        url = cfg.url;
+        inherit port;
       };
     };
   };

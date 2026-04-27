@@ -1,36 +1,62 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "homer";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "b4bz/homer:latest";
+  port = "8080";
 in
 {
-  options.homelab.containers.homer.enable = lib.mkEnableOption "homer dashboard";
 
-  config = lib.mkIf config.homelab.containers.homer.enable {
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "${container}.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/homer/data"; }
+      { directory = "${cfg.configDir}/data"; }
     ];
 
-    virtualisation.oci-containers.containers.homer = {
-      image = "b4bz/homer:latest";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "homer";
-      networks = [ cfg.networks.traefik ];
-
-      environment = cfg.commonEnv;
+      hostname = container;
+      networks = [ shared.networks.traefik ];
+      environment = shared.commonEnv;
 
       volumes = [
-        "${cfg.configPath}/homer/data:/www/assets"
+        "${cfg.configDir}/data:/www/assets"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.homer.rule" = "Host(`homer.${domain}`)";
-        "traefik.http.routers.homer.entrypoints" = "websecure";
-        "traefik.http.routers.homer.tls" = "true";
-        "traefik.http.routers.homer.tls.certresolver" = "letsencrypt";
-        "traefik.http.routers.homer.service" = "homer";
-        "traefik.http.services.homer.loadbalancer.server.port" = "8080";
+      labels = helpers.mkTraefikLabels {
+        name = container;
+        url = cfg.url;
+        inherit port;
       };
     };
   };

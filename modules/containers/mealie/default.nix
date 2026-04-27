@@ -1,39 +1,68 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "mealie";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "ghcr.io/mealie-recipes/mealie:v3.11.0";
+  port = "9000";
 in
 {
-  options.homelab.containers.mealie.enable = lib.mkEnableOption "mealie";
 
-  config = lib.mkIf config.homelab.containers.mealie.enable {
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "${container}.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/mealie/data"; }
+      { directory = "${cfg.configDir}/data"; }
     ];
 
-    virtualisation.oci-containers.containers.mealie = {
-      image = "ghcr.io/mealie-recipes/mealie:v3.11.0";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "mealie";
-      networks = [ cfg.networks.traefik ];
+      hostname = container;
+      networks = [ shared.networks.traefik ];
 
-      environment = cfg.commonEnv // {
+      environment = shared.commonEnv // {
         "ALLOW_SIGNUP" = "false";
         "MAX_WORKERS" = "1";
         "WEB_CONCURRENCY" = "1";
-        "BASE_URL" = "https://mealie.${domain}";
+        "BASE_URL" = "https://${cfg.url}";
       };
 
       volumes = [
-        "${cfg.configPath}/mealie/data:/app/data/"
+        "${cfg.configDir}/data:/app/data/"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.mealie.rule" = "Host(`mealie.${domain}`)";
-        "traefik.http.routers.mealie.entrypoints" = "websecure";
-        "traefik.http.routers.mealie.tls.certresolver" = "letsencrypt";
-        "traefik.http.services.mealie.loadbalancer.server.port" = "9000";
+      labels = helpers.mkTraefikLabels {
+        name = container;
+        url = cfg.url;
+        inherit port;
       };
     };
   };

@@ -5,15 +5,37 @@
   ...
 }:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "traefik";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  image = "traefik:v3.3";
 in
 {
-  options.homelab.containers.traefik.enable = lib.mkEnableOption "traefik reverse proxy";
 
-  config = lib.mkIf config.homelab.containers.traefik.enable {
-    # Define secrets on the host system
-    # Secrets files will be in /run/secrets/traefik/...
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "${container}.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     sops.secrets = {
       "traefik/dashboard-users" = {
         sopsFile = "${self}/secrets/homelab/secrets.yaml";
@@ -24,21 +46,20 @@ in
     };
 
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/traefik/data/acme"; }
+      { directory = "${cfg.configDir}/data/acme"; }
     ];
 
-    virtualisation.oci-containers.containers.traefik = {
-      image = "traefik:v3.3";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "traefik";
+      hostname = container;
       networks = [
-        cfg.networks.traefik
-        cfg.networks.vpnMedia
+        shared.networks.traefik
+        shared.networks.vpnMedia
       ];
 
-      environment = cfg.commonEnv;
+      environment = shared.commonEnv;
 
-      # This makes ENV vars in the container from the file on the host /run/secrets/traefik/env
       environmentFiles = [
         config.sops.secrets."traefik/env".path
       ];
@@ -50,9 +71,9 @@ in
 
       volumes = [
         "/run/podman/podman.sock:/var/run/docker.sock:ro"
-        "${cfg.configPath}/traefik/data/traefik.yml:/etc/traefik/traefik.yml:ro"
-        "${cfg.configPath}/traefik/data/dynamic/middlewares.yml:/etc/traefik/dynamic/middlewares.yml:ro"
-        "${cfg.configPath}/traefik/data/acme:/etc/traefik/acme"
+        "${cfg.configDir}/data/traefik.yml:/etc/traefik/traefik.yml:ro"
+        "${cfg.configDir}/data/dynamic/middlewares.yml:/etc/traefik/dynamic/middlewares.yml:ro"
+        "${cfg.configDir}/data/acme:/etc/traefik/acme"
         "${config.sops.secrets."traefik/dashboard-users".path}:/etc/traefik/dynamic/dashboard-users:ro"
       ];
 
@@ -60,7 +81,7 @@ in
 
       labels = {
         "traefik.enable" = "true";
-        "traefik.http.routers.dashboard.rule" = "Host(`traefik.${domain}`)";
+        "traefik.http.routers.dashboard.rule" = "Host(`${cfg.url}`)";
         "traefik.http.routers.dashboard.service" = "api@internal";
         "traefik.http.routers.dashboard.middlewares" = "dashboard-auth@file,vpn-whitelist@file";
         "traefik.http.routers.dashboard.tls" = "true";

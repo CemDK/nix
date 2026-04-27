@@ -1,48 +1,68 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "audiobookshelf";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "ghcr.io/advplyr/audiobookshelf:latest";
+  port = "80";
 in
 {
-  options.homelab.containers.audiobookshelf.enable = lib.mkEnableOption "audiobookshelf";
 
-  config = lib.mkIf config.homelab.containers.audiobookshelf.enable {
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "${container}.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     homelab.containers.requiredDirs = [
-      {
-        directory = "${cfg.storagePath}/media/audiobooks/books";
-        owner = "root";
-        group = "root";
-      }
-      {
-        directory = "${cfg.storagePath}/media/podcasts";
-        owner = "root";
-        group = "root";
-      }
-      { directory = "${cfg.configPath}/audiobookshelf/data/config"; }
-      { directory = "${cfg.configPath}/audiobookshelf/data/metadata"; }
+      { directory = "${shared.storagePath}/media/audiobooks/books"; }
+      { directory = "${shared.storagePath}/media/podcasts"; }
+      { directory = "${cfg.configDir}/data/config"; }
+      { directory = "${cfg.configDir}/data/metadata"; }
     ];
 
-    virtualisation.oci-containers.containers.audiobookshelf = {
-      image = "ghcr.io/advplyr/audiobookshelf:latest";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "audiobookshelf";
-      networks = [ cfg.networks.traefik ];
-
-      environment = cfg.commonEnv;
+      hostname = container;
+      networks = [ shared.networks.traefik ];
+      environment = shared.commonEnv;
 
       volumes = [
-        "${cfg.storagePath}/media/audiobooks/books:/audiobooks"
-        "${cfg.storagePath}/media/podcasts:/podcasts"
-        "${cfg.configPath}/audiobookshelf/data/config:/config"
-        "${cfg.configPath}/audiobookshelf/data/metadata:/metadata"
+        "${shared.storagePath}/media/audiobooks/books:/audiobooks"
+        "${shared.storagePath}/media/podcasts:/podcasts"
+        "${cfg.configDir}/data/config:/config"
+        "${cfg.configDir}/data/metadata:/metadata"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.abs.rule" = "Host(`audiobookshelf.${domain}`)";
-        "traefik.http.routers.abs.entrypoints" = "websecure";
-        "traefik.http.routers.abs.tls.certresolver" = "letsencrypt";
-        "traefik.http.services.abs.loadbalancer.server.port" = "80";
+      labels = helpers.mkTraefikLabels {
+        name = container;
+        url = cfg.url;
+        inherit port;
       };
     };
   };

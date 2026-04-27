@@ -1,40 +1,64 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
-  cfg = config.homelab.containers;
-  inherit (config.homelab) domain;
+  container = "calibre-web";
+
+  homelab = config.homelab;
+  shared = config.homelab.containers;
+  cfg = config.homelab.containers.${container};
+
+  helpers = import ../helpers.nix { inherit lib; };
+
+  image = "lscr.io/linuxserver/calibre-web:latest";
+  port = "8083";
 in
 {
-  options.homelab.containers.calibre-web.enable = lib.mkEnableOption "calibre-web";
 
-  config = lib.mkIf config.homelab.containers.calibre-web.enable {
+  # ============================================================================
+  # OPTIONS
+  # ============================================================================
+  options.homelab.containers.${container} = {
+    enable = lib.mkEnableOption {
+      description = "Enable ${container}";
+    };
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = "calibre.${homelab.domain}";
+    };
+    configDir = lib.mkOption {
+      type = lib.types.str;
+      default = "${shared.configPath}/${container}";
+    };
+  };
+
+  # ============================================================================
+  # CONFIG
+  # ============================================================================
+  config = lib.mkIf cfg.enable {
     homelab.containers.requiredDirs = [
-      { directory = "${cfg.configPath}/calibre-web/data/config"; }
-      {
-        directory = "${cfg.storagePath}/media/calibre";
-        owner = "root";
-        group = "root";
-      }
+      { directory = "${cfg.configDir}/data/config"; }
+      { directory = "${shared.storagePath}/media/calibre"; }
     ];
 
-    virtualisation.oci-containers.containers.calibre-web = {
-      image = "lscr.io/linuxserver/calibre-web:latest";
+    virtualisation.oci-containers.containers.${container} = {
+      inherit image;
       pull = "newer";
-      hostname = "calibre-web";
-      networks = [ cfg.networks.traefik ];
-
-      environment = cfg.commonEnv;
+      hostname = container;
+      networks = [ shared.networks.traefik ];
+      environment = shared.commonEnv;
 
       volumes = [
-        "${cfg.configPath}/calibre-web/data/config:/config"
-        "${cfg.storagePath}/media/calibre:/books"
+        "${cfg.configDir}/data/config:/config"
+        "${shared.storagePath}/media/calibre:/books"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.calibre.rule" = "Host(`calibre.${domain}`)";
-        "traefik.http.routers.calibre.entrypoints" = "websecure";
-        "traefik.http.routers.calibre.tls.certresolver" = "letsencrypt";
-        "traefik.http.services.calibre.loadbalancer.server.port" = "8083";
+      labels = helpers.mkTraefikLabels {
+        name = "calibre";
+        url = cfg.url;
+        inherit port;
       };
     };
   };
