@@ -31,7 +31,7 @@
       "networkmanager"
       "wheel"
     ];
-
+    openssh.authorizedKeys.keys = config.common.sshKeys;
   };
 
   # ============================================================================

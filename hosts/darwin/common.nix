@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   lib,
   self,
@@ -28,7 +29,10 @@
   # ============================================================================
   # USER MANAGEMENT
   # ============================================================================
-  users.users.${user}.home = "${home}";
+  users.users.${user} = {
+    home = "${home}";
+    openssh.authorizedKeys.keys = config.common.sshKeys;
+  };
 
   # ============================================================================
   # NETWORKING & FIREWALL
