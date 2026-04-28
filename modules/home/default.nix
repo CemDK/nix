@@ -83,10 +83,16 @@ in
     stateHome = "${config.home.homeDirectory}/.local/state";
   };
 
-  xdg.configFile = builtins.mapAttrs (name: config: {
-    source = link "${config}";
-    recursive = true;
-  }) configs;
+  xdg.configFile =
+    builtins.mapAttrs (name: config: {
+      source = link "${config}";
+      recursive = true;
+    }) configs
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      "direnv/direnvrc".text = ''
+        source ${pkgs.nix-direnv}/share/nix-direnv/direnvrc
+      '';
+    };
 
   home.file = {
     ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
