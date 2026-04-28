@@ -16,7 +16,6 @@
   # this installs into /nix/store/...
   environment.systemPackages = with pkgs; [
     aerospace
-    desktoppr
     hidden-bar
     mkalias
     nodejs
@@ -68,9 +67,5 @@
   # OTHER CONFIGURATIONS
   # ============================================================================
 
-  system.activationScripts.postActivation.text = ''
-    echo >&2 "Setting wallpaper..."
-    ${pkgs.desktoppr}/bin/desktoppr /Users/${user}/.config/wallpapers/oat/autumn-leaves-3.png
-  '';
 
 }

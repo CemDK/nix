@@ -48,13 +48,4 @@
   # OTHER CONFIGURATIONS
   # ============================================================================
 
-  # system.activationScripts.applications.text = ''
-  #   set -e
-  #   echo >&2 "Switching wallpapers..."
-  #   /usr/bin/osascript -e "tell application \"Finder\" to set desktop picture to POSIX file
-  #   \"${
-  #     /Users/cemdk/.config/wallpapers/autumn-season-leafs-plant-scene-generative-ai.jpg
-  #   }\""
-  # '';
-
 }
