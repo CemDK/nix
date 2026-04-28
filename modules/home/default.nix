@@ -116,7 +116,6 @@ in
           name = "CemDK";
           email = "25245902+CemDK@users.noreply.github.com";
         };
-        credential.helper = "store";
         init.defaultBranch = "main";
         core.editor = "vim";
         core.autocrlf = "input";
