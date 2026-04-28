@@ -45,12 +45,13 @@ in
     virtualisation.oci-containers.containers.${container} = {
       image = "lscr.io/linuxserver/sonarr:latest";
       pull = "newer";
-      environment = shared.commonEnv;
+      environment = shared.environment;
 
       volumes = [
         "${cfg.configDir}/data/config:/config"
         "${shared.storagePath}:/data"
       ];
-    } // shared.${stack}.wireguard.containerConfig;
+    }
+    // shared.${stack}.wireguard.containerConfig;
   };
 }

@@ -5,7 +5,7 @@
       name,
       url,
       port,
-      middlewares ? [],
+      middlewares ? [ ],
     }:
     {
       "traefik.enable" = "true";

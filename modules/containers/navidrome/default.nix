@@ -50,7 +50,7 @@ in
       hostname = container;
       networks = [ shared.networks.traefik ];
 
-      environment = shared.commonEnv // {
+      environment = shared.environment // {
         "ND_SCANSCHEDULE" = "24h";
         "ND_LOGLEVEL" = "info";
         "ND_SESSIONTIMEOUT" = "24h";

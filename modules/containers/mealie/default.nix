@@ -49,7 +49,7 @@ in
       hostname = container;
       networks = [ shared.networks.traefik ];
 
-      environment = shared.commonEnv // {
+      environment = shared.environment // {
         "ALLOW_SIGNUP" = "false";
         "MAX_WORKERS" = "1";
         "WEB_CONCURRENCY" = "1";

@@ -60,7 +60,7 @@ in
         shared.arr-stack.networks.media.name
       ];
 
-      environment = shared.commonEnv;
+      environment = shared.environment;
 
       environmentFiles = [
         config.sops.secrets."traefik/env".path

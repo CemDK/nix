@@ -128,7 +128,7 @@ in
         cfg.networks.media.name
       ];
 
-      environment = shared.commonEnv // {
+      environment = shared.environment // {
         "LOG_CONFS" = "true";
       };
 

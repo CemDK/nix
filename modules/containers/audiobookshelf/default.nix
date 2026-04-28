@@ -51,7 +51,7 @@ in
       pull = "newer";
       hostname = container;
       networks = [ shared.networks.traefik ];
-      environment = shared.commonEnv;
+      environment = shared.environment;
 
       volumes = [
         "${shared.storagePath}/media/audiobooks/books:/audiobooks"

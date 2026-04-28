@@ -46,7 +46,7 @@ in
         description = "Base path for persistent storage (media, downloads, etc).";
       };
 
-      commonEnv = lib.mkOption {
+      environment = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
         default = {
           "TZ" = "Europe/Berlin";

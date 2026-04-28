@@ -45,11 +45,12 @@ in
     virtualisation.oci-containers.containers.${container} = {
       image = "ghcr.io/seerr-team/seerr:latest";
       pull = "newer";
-      environment = shared.commonEnv;
+      environment = shared.environment;
 
       volumes = [
         "${cfg.configDir}/data/config:/app/config"
       ];
-    } // shared.${stack}.wireguard.containerConfig;
+    }
+    // shared.${stack}.wireguard.containerConfig;
   };
 }

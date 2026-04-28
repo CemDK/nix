@@ -41,7 +41,7 @@ in
       pull = "newer";
       hostname = container;
       networks = [ shared.networks.traefik ];
-      environment = shared.commonEnv;
+      environment = shared.environment;
 
       labels = helpers.mkTraefikLabels {
         name = container;
