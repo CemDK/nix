@@ -16,6 +16,7 @@
   # this installs into /nix/store/...
   environment.systemPackages = with pkgs; [
     aerospace
+    desktoppr
     hidden-bar
     mkalias
     nodejs
@@ -47,6 +48,8 @@
     nix-search-tv
     fastfetch
     opencode
+
+    redis
   ];
 
   # Add home-manager managed packages here
@@ -65,13 +68,9 @@
   # OTHER CONFIGURATIONS
   # ============================================================================
 
-  # system.activationScripts.applications.text = ''
-  #   set -e
-  #   echo >&2 "Switching wallpapers..."
-  #   /usr/bin/osascript -e "tell application \"Finder\" to set desktop picture to POSIX file
-  #   \"${
-  #     /Users/cemdk/.config/wallpapers/autumn-season-leafs-plant-scene-generative-ai.jpg
-  #   }\""
-  # '';
+  system.activationScripts.postActivation.text = ''
+    echo >&2 "Setting wallpaper..."
+    ${pkgs.desktoppr}/bin/desktoppr /Users/${user}/.config/wallpapers/oat/autumn-leaves-3.png
+  '';
 
 }
