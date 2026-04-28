@@ -99,6 +99,13 @@ in
     ".local/scripts/tmux-sessionizer".source = ../../dotfiles/scripts/tmux-sessionizer;
   };
 
+  home.activation.generateSshKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
+      mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+      ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -f "$HOME/.ssh/id_ed25519" -N "" -C "$USER@$(${pkgs.hostname}/bin/hostname)"
+    fi
+  '';
+
   # ============================================================================
   # EXTRA PROGRAMS
   # ============================================================================
