@@ -8,6 +8,11 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.inputs.brew-src.follows = "brew-src";
+    brew-src = {
+      url = "github:Homebrew/brew/5.1.10";
+      flake = false;
+    };
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
