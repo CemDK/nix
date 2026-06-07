@@ -94,6 +94,8 @@ in
       '';
     };
 
+  # Scripts are store-managed: they're stable, and being in the store gives atomic
+  # deploys and rollback, which is worth the nixswitch per change.
   home.file = {
     ".local/scripts/ready-tmux".source = ../../dotfiles/scripts/ready-tmux;
     ".local/scripts/tmux-sessionizer".source = ../../dotfiles/scripts/tmux-sessionizer;

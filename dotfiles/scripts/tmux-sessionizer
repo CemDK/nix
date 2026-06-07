@@ -3,6 +3,10 @@
 
 [[ $1 == "--debug" ]] && set -x
 
+# Name of the session we're running from, so we can filter it out below
+current_session=""
+[[ -n "$TMUX" ]] && current_session=$(tmux display-message -p '#S')
+
 # Collect candidate directories and prompt with fzf
 selected=$(
   {
@@ -10,7 +14,12 @@ selected=$(
     echo "$HOME/.config/nvim"
     find ~/dev/personal ~/dev/git ~/dev/public -mindepth 1 -maxdepth 1 -type d 2>/dev/null
     find ~/dev/work -mindepth 2 -maxdepth 2 -type d 2>/dev/null
-  } | sort | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}'
+  } | sort | while IFS= read -r dir; do
+      # Skip the dir whose derived session name matches the current session
+      name=$(basename "$dir" | tr ";,. " "____")
+      [[ -n "$current_session" && "$name" == "$current_session" ]] && continue
+      printf '%s\n' "$dir"
+    done | fzf --tmux='80%' --preview-window='50%,right' --layout=reverse --preview='eza --tree --colour=always {}'
 )
 
 # Exit if nothing was selected
