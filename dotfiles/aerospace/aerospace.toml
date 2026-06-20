@@ -244,7 +244,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     cmd-shift-s = 'move-workspace-to-monitor --wrap-around next'
 
     # Enter resize mode (matching glazewm left-alt+r)
-    cmd-r = 'mode resize'
+    # cmd-r = 'mode resize'
 
     # Reload config (matching glazewm left-alt+shift+r)
     cmd-shift-r = 'reload-config'

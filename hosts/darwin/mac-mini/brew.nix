@@ -3,9 +3,11 @@
     enable = true;
     # caskArgs.no_quarantine = true;
     onActivation = {
-      cleanup = "zap";
       autoUpdate = false;
       upgrade = true;
+      # brew 6.0 removed `--force-cleanup`; nix-darwin's cleanup="uninstall"
+      # still emits it, so pass brew's native `--cleanup` flag directly.
+      extraFlags = [ "--cleanup" ];
     };
     global.autoUpdate = true;
 

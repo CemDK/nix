@@ -209,5 +209,5 @@ in
     Install.WantedBy = [ "timers.target" ];
   };
 
-  gtk.gtk4.theme = null;
+  # gtk.gtk4.theme = null;
 }
