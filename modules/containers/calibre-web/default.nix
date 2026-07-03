@@ -21,9 +21,7 @@ in
   # OPTIONS
   # ============================================================================
   options.homelab.containers.${container} = {
-    enable = lib.mkEnableOption {
-      description = "Enable ${container}";
-    };
+    enable = lib.mkEnableOption container;
     url = lib.mkOption {
       type = lib.types.str;
       default = "calibre.${homelab.domain}";

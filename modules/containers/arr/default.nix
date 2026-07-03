@@ -46,9 +46,7 @@ in
   # OPTIONS
   # ============================================================================
   options.homelab.containers.${stack} = {
-    enable = lib.mkEnableOption {
-      description = "Enable ${stack} (wireguard, sabnzbd, sonarr, radarr, seerr)";
-    };
+    enable = lib.mkEnableOption "${stack} (wireguard, sabnzbd, sonarr, radarr, seerr)";
     configDir = lib.mkOption {
       type = lib.types.str;
       default = "${shared.configPath}/${stack}";
@@ -61,6 +59,12 @@ in
       );
       default = { };
     };
+    # TODO: template wg0.conf through Nix so the media subnet in the kill switch
+    # iptables rules stays in sync with networks.media.subnet.
+    # i.e. :
+    # PostUp  = DROUTE=$(ip route | grep default | awk '{print $3}'); HOMENET=192.168.178.0/24; MEDIANET=10.89.2.0/24; ip route add $HOMENET via $DROUTE; iptables -I OUTPUT -d $HOMENET -j ACCEPT; iptables -I OUTPUT -d $MEDIANET -j ACCEPT; iptables -A OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT && ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
+    # PreDown = DROUTE=$(ip route | grep default | awk '{print $3}'); HOMENET=192.168.178.0/24; MEDIANET=10.89.2.0/24; ip route del $HOMENET via $DROUTE; iptables -D OUTPUT -d $HOMENET -j ACCEPT; iptables -D OUTPUT -d $MEDIANET -j ACCEPT; iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT && ip6tables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
+
     networks = {
       egress = {
         name = lib.mkOption {

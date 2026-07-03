@@ -5,20 +5,28 @@
   ...
 }:
 let
-  containerData = config.homelab.containers.configPath;
+  containers = config.homelab.containers;
   systemctl = lib.getExe' pkgs.systemd "systemctl";
 
-  # Services to stop before backup (have mutable databases or state)
-  servicesToStop = [
-    "podman-navidrome"
-    "podman-audiobookshelf"
-    "podman-sonarr"
-    "podman-radarr"
-    "podman-sabnzbd"
-    "podman-seerr"
-    "podman-mealie"
-    "podman-calibre-web"
+  # Containers with mutable databases or state, stopped during backup
+  statefulContainers = [
+    "audiobookshelf"
+    "calibre-web"
+    "mealie"
+    "navidrome"
+    "radarr"
+    "sabnzbd"
+    "seerr"
+    "sonarr"
   ];
+
+  # Config-only containers, safe to back up while running
+  configOnlyContainers = [
+    "homer"
+    "traefik"
+  ];
+
+  servicesToStop = map (name: "podman-${name}") statefulContainers;
 
   stopAll = lib.concatMapStrings (s: "${systemctl} stop ${s}.service || true\n") servicesToStop;
   startAll = lib.concatMapStrings (s: "${systemctl} start ${s}.service || true\n") servicesToStop;
@@ -29,19 +37,11 @@ in
   services.restic.backups.containers = {
     initialize = true;
 
-    paths = [
-      "${containerData}/navidrome/data"
-      "${containerData}/audiobookshelf/data"
-      "${containerData}/arr/sonarr/data"
-      "${containerData}/arr/radarr/data"
-      "${containerData}/arr/sabnzbd/data"
-      "${containerData}/arr/seerr/data"
-      "${containerData}/arr/wireguard/data"
-      "${containerData}/traefik/data"
-      "${containerData}/mealie/data"
-      "${containerData}/calibre-web/data"
-      "${containerData}/homer/data"
-    ];
+    # Paths derive from each container's configDir option so they can't
+    # drift from where the containers actually mount their volumes.
+    paths =
+      map (name: "${containers.${name}.configDir}/data") (statefulContainers ++ configOnlyContainers)
+      ++ [ "${containers.arr-stack.configDir}/wireguard/data" ];
 
     exclude = [
       "*/cache/*"
