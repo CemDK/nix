@@ -2,16 +2,17 @@
   description = "Shokunix - Multi platform Nix configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    stylix.url = "github:nix-community/stylix";
+    stylix.url = "github:nix-community/stylix/release-26.05";
     stylix.inputs.nixpkgs.follows = "nixpkgs";
     walker.url = "github:abenz1267/walker";
     walker.inputs.nixpkgs.follows = "nixpkgs";
@@ -34,6 +35,16 @@
 
       helpers = import ./lib/helpers.nix { inherit lib; };
       inherit (helpers) assertHostDir mapModules format;
+
+      # Exposes the unstable channel as `pkgs.unstable.<pkg>`
+      overlays = [
+        (final: prev: {
+          unstable = import inputs.nixpkgs-unstable {
+            inherit (prev.stdenv.hostPlatform) system;
+            config.allowUnfree = true;
+          };
+        })
+      ];
 
       supportedSystems = [
         "x86_64-linux"
@@ -94,6 +105,7 @@
           inherit system;
           specialArgs = args;
           modules = [
+            { nixpkgs.overlays = overlays; }
             (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
             inputs.home-manager.darwinModules.home-manager
@@ -154,6 +166,7 @@
           inherit system;
           specialArgs = args;
           modules = [
+            { nixpkgs.overlays = overlays; }
             (hostDir + "/configuration.nix")
             inputs.home-manager.nixosModules.home-manager
             hmModule
@@ -195,7 +208,10 @@
         in
         # ----------------------------------------------------------------------
         home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs {
+            inherit system overlays;
+            config.allowUnfree = true;
+          };
           extraSpecialArgs = args;
           modules = [
             (hostDir + "/home.nix")
