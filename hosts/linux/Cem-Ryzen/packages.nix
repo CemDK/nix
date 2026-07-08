@@ -23,6 +23,12 @@
     pastel
     opencode
     sops
+    # Git related
+    lazygit
+    delta
+    diff-so-fancy
+    ydiff
+    difftastic
 
     # Sandboxing related
     socat

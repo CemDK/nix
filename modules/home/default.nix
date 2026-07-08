@@ -12,6 +12,7 @@ let
   configs = {
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
+    lazygit = "${localFiles}/lazygit";
     neovide = "${localFiles}/neovide";
     rofi = "${localFiles}/rofi";
     tmux = "${localFiles}/tmux";
