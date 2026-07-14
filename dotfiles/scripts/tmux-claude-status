@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# tmux status-right: compact Claude attention summary across all sessions.
+# Counts panes by @claude_status (set by claude-tmux-hook); shows only nonzero,
+# color-coded to match the prefix-a switcher (waiting=red, busy=orange, idle=green).
+
+tmux list-panes -a -F '#{@claude_status}' 2>/dev/null | awk '
+  $0=="waiting"{w++} $0=="idle"{i++} $0=="busy"{b++}
+  END{
+    out=""
+    if(w) out=out sprintf("#[fg=#ff4500]● %d ", w)
+    if(b) out=out sprintf("#[fg=#f78104]● %d ", b)
+    if(i) out=out sprintf("#[fg=#8ec07c]● %d ", i)
+    printf "%s#[default]", out
+  }'

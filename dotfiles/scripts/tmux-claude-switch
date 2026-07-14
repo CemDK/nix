@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# prefix-a: jump to a running Claude instance across all tmux sessions.
+# Rendered as a tree: a bold "session" header per project, Claude panes indented
+# beneath. Header rows are skipped by the cursor (effectively unselectable) via a
+# focus-event bind. Interactive filtering is owned by us: fzf runs display-only
+# (--disabled) and re-renders the grouped tree on every keystroke via reload,
+# which keeps the tree grouped while typing and avoids fzf's --nth/--with-nth
+# matcher entirely. Render output lines are: <pane|HDR>\t<visible-tree-row>.
+
+sep=$'\037'   # field sep unlikely to appear in pane titles/paths
+fmt="#{@claude_status}${sep}#{pane_id}${sep}#{session_name}${sep}#{@claude_since}${sep}#{pane_title}${sep}#{pane_current_path}"
+
+# --render [QUERY]: build the grouped tree. With a non-empty QUERY, keep only
+# children whose "session title" matches (case-insensitive) and emit headers
+# only for groups with >=1 surviving child.
+render() {
+  local query="$1"
+  local rows now
+  rows=$(tmux list-panes -a -F "$fmt" | awk -F"$sep" '$1 != ""')
+  [[ -z "$rows" ]] && return
+  now=$(date +%s)
+
+  # 1) awk: per-session urgency (min child rank) + name width; emits sortable
+  #    lines  <sortkey>\t<pane>\t<session>\t<searchkey>\t<indented child row>.
+  #    The current session (CLAUDE_CUR_SESSION) gets a leading 1 so it sorts to
+  #    the bottom — kept in the list, but never the first item.
+  # 2) sort: other sessions first by urgency, then name; current session last;
+  #    within a session waiting/idle/busy, longest-waiting first (fixed-width
+  #    keys sort lexically under LC_ALL=C).
+  # 3) awk: filter by QUERY, then inject a bold session header per surviving group.
+  printf '%s\n' "$rows" | awk -F"$sep" -v now="$now" -v cur="${CLAUDE_CUR_SESSION:-}" '
+    function rank(s){ return s=="waiting"?0 : s=="idle"?1 : 2 }
+    function dur(t,   d,m,s,h){ if(t==""){return sprintf("%7s","-")} d=now-t; if(d<0)d=0
+      if(d<3600){ m=int(d/60); s=d%60; return sprintf("%2dm %2ds",m,s) }
+      h=int(d/3600); m=int((d%3600)/60); return sprintf("%2dh %2dm",h,m) }
+    {
+      name=$5; sub(/^[^ -~]+[[:space:]]*/,"",name)   # drop leading status glyph
+      if(length(name)>40) name=substr(name,1,39) "…"
+      ST[NR]=$1; PA[NR]=$2; SE[NR]=$3; SI[NR]=$4; NM[NR]=name; RK[NR]=rank($1)
+      if(!($3 in su) || RK[NR]<su[$3]) su[$3]=RK[NR]
+      if(length(name)>wn) wn=length(name)
+    }
+    END{ for(i=1;i<=NR;i++){
+      ic = ST[i]=="waiting" ? "\033[31m●\033[0m" : ST[i]=="idle" ? "\033[32m●\033[0m" : "\033[33m●\033[0m"
+      child = sprintf("   %s  %-7s  %-*s  %s", ic, ST[i], wn, NM[i], dur(SI[i]))
+      cf = (cur!="" && SE[i]==cur) ? 1 : 0   # current session sorts last
+      printf "%d\034%d\034%s\034%d\034%012d\t%s\t%s\t%s %s\t%s\n", cf, su[SE[i]], SE[i], RK[i], SI[i], PA[i], SE[i], SE[i], NM[i], child
+    }}
+    ' | LC_ALL=C sort | awk -F'\t' -v query="$query" '
+      function flush(   i){
+        if(nkept>0){
+          printf "HDR\t\033[1m%s\033[0m\n", grpname
+          for(i=1;i<=nkept;i++) print kept[i]
+        }
+        nkept=0
+      }
+      BEGIN{ ql=tolower(query) }
+      {
+        # $2=pane $3=session $4=searchkey ("session title") $5=child row
+        if($3!=prev){ flush(); prev=$3; grpname=$3 }
+        if(ql=="" || index(tolower($4), ql)>0){ nkept++; kept[nkept]=$2 "\t" $5 }
+      }
+      END{ flush() }'
+}
+
+if [[ "$1" == "--render" ]]; then
+  render "$2"
+  exit 0
+fi
+
+# main mode: bail early if nothing is marked, else drive fzf in display-only mode.
+if ! tmux list-panes -a -F '#{@claude_status}' 2>/dev/null | grep -q .; then
+  tmux display-message "No Claude sessions found"
+  exit 0
+fi
+
+# Identify the session we were invoked from so render can sort it last (kept in
+# the list, just never first). The tmux binding passes it in via the env var;
+# fall back to display-message if unset. Export so fzf's reload children inherit.
+: "${CLAUDE_CUR_SESSION:=$(tmux display-message -p '#{session_name}' 2>/dev/null)}"
+export CLAUDE_CUR_SESSION
+
+# Skip header rows on focus. Direction comes from comparing the new position
+# ($FZF_POS) with the previous one (kept in $pf): moving up keeps skipping up,
+# down keeps skipping down, and the top header (pos 1) bounces back down.
+pf=$(mktemp "${TMPDIR:-/tmp}/claude-switch.XXXXXX"); printf '1\n' >"$pf"
+skip='if test {1} = HDR; then if test "$FZF_POS" = 1; then echo down; elif test "$FZF_POS" -le "$(cat '"$pf"' 2>/dev/null)"; then echo up; else echo down; fi; fi; echo "$FZF_POS" > '"$pf"
+
+sel=$(fzf --tmux=90% --ansi --disabled \
+  --delimiter='\t' --with-nth=2.. \
+  --layout=reverse --preview-window='right,70%' \
+  --bind 'start:reload(tmux-claude-switch --render {q})' \
+  --bind 'change:reload(tmux-claude-switch --render {q})' \
+  --bind "load:transform[$skip]" \
+  --bind "focus:transform[$skip]" \
+  --preview 'test {1} = HDR || tmux capture-pane -ep -t {1} | tail -n "$FZF_PREVIEW_LINES"' < /dev/null)
+
+rm -f "$pf"
+
+[[ -z "$sel" ]] && exit 0
+pane=$(printf '%s' "$sel" | cut -f1)
+{ [[ -z "$pane" ]] || [[ "$pane" == HDR ]]; } && exit 0   # a header, nothing to jump to
+
+tmux select-window -t "$pane"
+tmux select-pane   -t "$pane"
+if [[ -z "$TMUX" ]]; then
+  tmux attach-session -t "$pane"
+else
+  tmux switch-client -t "$pane"
+fi

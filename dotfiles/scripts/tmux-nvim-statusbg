@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Drive tmux status-bg from the FOCUSED pane so the bar blends into nvim only
+# while nvim is focused. nvim tags its own pane with the pane-local @nvim_bg
+# option (its theme's statusline color); every other pane leaves it unset.
+# tmux focus/window/session hooks call this to repaint on each switch.
+#
+# Called three ways:
+#   mark <color>   nvim VimEnter: tag $TMUX_PANE with <color>, then repaint
+#   unmark         nvim VimLeave: clear $TMUX_PANE's tag, then repaint
+#   (no args)      tmux hooks: repaint for whichever pane now has focus
+
+default="#062027"   # normal status-bg (matches thm_bg in tmux.conf)
+
+case "$1" in
+  mark)   [[ -n "$TMUX_PANE" ]] && tmux set -p -t "$TMUX_PANE" @nvim_bg "$2" 2>/dev/null ;;
+  unmark) [[ -n "$TMUX_PANE" ]] && tmux set -p -t "$TMUX_PANE" -u @nvim_bg  2>/dev/null ;;
+esac
+
+# Repaint from whichever pane currently has focus (nvim's pane == active pane
+# when it calls mark/unmark, so this reads back the value just set).
+bg=$(tmux display-message -p '#{@nvim_bg}' 2>/dev/null)
+tmux set -g status-bg "${bg:-$default}" 2>/dev/null
+
+exit 0

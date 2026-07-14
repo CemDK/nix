@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Mark the tmux pane running this Claude instance, so the prefix-a switcher
+# (tmux-claude-switch) can find and label it. Called from Claude Code hooks.
+# Also renames the window to "CLAUDE <model>", refreshed from the transcript so
+# a mid-session /model switch isn't left showing a stale name.
+# Usage: claude-tmux-hook <busy|waiting|idle|clear>
+
+input=$(cat)   # hook JSON on stdin; carries .transcript_path
+
+[[ -z "$TMUX_PANE" ]] && exit 0   # only act inside tmux
+
+case "$1" in
+  clear)
+    tmux set -p -t "$TMUX_PANE" -u @claude_status 2>/dev/null
+    tmux set -p -t "$TMUX_PANE" -u @claude_since  2>/dev/null
+    ;;
+  *)
+    tmux set -p -t "$TMUX_PANE" @claude_status "$1"            2>/dev/null
+    tmux set -p -t "$TMUX_PANE" @claude_since  "$(date +%s)"   2>/dev/null
+    ;;
+esac
+
+# Refresh the window name to the CURRENT model. Only on turn boundaries
+# (busy=prompt submitted, idle=response finished) — not on every PreToolUse,
+# which would re-scan the transcript many times per turn. After a response the
+# last assistant line holds the model just used, so /model switches show up here.
+if [[ "$1" == busy || "$1" == idle ]]; then
+  tp=$(printf '%s' "$input" | jq -r '.transcript_path // empty' 2>/dev/null)
+  if [[ -n "$tp" && -r "$tp" ]]; then
+    mid=$(jq -rc 'select(.type=="assistant") | .message.model // empty' "$tp" 2>/dev/null \
+            | grep '^claude-' | tail -1)
+    if [[ -n "$mid" ]]; then
+      # claude-opus-4-8 -> "Opus 4.8"; keep only short numeric segments (drops
+      # any date suffix like -20251001), capitalize the family name.
+      name=$(printf '%s' "$mid" | awk '{
+        id=$0; sub(/^claude-/,"",id); sub(/\[.*$/,"",id); n=split(id,a,"-")
+        f=toupper(substr(a[1],1,1)) substr(a[1],2); v=""
+        for(i=2;i<=n;i++) if(a[i]~/^[0-9]+$/ && length(a[i])<=2) v=(v==""?a[i]:v"."a[i])
+        printf "%s%s", f, (v==""?"":" " v) }')
+      [[ -n "$name" ]] && tmux rename-window -t "$TMUX_PANE" "CLAUDE $name" 2>/dev/null
+    fi
+  fi
+fi
+exit 0

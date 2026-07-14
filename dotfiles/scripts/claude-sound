@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Play a short notification sound for Claude Code events, from inside WSL.
+# Plays event-named WAVs (Kenney UI sounds) through Windows' Media.SoundPlayer
+# via powershell.exe. Fired from Claude Code hooks; runs detached so the hook
+# returns immediately and never blocks Claude on the sound.
+# Usage: claude-sound <question|done|attention>
+#
+# Sounds live in ~/.local/share/claude-sounds/<event>.wav (deployed by nix from
+# dotfiles/assets/sounds). To change a mapping, swap the file there.
+
+# Hooks pass JSON on stdin; drain it so the writer never blocks on a full pipe.
+[[ -t 0 ]] || cat >/dev/null 2>&1
+
+case "$1" in
+  question|done|attention) event="$1" ;;
+  *) exit 0 ;;
+esac
+
+sound="$HOME/.local/share/claude-sounds/${event}.wav"
+[[ -r "$sound" ]] || exit 0
+
+# Need Windows interop (powershell.exe) and wslpath to hand Windows a path it
+# understands; bail quietly if either is missing (e.g. non-WSL host).
+ps=$(command -v powershell.exe 2>/dev/null) || exit 0
+win=$(wslpath -w "$sound" 2>/dev/null) || exit 0
+
+# Fire and forget: detach so the hook doesn't wait on playback. PlaySync (not
+# Play) keeps the detached process alive until the sound finishes — Play() would
+# return instantly and the process could exit mid-sound.
+setsid "$ps" -NoProfile -NonInteractive \
+  -Command "(New-Object Media.SoundPlayer '${win}').PlaySync()" \
+  >/dev/null 2>&1 < /dev/null &
+
+exit 0
