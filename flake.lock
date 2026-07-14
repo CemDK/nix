@@ -242,17 +242,17 @@
     },
     "nix-keylayout": {
       "locked": {
-        "lastModified": 1776124980,
-        "narHash": "sha256-jN01w6Ca2tsqE2/d9od355ura6zCjLyy4dE1xLCitg4=",
-        "ref": "refs/heads/main",
-        "rev": "e73f8f8e88d5bbcba2cd5584dd704943877cc706",
-        "revCount": 1,
-        "type": "git",
-        "url": "ssh://git@github.com/CemDK/nix-keylayout"
+        "lastModified": 1784060848,
+        "narHash": "sha256-E0NLMEZCMGdA5ae3EOFh3CRtCBgTr5LRYuSc8KPHug4=",
+        "owner": "CemDK",
+        "repo": "nix-keylayout",
+        "rev": "536fa4a70c3ab614f87c4b7d4cb00b7543d00bb6",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/CemDK/nix-keylayout"
+        "owner": "CemDK",
+        "repo": "nix-keylayout",
+        "type": "github"
       }
     },
     "nixos-hardware": {

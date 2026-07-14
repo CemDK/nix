@@ -16,7 +16,7 @@
     stylix.inputs.nixpkgs.follows = "nixpkgs";
     walker.url = "github:abenz1267/walker";
     walker.inputs.nixpkgs.follows = "nixpkgs";
-    nix-keylayout.url = "git+ssh://git@github.com/CemDK/nix-keylayout";
+    nix-keylayout.url = "github:CemDK/nix-keylayout";
     nix-keylayout.flake = true;
   };
 
