@@ -28,7 +28,7 @@
     nodejs
     pnpm
     rustup # includes rust-analyzer
-    typescript
+    typescript-go
 
     # ---------------------------------
     # LSP servers and tools
@@ -40,7 +40,7 @@
     biome
     eslint
     nixfmt
-    prettier
+    # prettier
     statix # nix linter
     treefmt
 
@@ -54,7 +54,6 @@
     roslyn-ls
     tailwindcss-language-server
     terraform-ls
-    typescript-go
     typescript-language-server
     vscode-langservers-extracted
     yaml-language-server
