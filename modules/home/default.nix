@@ -40,6 +40,12 @@ in
         # zsh
         # ---------------------------------
 
+        #diffing tools
+        delta
+        diff-so-fancy
+        ydiff
+        difftastic
+
         alacritty
         bat
         btop

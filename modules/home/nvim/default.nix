@@ -40,7 +40,7 @@
     biome
     eslint
     nixfmt
-    # prettier
+    prettierd # markdown/js/ts/json/yaml/css formatter (daemonized prettier)
     statix # nix linter
     treefmt
 

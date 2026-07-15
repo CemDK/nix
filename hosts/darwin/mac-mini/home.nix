@@ -8,6 +8,6 @@
 
   programs.desktoppr = {
     enable = true;
-    settings.picture = "${config.home.homeDirectory}/.config/wallpapers/oat/autumn-leaves-3.png";
+    settings.picture = "${config.home.homeDirectory}/.config/nix/dotfiles/wallpapers/oat/autumn-leaves-3.png";
   };
 }
