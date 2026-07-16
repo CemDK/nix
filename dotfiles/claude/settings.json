@@ -1,0 +1,163 @@
+{
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "includeCoAuthoredBy": false,
+    "permissions": {
+        "allow": [
+            "WebFetch",
+            "WebSearch",
+            "Glob",
+            "Grep",
+            "LS",
+            "Read",
+            "NotebookRead",
+            "Task",
+            "TodoWrite",
+            "Bash(cat:*)",
+            "Bash(date:*)",
+            "Bash(echo:*)",
+            "Bash(file:*)",
+            "Bash(find:*)",
+            "Bash(grep:*)",
+            "Bash(head:*)",
+            "Bash(ls:*)",
+            "Bash(mkdir:*)",
+            "Bash(pnpm lint:*)",
+            "Bash(sort:*)",
+            "Bash(tail:*)",
+            "Bash(tr:*)",
+            "Bash(wc:*)",
+            "Skill(frontend-design)",
+            "Skill(frontend-design:frontend-design)"
+        ],
+        "deny": [
+            "Read(.env)",
+            "Read(.env.*)",
+            "Read(**/secrets/*)",
+            "Read(**/*credential*)",
+            "Read(**/*.pem)",
+            "Read(**/*.key)"
+        ]
+    },
+    "model": "opus[1m]",
+    "hooks": {
+        "SessionStart": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook idle"
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook busy"
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook waiting"
+                    },
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-sound attention"
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "AskUserQuestion",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook waiting"
+                    },
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-sound question"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook idle"
+                    },
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-sound done"
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-tmux-hook clear"
+                    }
+                ]
+            }
+        ]
+    },
+    "statusLine": {
+        "type": "command",
+        "command": "~/.claude/statusline.sh"
+    },
+    "enabledPlugins": {
+        "frontend-design@claude-plugins-official": true,
+        "feature-dev@claude-plugins-official": true,
+        "code-review@claude-plugins-official": false,
+        "security-guidance@claude-plugins-official": true,
+        "agent-sdk-dev@claude-plugins-official": false,
+        "explanatory-output-style@claude-plugins-official": false,
+        "rust-analyzer-lsp@claude-plugins-official": false,
+        "typescript-lsp@claude-plugins-official": false,
+        "lua-lsp@claude-plugins-official": false,
+        "plugin-dev@claude-plugins-official": false,
+        "learning-output-style@claude-plugins-official": false,
+        "pr-review-toolkit@claude-plugins-official": true,
+        "code-review@claude-code-plugins": false,
+        "claude-code-wakatime@wakatime": true,
+        "figma@claude-plugins-official": true
+    },
+    "extraKnownMarketplaces": {
+        "claude-code-plugins": {
+            "source": {
+                "source": "github",
+                "repo": "anthropics/claude-code"
+            }
+        },
+        "wakatime": {
+            "source": {
+                "source": "git",
+                "url": "https://github.com/wakatime/claude-code-wakatime.git"
+            }
+        }
+    },
+    "alwaysThinkingEnabled": true,
+    "effortLevel": "high",
+    "promptSuggestionEnabled": false,
+    "awaySummaryEnabled": false,
+    "showClearContextOnPlanAccept": true,
+    "tui": "fullscreen",
+    "skipWorkflowUsageWarning": true,
+    "editorMode": "vim",
+    "verbose": true,
+    "agentPushNotifEnabled": true,
+    "voiceEnabled": true
+}

@@ -118,6 +118,9 @@ in
     };
   };
 
+  home.file.".claude/settings.json".source = link "${localFiles}/claude/settings.json";
+  home.file.".claude/statusline.sh".source = link "${localFiles}/claude/statusline.sh";
+
   home.activation.generateSshKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
       mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
