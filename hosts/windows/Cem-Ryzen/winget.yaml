@@ -1,0 +1,389 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+#
+# Declarative package set for the Windows side of Cem-Ryzen.
+# Apply from WSL with `make windows` (runs `winget configure` via interop).
+#
+# NOTE: winget configure is additive-only — it installs what is listed here
+# but never removes anything. Uninstalls stay manual (`winget uninstall <id>`).
+# Find IDs with `winget search <name>`; snapshot reality with `winget export`.
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    # ------------------------------------------------------------------
+    # WSL — bootstrap for the Nix side of this repo
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: wsl
+      settings:
+        id: Microsoft.WSL
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: ubuntu
+      settings:
+        id: Canonical.Ubuntu
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: debian
+      settings:
+        id: Debian.Debian
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Dev tooling
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: git
+      settings:
+        id: Git.Git
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: github-cli
+      settings:
+        id: GitHub.cli
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: git-lfs
+      settings:
+        id: GitHub.GitLFS
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vscode
+      settings:
+        id: Microsoft.VisualStudioCode
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: zed
+      settings:
+        id: ZedIndustries.Zed
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: neovim
+      settings:
+        id: Neovim.Neovim
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: neovide
+      settings:
+        id: Neovide.Neovide
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: notepadplusplus
+      settings:
+        id: Notepad++.Notepad++
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: cmake
+      settings:
+        id: Kitware.CMake
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: nodejs-lts
+      settings:
+        id: OpenJS.NodeJS.22
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: python
+      settings:
+        id: Python.Python.3.13
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: rustup
+      settings:
+        id: Rustlang.Rustup
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: powershell
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: windows-terminal
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: docker-desktop
+      settings:
+        id: Docker.DockerDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: visual-studio
+      settings:
+        id: Microsoft.VisualStudio.Community
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vs2019-buildtools
+      settings:
+        id: Microsoft.VisualStudio.2019.BuildTools
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: dotnet-sdk-10
+      settings:
+        id: Microsoft.DotNet.SDK.10
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: unity-hub
+      settings:
+        id: Unity.UnityHub
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Desktop environment (tiling WM + bar + automation)
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: glazewm
+      settings:
+        id: glzr-io.glazewm
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: zebar
+      settings:
+        id: glzr-io.zebar
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: autohotkey
+      settings:
+        id: AutoHotkey.AutoHotkey
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: powertoys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: flux
+      settings:
+        id: flux.flux
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Applications
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: zen-browser
+      settings:
+        id: Zen-Team.Zen-Browser
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: bitwarden
+      settings:
+        id: Bitwarden.Bitwarden
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: claude
+      settings:
+        id: Anthropic.Claude
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: anki
+      settings:
+        id: Anki.Anki
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: calibre
+      settings:
+        id: calibre.calibre
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: sumatrapdf
+      settings:
+        id: SumatraPDF.SumatraPDF
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: 7zip
+      settings:
+        id: 7zip.7zip
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: winrar
+      settings:
+        id: RARLab.WinRAR
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: file-pilot
+      settings:
+        id: Voidstar.FilePilot
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: localsend
+      settings:
+        id: LocalSend.LocalSend
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: jdownloader
+      settings:
+        id: AppWork.JDownloader
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: openaudible
+      settings:
+        id: OpenAudible.OpenAudible
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: stickies
+      settings:
+        id: ZhornSoftware.Stickies
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vlc
+      settings:
+        id: VideoLAN.VLC
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: obs-studio
+      settings:
+        id: OBSProject.OBSStudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: plex
+      settings:
+        id: XP9CDQW6ML4NQN
+        source: msstore
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: ausweisapp
+      settings:
+        id: Governikus.AusweisApp
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Imaging / flashing / VM
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: rufus
+      settings:
+        id: Rufus.Rufus
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: etcher
+      settings:
+        id: Balena.Etcher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: rpi-imager
+      settings:
+        id: RaspberryPiFoundation.RaspberryPiImager
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: virtualbox
+      settings:
+        id: Oracle.VirtualBox
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Networking
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: tailscale
+      settings:
+        id: Tailscale.Tailscale
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: wireguard
+      settings:
+        id: WireGuard.WireGuard
+        source: winget
+
+    # ------------------------------------------------------------------
+    # 3D printing / CAD
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: blender
+      settings:
+        id: BlenderFoundation.Blender
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: freecad
+      settings:
+        id: FreeCAD.FreeCAD
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: bambu-studio
+      settings:
+        id: Bambulab.Bambustudio
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: orca-slicer
+      settings:
+        id: SoftFever.OrcaSlicer
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Gaming
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: steam
+      settings:
+        id: Valve.Steam
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: gog-galaxy
+      settings:
+        id: GOG.Galaxy
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: epic-games
+      settings:
+        id: EpicGames.EpicGamesLauncher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: ea-app
+      settings:
+        id: ElectronicArts.EADesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: rockstar-launcher
+      settings:
+        id: RockstarGames.Launcher
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: retroarch
+      settings:
+        id: Libretro.RetroArch
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Hardware / monitoring
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: hwinfo
+      settings:
+        id: REALiX.HWiNFO
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: fancontrol
+      settings:
+        id: Rem0o.FanControl
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: pawnio # kernel driver used by FanControl
+      settings:
+        id: namazso.PawnIO
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: logitech-ghub
+      settings:
+        id: Logitech.GHUB
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: nzxt-cam
+      settings:
+        id: NZXT.CAM
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: obinskit # Anne Pro keyboard
+      settings:
+        id: ObinsKit.ObinsKit
+        source: winget
+
+    # Installed today but questionable — uncomment to keep on a fresh machine:
+    #   equalsraf.neovim-qt        (redundant next to Neovide)
+    #   Anaconda.Miniconda3        (old py312 install; prefer WSL/nix python)
+    #   Oracle.JDK.17              (stale JDK 20)
+    #   Microsoft.DotNet.SDK.7     (EOL)
+    #   Microsoft.msodbcsql.17     (SQL Server dev leftovers?)
+    #   Microsoft.WebDeploy        (SQL Server dev leftovers?)

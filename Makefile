@@ -20,7 +20,7 @@ else
   SWITCH_CMD := $(NH) home switch .
 endif
 
-.PHONY: bootstrap check lint switch update clean iso secrets secrets-homelab rekey sync deploy
+.PHONY: bootstrap check lint switch update clean iso secrets secrets-homelab rekey sync deploy windows
 
 # ============================================================================
 # BOOTSTRAP
@@ -83,6 +83,12 @@ iso:
 		}).config.system.build.isoImage" \
 		-o result-iso 2>&1 | tee $(LOG); \
 	echo "ISO written to result-iso/iso/"
+
+# ============================================================================
+# WINDOWS HOST (winget configure via WSL interop)
+# ============================================================================
+windows:
+	@./hosts/windows/apply.sh
 
 # ============================================================================
 # SECRETS (sops)
