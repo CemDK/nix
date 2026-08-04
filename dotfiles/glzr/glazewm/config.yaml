@@ -44,14 +44,14 @@ gaps:
   scale_with_dpi: true
 
   # Gap between adjacent windows.
-  inner_gap: "10px"
+  inner_gap: "0px"
 
   # Gap between windows and the screen edge.
   outer_gap:
-    top: "50px"
-    right: "20px"
-    bottom: "20px"
-    left: "20px"
+    top: "45px"
+    right: "11px"
+    bottom: "17px"
+    left: "11px"
 
 window_effects:
   # Visual effects to apply to the focused window.
@@ -97,8 +97,7 @@ window_effects:
       opacity: "0%"
 
 window_behavior:
-  # 'tiling', 'floating'.
-  initial_state: "tiling"
+  initial_state: "tiling" # 'tiling' or 'floating'.
 
   # `set-floating`, are used without any flags.
   state_defaults:
@@ -107,7 +106,7 @@ window_behavior:
       centered: true
 
       # Whether to show floating windows as always on top.
-      shown_on_top: false
+      shown_on_top: true
 
     fullscreen:
       # Maximize the window if possible. If the window doesn't have a
@@ -129,21 +128,21 @@ workspaces:
   - name: "2"
     display_name: "2 terminal"
     bind_to_monitor: 1
-    keep_alive: true
+    keep_alive: false
   - name: "3"
     display_name: "3 editor"
     bind_to_monitor: 1
-    keep_alive: true
+    keep_alive: false
   - name: "4"
     display_name: "4 explorer"
     bind_to_monitor: 1
-    keep_alive: true
+    keep_alive: false
   - name: "5"
-    display_name: "5 other"
+    display_name: "5 games"
     bind_to_monitor: 1
     keep_alive: false
   - name: "6"
-    display_name: "6 anki"
+    display_name: "6 others"
     bind_to_monitor: 1
     keep_alive: false
   - name: "7"
@@ -155,7 +154,11 @@ workspaces:
     bind_to_monitor: 1
     keep_alive: false
   - name: "9"
-    display_name: "9 games"
+    display_name: "9 launchers"
+    bind_to_monitor: 1
+    keep_alive: false
+  - name: "10"
+    display_name: "10 stuff"
     bind_to_monitor: 1
     keep_alive: false
 
@@ -180,57 +183,64 @@ window_rules:
 
       - window_process: { equals: "SnippingTool" }
 
+      - window_process: { equals: "League of Legends" }
+      - window_process: { equals: "LeagueClientUx" }
+
+      - window_process: { equals: "gimp-3" }
+        window_title: { not_regex: "(GIMP|GNU Image Manipulation Program)" }
+
+      - window_process: { equals: "msrdc" }
+
   # ---------------------------------------------------------------------------
   # WORKSPACE 1
   # ---------------------------------------------------------------------------
-  - commands: ["move --workspace 1"]
+  - commands: ["move --workspace 1", "focus --workspace 1"]
     match:
-      - window_process: { regex: "[Zz]en" }
-      - window_title: { regex: "[Mm]ozilla [Ff]irefox" }
+      - window_process: { equals: "zen" }
+      - window_process: { equals: "firefox" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 0
   # ---------------------------------------------------------------------------
   # Move Edge (for dev) and pip windows to second screen
   # The size commands make it so edge and the pip fill the screen properly
-  - commands: ["move --workspace 0", "size --width 1400 --height 1650"]
+  - commands: ["move --workspace 0", "size --width 1400 --height 1720"]
     match:
-      - window_process: { regex: "edge" }
+      - window_process: { equals: "msedge" }
+      - window_process: { equals: "chrome" }
 
-  - commands: ["move --workspace 0", "size --width 1400 --height 790"]
+  - commands: ["move --workspace 0", "size --width 1440 --height 810"]
     match:
-      - window_title: { regex: "[Bb]ild-im-[Bb]ild" }
-        window_class: { regex: "Chrome_WidgetWin_1|MozillaDialogClass" }
-      - window_title: { regex: "[Pp]icture.in.[Pp]icture" }
-        window_class: { regex: "Chrome_WidgetWin_1|MozillaDialogClass" }
+      - window_title: { equals: "Picture-in-Picture" }
+        window_class: { equals: "MozillaDialogClass" }
+        window_process: { equals: "zen" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 2
   # ---------------------------------------------------------------------------
   - commands: ["move --workspace 2"]
     match:
-      - window_process: { regex: "[Tt]erminal" }
+      - window_process: { equals: "WindowsTerminal" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 3
   # ---------------------------------------------------------------------------
-  - commands: ["move --workspace 3", "focus --workspace 3"]
+  - commands: ["move --workspace 3"]
     match:
-      - window_process: { regex: "Visual Studio Code" }
-      - window_process: { regex: "neovide" }
-      - window_title: { regex: "^[Vv]isual [Ss]tudio [Cc]ode$" }
-
-  - commands: ["move --workspace 3", "focus --workspace 3"]
-    match:
-      - window_title: { regex: "Microsoft Visual Studio 2022" }
+      - window_process: { equals: "Code" }
+      - window_process: { equals: "neovide" }
+      - window_process: { equals: "devenv" }
+      - window_process: { equals: "Zed" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 4
   # ---------------------------------------------------------------------------
   - commands: ["move --workspace 4", "focus --workspace 4"]
     match:
-      - window_process: { regex: "explorer" }
-        window_class: { not_equals: "OperationStatusWindow" }
+      # Move default Windows file explorer windows only
+      - window_process: { equals: "explorer" }
+        window_class: { equals: "CabinetWClass" }
+        window_title: { equals: "Dieser PC" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 5
@@ -238,19 +248,30 @@ window_rules:
   - commands: ["move --workspace 5"]
     match:
       - window_process: { equals: "Fusion360" }
+      - window_process: { equals: "retroarch" }
+
+  - commands: ["move --workspace 5", "toggle-fullscreen"]
+    match:
+      - window_process: { equals: "javaw" }
+        window_title: { regex: "Minecraft" }
+
+  - commands: ["move --workspace 5", "set-floating"]
+    match:
+      - window_process: { equals: "Minecraft" }
+        window_title: { equals: "Minecraft Launcher" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 6
   # ---------------------------------------------------------------------------
   - commands: ["move --workspace 6"]
     match:
-      - window_process: { regex: "[Aa]nki" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 7
   # ---------------------------------------------------------------------------
   - commands: ["move --workspace 7"]
     match:
+      - window_process: { equals: "Anki" }
       - window_process: { equals: "Obsidian" }
 
   # ---------------------------------------------------------------------------
@@ -258,36 +279,79 @@ window_rules:
   # ---------------------------------------------------------------------------
   - commands: ["move --workspace 8", "focus --workspace 8"]
     match:
-      - window_process: { regex: "[Pp]lex|vlc|[Ss]umatra" }
+      - window_process: { equals: "Plex" }
+      - window_process: { equals: "SumatraPDF" }
+      - window_process: { equals: "vlc" }
+      - window_process: { equals: "calibre" }
+      - window_process: { equals: "calibre-parallel" }
+      - window_process: { equals: "VirtualBoxVM" }
+      - window_process: { equals: "olk" }
+      - window_process: { equals: "bambu-studio" }
+      - window_process: { equals: "gimp-3" }
+      - window_process: { equals: "blender" }
 
-  - commands: ["move --workspace 8"]
+  - commands: ["move --workspace 8", "set-fullscreen"]
     match:
-      - window_process: { equals: "Unity Hub" }
       - window_process: { equals: "Unity" }
-      - window_title: { regex: "[Vv]irtual[Bb]ox" }
+
+  - commands: ["move --workspace 8", "set-floating", "set-minimized"]
+    match:
+      - window_process: { equals: "Unity" }
+        window_class: { equals: "ConsoleWindowClass" }
 
   # ---------------------------------------------------------------------------
   # WORKSPACE 9
   # ---------------------------------------------------------------------------
-  - commands: ["move --workspace 9", "focus --workspace 9"]
+  # Move Steam main window to workspace 9
+  - commands: ["move --workspace 9"]
     match:
-      - window_process: { regex: "[Ss]team|[Ee]pic[Gg]ames|[Dd]iscord" }
-      - window_title: { regex: "GOG Galaxy" }
+      - window_process: { equals: "Unity Hub" }
+      - window_process: { equals: "steamwebhelper" }
+        window_title: { equals: "Steam" }
 
-  - commands: ["move --workspace 9", "focus --workspace 9"]
+  # Move Steam friends list to workspace 9 and resize it
+  - commands: ["move --workspace 9", "size --width 440"]
     match:
-      - window_process: { regex: "[Mm]inecraft" }
+      - window_process: { equals: "steamwebhelper" }
+        window_title: { equals: "Freundesliste" }
+
+  # Set all other Steam windows to floating
+  - commands: ["move --workspace 9", "set-floating"]
+    match:
+      - window_process: { equals: "steamwebhelper" }
+        window_title: { not_regex: "Steam|Freundesliste" }
+
+  - commands: ["move --workspace 9"]
+    match:
+      - window_process: { equals: "EpicGamesLauncher" }
+      - window_process: { equals: "GalaxyClient" }
+
+  # ---------------------------------------------------------------------------
+  # WORKSPACE 10
+  # ---------------------------------------------------------------------------
+  - commands: ["move --workspace 10"]
+    match:
+      - window_process: { equals: "Discord" }
 
   # ---------------------------------------------------------------------------
   # FLOATING
   # ---------------------------------------------------------------------------
   - commands: ["set-floating"]
     match:
-      - window_title: { regex: "[Mm]inecraft [Ll]auncher" }
-      - window_title: { regex: "[Tt]ask-[Mm]anager" }
-      - window_title: { regex: "calc|Rechner" }
-      - window_title: { regex: "Extension.*Bitwarden.*" }
-      - window_title: { regex: "[Vv]irtual[Bb]ox Manager" }
+      # Set Browser extension windows to floating.
+      - window_process: { equals: "zen" }
+        window_title: { regex: "Extension" }
+        window_class: { equals: "MozillaDialogClass" }
+      - window_process: { equals: "Taskmgr" }
+      - window_title: { equals: "Rechner" }
+      - window_title: { regex: "Window Spy" }
+      - window_process: { equals: "VirtualBoxVM" }
+        window_title: { equals: "Close Virtual Machine" }
+      - window_process: { equals: "blender" }
+        window_title: { equals: "Blender File View" }
+      - window_process: { equals: "explorer" }
+        window_class: { not_equals: "CabinetWClass" }
+        window_title: { not_equals: "Dieser PC" }
 
 binding_modes:
   # When enabled, the focused window can be resized via arrow keys or HJKL.
@@ -335,14 +399,14 @@ keybindings:
     bindings: ["alt+shift+j", "alt+shift+down"]
 
   # Resize focused window by a percentage or pixel amount.
-  - commands: ["resize --width -2%"]
-    bindings: ["alt+u"]
-  - commands: ["resize --width +2%"]
+  # - commands: ["resize --width -2%"]
+    # bindings: ["alt+u"]
+  # - commands: ["resize --width +2%"]
     # bindings: ['alt+p']
-  - commands: ["resize --height +2%"]
-    bindings: ["alt+o"]
+  # - commands: ["resize --height +2%"]
+    # bindings: ["alt+o"]
   # - commands: ['resize --height -2%']
-  #   bindings: ['alt+i']
+    # bindings: ['alt+i']
 
   # As an alternative to the resize keybindings above, resize mode enables
   # resizing via arrow keys or HJKL. The binding mode is defined above with
@@ -373,8 +437,8 @@ keybindings:
     bindings: ["alt+t"]
 
   # Change the focused window to be fullscreen.
-  # - commands: ["toggle-fullscreen"]
-  #   bindings: ["alt+i"]
+  - commands: ["toggle-fullscreen"]
+    bindings: ["alt+shift+f"]
 
   # Minimize focused window.
   - commands: ["toggle-minimized"]
@@ -407,23 +471,33 @@ keybindings:
 
   # Focus the next/previous active workspace defined in `workspaces` config.
   - commands: ["focus --next-active-workspace"]
-    bindings: ["alt+s", "alt+n"]
+    bindings: ["alt+s"]
   - commands: ["focus --prev-active-workspace"]
-    bindings: ["alt+a", "alt+p"]
+    bindings: ["alt+a"]
 
   # Focus the workspace that last had focus.
   - commands: ["focus --recent-workspace"]
     bindings: ["alt+d"]
 
+  # | Key       | Workspace | Description           |
+  # |-----------|----------|-----------------------|
+  # | alt+H     | 0        | edge                  |
+  # | alt+F     | 1        | [F]irefox or browser  |
+  # | alt+J     | 2        | terminal              |
+  # | alt+K     | 3        | [K]ode or editor      |
+  # | alt+N     | 3        | [N]eovim or editor    |
+  # | alt+L     | 4        | explorer              |
+  # | alt+;     | 5        | games                 |
+  # | alt+O     | 7        | [O]bsidian            |
   # Change focus to a workspace defined in `workspaces` config.
   - commands: ["focus --workspace 0"]
     bindings: ["alt+0", "alt+h"]
   - commands: ["focus --workspace 1"]
-    bindings: ["alt+1", "alt+f"]
+    bindings: ["alt+1", "alt+f"] # alt + [F]irefox
   - commands: ["focus --workspace 2"]
-    bindings: ["alt+2", "alt+j"]
+    bindings: ["alt+2", "alt+j"] # alt + [J]erminal :)
   - commands: ["focus --workspace 3"]
-    bindings: ["alt+3", "alt+k"]
+    bindings: ["alt+3", "alt+k", "alt+n"] # alt + [N]eovim or alt + [K]ode :)
   - commands: ["focus --workspace 4"]
     bindings: ["alt+4", "alt+l"]
   - commands: ["focus --workspace 5"]
@@ -431,7 +505,7 @@ keybindings:
   - commands: ["focus --workspace 6"]
     bindings: ["alt+6"]
   - commands: ["focus --workspace 7"]
-    bindings: ["alt+7"]
+    bindings: ["alt+7", "alt+o"] # alt + [O]bsidian
   - commands: ["focus --workspace 8"]
     bindings: ["alt+8"]
   - commands: ["focus --workspace 9"]
@@ -439,14 +513,14 @@ keybindings:
 
   # Move the focused window's parent workspace to a monitor in a given
   # direction.
-  - commands: ["move-workspace --direction left"]
-    bindings: ["alt+shift+a"]
-  - commands: ["move-workspace --direction right"]
-    bindings: ["alt+shift+f"]
-  - commands: ["move-workspace --direction up"]
-    bindings: ["alt+shift+d"]
-  - commands: ["move-workspace --direction down"]
-    bindings: ["alt+shift+s"]
+  # - commands: ["move-workspace --direction left"]
+  #   bindings: ["alt+shift+a"]
+  # - commands: ["move-workspace --direction right"]
+  #   bindings: ["alt+shift+f"]
+  # - commands: ["move-workspace --direction up"]
+  #   bindings: ["alt+shift+d"]
+  # - commands: ["move-workspace --direction down"]
+  #   bindings: ["alt+shift+s"]
 
   # Move focused window to a workspace defined in `workspaces` config.
   - commands: ["move --workspace 1", "focus --workspace 1"]

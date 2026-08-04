@@ -79,9 +79,9 @@
     blueman # Bluetooth manager
 
     # Screenshot and screen recording
-    # grim # Screenshot
-    # slurp # Region selector
-    # wl-clipboard # Clipboard utilities
+    grim # Screenshot
+    slurp # Region selector
+    wl-clipboard # Clipboard utilities
 
     # File manager
     # xfce.thunar

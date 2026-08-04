@@ -17,7 +17,7 @@
     minio-client
     redis
     stripe-cli
-    dioxus-cli
+    # dioxus-cli
     ngrok
     bun
     pastel
@@ -42,6 +42,7 @@
     iperf3
     mkvtoolnix-cli
     spotdl
+    deno
     yt-dlp
 
     # TODO: look into making this work nicely
