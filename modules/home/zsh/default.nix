@@ -11,11 +11,7 @@
 
     starship = {
       enable = true;
-      settings = {
-        add_newline = true;
-        aws.disabled = true;
-        gcloud.disabled = true;
-      };
+      settings = builtins.fromTOML (builtins.readFile ../../../dotfiles/starship/starship.toml);
     };
 
     zsh = {

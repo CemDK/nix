@@ -1,0 +1,10 @@
+# Starship config for WSL zsh (via home-manager fromTOML). The Windows
+# PowerShell prompt uses starship-windows.toml instead (deployed by
+# hosts/windows/apply.sh), so each system has its own prompt style.
+add_newline = true
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
