@@ -122,7 +122,7 @@
           "/Applications/Zen.app"
           "${pkgs.alacritty}/Applications/Alacritty.app"
           "/Applications/Anki.app"
-          "${pkgs.obsidian}/Applications/Obsidian.app"
+          # "${pkgs.obsidian}/Applications/Obsidian.app"
           "/System/Applications/System Settings.app"
         ];
         persistent-others = [

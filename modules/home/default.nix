@@ -60,7 +60,7 @@ in
         nh
         neovide
         neovim
-        obsidian
+        # obsidian
         ripgrep
         starship
         statix
