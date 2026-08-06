@@ -20,13 +20,12 @@ lib.optionalString pkgs.stdenv.isDarwin ''
   fi
   unset __conda_setup
   # <<< conda initialize <<<
-''
-+ lib.optionalString config.targets.genericLinux.enable ''
-  alias pbcopy='xclip -selection clipboard'
-''
-# Common for all configs:
-+ ''
+
+  # On Linux programs.direnv provides the zsh hook; on Darwin direnv comes from brew
   if command -v direnv > /dev/null; then
     eval "$(direnv hook zsh)";
   fi
+''
++ lib.optionalString config.targets.genericLinux.enable ''
+  alias pbcopy='xclip -selection clipboard'
 ''

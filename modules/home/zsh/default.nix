@@ -63,6 +63,25 @@
       # ============================================================================
       # INIT
       # ============================================================================
+      # Full compinit (with compaudit security scan) only when the dump is older
+      # than 24h; otherwise trust the cache (-C). Compile the dump in the
+      # background so sourcing it is faster on the next startup.
+      completionInit = ''
+        # skip the autoload when compinit is already loaded (e.g. re-sourcing .zshrc),
+        # since autoload discards the loaded function and forces a reload from fpath
+        (( $+functions[compinit] )) || autoload -U compinit
+        if [[ -n $ZDOTDIR/.zcompdump(#qN.mh-24) ]]; then
+          compinit -C
+        else
+          compinit
+        fi
+        {
+          if [[ -s $ZDOTDIR/.zcompdump && (! -s $ZDOTDIR/.zcompdump.zwc || $ZDOTDIR/.zcompdump -nt $ZDOTDIR/.zcompdump.zwc) ]]; then
+            zcompile $ZDOTDIR/.zcompdump
+          fi
+        } &!
+      '';
+
       shellAliases = import ./aliases.nix;
       envExtra = ''
         PATH=$PATH:${config.home.homeDirectory}/.cargo/bin
@@ -72,12 +91,7 @@
 
       initContent = ''
 
-        export COMPDUMP=$HOME/.cache/.zcompdump-$HOST
         export WAKATIME_HOME=$XDG_CONFIG_HOME/wakatime
-
-        eval "$(zoxide init zsh)"
-        eval "$(starship init zsh)"
-
 
         # HISTORY
         setopt MENU_COMPLETE
