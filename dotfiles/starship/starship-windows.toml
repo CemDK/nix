@@ -1,0 +1,72 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+add_newline = true
+
+format = """
+[](fg:orange)\
+$os\
+$username\
+[](fg:orange bg:teal1)\
+$shell\
+[](fg:teal1 bg:teal2)\
+$directory\
+[](fg:teal2 bg:teal3)\
+$git_branch\
+$git_status\
+[](fg:teal3 bg:dark)\
+$time\
+[ ](fg:dark)\
+$line_break$character"""
+
+palette = 'oat'
+
+[palettes.oat]
+orange = '#F78104'
+teal1 = '#00767A'
+teal2 = '#005F60'
+teal3 = '#00494E'
+dark = '#062027'
+fg = '#DCDFE4'
+green = '#8EC07C'
+red = '#FF4500'
+
+[os]
+disabled = false
+style = 'bg:orange fg:dark'
+format = '[ $symbol]($style)'
+
+[os.symbols]
+Windows = ''
+
+[username]
+show_always = true
+style_user = 'bg:orange fg:dark'
+style_root = 'bg:orange fg:dark'
+format = '[ $user ]($style)'
+
+[shell]
+disabled = false
+format = '[ $indicator ]($style)'
+style = 'bg:teal1 fg:fg bold'
+powershell_indicator = 'pwsh'
+
+[directory]
+style = 'fg:fg bg:teal2'
+format = '[ $path ]($style)'
+truncation_length = 3
+truncation_symbol = '…/'
+
+[git_branch]
+symbol = ''
+format = '[ $symbol $branch ](fg:fg bg:teal3)'
+
+[git_status]
+format = '[($all_status$ahead_behind )](fg:fg bg:teal3)'
+
+[time]
+disabled = false
+time_format = '%R'
+format = '[ $time ](fg:orange bg:dark)'
+
+[character]
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
