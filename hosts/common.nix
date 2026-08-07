@@ -9,9 +9,24 @@
   # ============================================================================
   # OPTIONS
   # ============================================================================
-  options.common.sshKeys = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ ];
+  options.common = {
+    user = lib.mkOption {
+      type = lib.types.str;
+      description = "Primary user account name.";
+    };
+    host = lib.mkOption {
+      type = lib.types.str;
+      description = "Host name of the machine.";
+    };
+    home = lib.mkOption {
+      type = lib.types.str;
+      description = "Absolute path to the primary user's home directory.";
+    };
+    sshKeys = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "SSH public keys authorized for the primary user.";
+    };
   };
 
   # ============================================================================

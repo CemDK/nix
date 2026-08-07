@@ -1,10 +1,10 @@
 {
   lib,
-  user,
   config,
   ...
 }:
 let
+  inherit (config.common) user;
   cfg = config.homelab.containers;
 in
 {

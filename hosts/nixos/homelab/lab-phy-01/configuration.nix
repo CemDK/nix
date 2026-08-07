@@ -1,12 +1,11 @@
 {
   config,
   self,
-  user,
-  host,
   pkgs,
   ...
 }:
 let
+  inherit (config.common) user;
   cfg = config.homelab.containers;
 
   container = name: import "${self}/modules/containers/${name}";
@@ -163,7 +162,6 @@ in
   # ============================================================================
   # NETWORKING & FIREWALL
   # ============================================================================
-  networking.hostName = host;
   networking.firewall.allowedTCPPorts = [
     80
     443

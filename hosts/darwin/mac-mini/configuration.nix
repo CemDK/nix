@@ -1,4 +1,7 @@
-{ self, user, ... }:
+{ config, self, ... }:
+let
+  inherit (config.common) user;
+in
 {
   imports = [
     "${self}/hosts/darwin/common.nix"

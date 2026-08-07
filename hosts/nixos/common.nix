@@ -3,10 +3,11 @@
   lib,
   pkgs,
   self,
-  host,
-  user,
   ...
 }:
+let
+  inherit (config.common) user host;
+in
 {
   # ============================================================================
   # IMPORTS
@@ -91,7 +92,7 @@
   # NETWORKING & FIREWALL
   # ============================================================================
   networking = {
-    hostName = host;
+    hostName = lib.mkDefault host;
     networkmanager.enable = true;
     firewall = {
       enable = true;

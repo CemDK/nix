@@ -1,9 +1,12 @@
 {
+  config,
   self,
   pkgs,
-  user,
   ...
 }:
+let
+  inherit (config.common) user;
+in
 {
   # ============================================================================
   # IMPORTS

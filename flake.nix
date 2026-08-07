@@ -71,9 +71,6 @@
             inherit
               self
               system
-              user
-              host
-              home
               inputs
               ;
           };
@@ -105,7 +102,16 @@
           inherit system;
           specialArgs = args;
           modules = [
-            { nixpkgs.overlays = overlays; }
+            {
+              nixpkgs.overlays = overlays;
+              common = {
+                inherit
+                  user
+                  host
+                  home
+                  ;
+              };
+            }
             (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
             inputs.home-manager.darwinModules.home-manager
@@ -137,9 +143,6 @@
             inherit
               self
               system
-              user
-              host
-              home
               inputs
               ;
           };
@@ -166,7 +169,16 @@
           inherit system;
           specialArgs = args;
           modules = [
-            { nixpkgs.overlays = overlays; }
+            {
+              nixpkgs.overlays = overlays;
+              common = {
+                inherit
+                  user
+                  host
+                  home
+                  ;
+              };
+            }
             (hostDir + "/configuration.nix")
             inputs.home-manager.nixosModules.home-manager
             hmModule
@@ -194,9 +206,6 @@
             inherit
               self
               system
-              user
-              host
-              home
               inputs
               ;
           };

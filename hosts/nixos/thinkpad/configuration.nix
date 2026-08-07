@@ -1,9 +1,12 @@
 {
+  config,
   inputs,
   self,
-  user,
   ...
 }:
+let
+  inherit (config.common) user;
+in
 {
 
   # ============================================================================
