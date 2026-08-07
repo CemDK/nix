@@ -61,27 +61,32 @@
       args = { inherit self inputs; };
 
       # ========================================================================
+      # Home-manager module, shared by nix-darwin and NixOS
+      # ========================================================================
+      mkHmModule =
+        hostDir:
+        { config, ... }:
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            backupFileExtension = "backup";
+            extraSpecialArgs = args;
+            users.${config.common.user} = {
+              imports = [ (hostDir + "/home.nix") ];
+              home.username = config.common.user;
+              home.homeDirectory = config.common.home;
+            };
+          };
+        };
+
+      # ========================================================================
       # Nix-Darwin configuration
       # ========================================================================
       mkDarwinConfig =
         { host, hostDir }:
         # ----------------------------------------------------------------------
         let
-          hmModule =
-            { config, ... }:
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = args;
-                users.${config.common.user} = {
-                  imports = [ (hostDir + "/home.nix") ];
-                  home.username = config.common.user;
-                  home.homeDirectory = config.common.home;
-                };
-              };
-            };
           brewConfig =
             { config, ... }:
             {
@@ -105,7 +110,7 @@
             (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
             inputs.home-manager.darwinModules.home-manager
-            hmModule
+            (mkHmModule hostDir)
             inputs.nix-homebrew.darwinModules.nix-homebrew
             brewConfig
             sops-nix.darwinModules.sops
@@ -117,32 +122,7 @@
       # NixOS configuration
       # ========================================================================
       mkNixOSConfig =
-        {
-          isHomelab ? false,
-        }:
         { host, hostDir }:
-        # ----------------------------------------------------------------------
-        let
-          hmModule =
-            { config, ... }:
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = args;
-                users.${config.common.user} = {
-                  imports = [
-                    (hostDir + "/home.nix")
-                    inputs.walker.homeManagerModules.default
-                    ./modules/home/walker
-                  ];
-                  home.username = config.common.user;
-                  home.homeDirectory = config.common.home;
-                };
-              };
-            };
-        in
         # ----------------------------------------------------------------------
         nixpkgs.lib.nixosSystem {
           specialArgs = args;
@@ -153,11 +133,8 @@
             }
             (hostDir + "/configuration.nix")
             inputs.home-manager.nixosModules.home-manager
-            hmModule
+            (mkHmModule hostDir)
             sops-nix.nixosModules.sops
-          ]
-          ++ lib.optionals (!isHomelab) [
-            stylix.nixosModules.stylix
           ];
         };
 
@@ -229,11 +206,7 @@
       darwinConfigurations = mapHosts ./hosts/darwin mkDarwinConfig;
 
       # NixOS configurations
-      nixosConfigurations =
-        mapHosts ./hosts/nixos (mkNixOSConfig { })
-        // mapHosts ./hosts/nixos/homelab (mkNixOSConfig {
-          isHomelab = true;
-        });
+      nixosConfigurations = mapHosts ./hosts/nixos mkNixOSConfig;
 
       # Home-manager standalone configurations (for non-NixOS Linux)
       homeConfigurations = {

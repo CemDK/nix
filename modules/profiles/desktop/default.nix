@@ -1,5 +1,14 @@
-{ pkgs, ... }:
 {
+  inputs,
+  pkgs,
+  self,
+  ...
+}:
+{
+  imports = [ inputs.stylix.nixosModules.stylix ];
+
+  home-manager.sharedModules = [ "${self}/modules/home/walker" ];
+
   programs.firefox.enable = true;
 
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];

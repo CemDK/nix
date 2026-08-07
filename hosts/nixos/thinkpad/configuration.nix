@@ -14,7 +14,7 @@ in
   # ============================================================================
   imports = [
     "${self}/hosts/nixos/common.nix"
-    "${self}/hosts/nixos/desktop.nix"
+    "${self}/modules/profiles/desktop"
     ./hardware-configuration.nix
     "${self}/modules/features/stylix"
     "${self}/modules/features/hyprland"
