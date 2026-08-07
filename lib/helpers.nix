@@ -6,6 +6,28 @@
       "No configuration found at ${toString dir} - check the directory name in flake.nix";
     dir;
 
+  # Discovers hosts in `dir`: every subdirectory containing both a
+  # configuration.nix and a home.nix is a host, named after the directory.
+  # Non-host dirs (e.g. iso/, homelab/) are skipped by that rule.
+  mapHosts =
+    dir: fn:
+    lib.mapAttrs
+      (
+        host: _:
+        fn {
+          inherit host;
+          hostDir = dir + "/${host}";
+        }
+      )
+      (
+        lib.filterAttrs (
+          name: type:
+          type == "directory"
+          && builtins.pathExists (dir + "/${name}/configuration.nix")
+          && builtins.pathExists (dir + "/${name}/home.nix")
+        ) (builtins.readDir dir)
+      );
+
   mapModules =
     dir: fn:
     lib.mapAttrs' (name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (fn (dir + "/${name}"))) (

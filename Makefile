@@ -6,7 +6,7 @@ LOG           := /tmp/nixos-build.log
 SECRETS_DIR   := secrets
 HOMELAB_USER  := cemdk
 HOMELAB_HOST  := $(HOMELAB_USER)@nixos.local
-HOMELAB_FLAKE := wyse-5070
+HOMELAB_FLAKE := lab-phy-01
 NH            := $(shell command -v nh 2>/dev/null || echo "nix run nixpkgs\#nh --")
 
 # DARWIN:

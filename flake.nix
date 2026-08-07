@@ -34,7 +34,12 @@
       inherit (nixpkgs) lib;
 
       helpers = import ./lib/helpers.nix { inherit lib; };
-      inherit (helpers) assertHostDir mapModules format;
+      inherit (helpers)
+        assertHostDir
+        mapHosts
+        mapModules
+        format
+        ;
 
       # Exposes the unstable channel as `pkgs.unstable.<pkg>`
       overlays = [
@@ -53,64 +58,49 @@
       ];
 
       forAllSystems = lib.genAttrs supportedSystems;
+      args = { inherit self inputs; };
 
       # ========================================================================
       # Nix-Darwin configuration
       # ========================================================================
       mkDarwinConfig =
-        {
-          system,
-          user,
-          host,
-          home,
-        }:
+        { host, hostDir }:
         # ----------------------------------------------------------------------
         let
-          hostDir = assertHostDir ./hosts/darwin/${host};
-          args = {
-            inherit
-              self
-              system
-              inputs
-              ;
-          };
-          hmModule = {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "backup";
-              extraSpecialArgs = args;
-              users.${user} = {
-                imports = [ (hostDir + "/home.nix") ];
-                home.username = user;
-                home.homeDirectory = home;
+          hmModule =
+            { config, ... }:
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "backup";
+                extraSpecialArgs = args;
+                users.${config.common.user} = {
+                  imports = [ (hostDir + "/home.nix") ];
+                  home.username = config.common.user;
+                  home.homeDirectory = config.common.home;
+                };
               };
             };
-          };
-          brewConfig = {
-            nix-homebrew = {
-              enable = true;
-              enableRosetta = true;
-              autoMigrate = true;
-              mutableTaps = true;
-              user = "${user}";
+          brewConfig =
+            { config, ... }:
+            {
+              nix-homebrew = {
+                enable = true;
+                enableRosetta = true;
+                autoMigrate = true;
+                mutableTaps = true;
+                user = config.common.user;
+              };
             };
-          };
         in
         # ----------------------------------------------------------------------
         nix-darwin.lib.darwinSystem {
-          inherit system;
           specialArgs = args;
           modules = [
             {
               nixpkgs.overlays = overlays;
-              common = {
-                inherit
-                  user
-                  host
-                  home
-                  ;
-              };
+              common.host = host;
             }
             (hostDir + "/configuration.nix")
             stylix.darwinModules.stylix
@@ -128,56 +118,38 @@
       # ========================================================================
       mkNixOSConfig =
         {
-          system,
-          user,
-          host,
-          home,
           isHomelab ? false,
         }:
+        { host, hostDir }:
         # ----------------------------------------------------------------------
         let
-          hostDir = assertHostDir (
-            if isHomelab then ./hosts/nixos/homelab/${host} else ./hosts/nixos/${host}
-          );
-          args = {
-            inherit
-              self
-              system
-              inputs
-              ;
-          };
-          hmModule = {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              backupFileExtension = "backup";
-              extraSpecialArgs = args;
-              users.${user} = {
-                imports = [
-                  (hostDir + "/home.nix")
-                  inputs.walker.homeManagerModules.default
-                  ./modules/home/walker
-                ];
-                home.username = user;
-                home.homeDirectory = home;
+          hmModule =
+            { config, ... }:
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "backup";
+                extraSpecialArgs = args;
+                users.${config.common.user} = {
+                  imports = [
+                    (hostDir + "/home.nix")
+                    inputs.walker.homeManagerModules.default
+                    ./modules/home/walker
+                  ];
+                  home.username = config.common.user;
+                  home.homeDirectory = config.common.home;
+                };
               };
             };
-          };
         in
         # ----------------------------------------------------------------------
         nixpkgs.lib.nixosSystem {
-          inherit system;
           specialArgs = args;
           modules = [
             {
               nixpkgs.overlays = overlays;
-              common = {
-                inherit
-                  user
-                  host
-                  home
-                  ;
-              };
+              common.host = host;
             }
             (hostDir + "/configuration.nix")
             inputs.home-manager.nixosModules.home-manager
@@ -193,27 +165,10 @@
       # Standalone Home-manager configuration (for non-NixOS Linux)
       # ========================================================================
       mkHomeConfig =
-        {
-          system,
-          user,
-          host,
-          home,
-        }:
+        { system, host }:
         # ----------------------------------------------------------------------
         let
           hostDir = assertHostDir ./hosts/linux/${host};
-          args = {
-            inherit
-              self
-              system
-              inputs
-              ;
-          };
-          hmConfig = {
-            home.username = user;
-            home.homeDirectory = home;
-            targets.genericLinux.enable = true;
-          };
         in
         # ----------------------------------------------------------------------
         home-manager.lib.homeManagerConfiguration {
@@ -225,7 +180,6 @@
           modules = [
             (hostDir + "/home.nix")
             stylix.homeModules.stylix
-            hmConfig
           ];
         };
 
@@ -272,55 +226,20 @@
       # CONFIG DEFINITIONS
       # ========================================================================
       # Darwin configurations (macOS)
-      darwinConfigurations = {
-        "Cems-MacBook-Pro" = mkDarwinConfig {
-          system = "aarch64-darwin";
-          user = "cemdk";
-          host = "Cems-MacBook-Pro";
-          home = "/Users/cemdk";
-        };
-
-        "mac-mini" = mkDarwinConfig {
-          system = "aarch64-darwin";
-          user = "cemdk";
-          host = "mac-mini";
-          home = "/Users/cemdk";
-        };
-      };
+      darwinConfigurations = mapHosts ./hosts/darwin mkDarwinConfig;
 
       # NixOS configurations
-      nixosConfigurations = {
-        # Personal devices
-        "thinkpad" = mkNixOSConfig {
-          system = "x86_64-linux";
-          user = "cemdk";
-          host = "thinkpad";
-          home = "/home/cemdk";
-        };
-        "thinclient" = mkNixOSConfig {
-          system = "x86_64-linux";
-          user = "cemdk";
-          host = "thinclient";
-          home = "/home/cemdk";
-        };
-
-        # Homelab
-        "wyse-5070" = mkNixOSConfig {
-          system = "x86_64-linux";
-          user = "cemdk";
-          host = "lab-phy-01";
-          home = "/home/cemdk";
+      nixosConfigurations =
+        mapHosts ./hosts/nixos (mkNixOSConfig { })
+        // mapHosts ./hosts/nixos/homelab (mkNixOSConfig {
           isHomelab = true;
-        };
-      };
+        });
 
       # Home-manager standalone configurations (for non-NixOS Linux)
       homeConfigurations = {
         "cem@Cem-Ryzen" = mkHomeConfig {
           system = "x86_64-linux";
-          user = "cem";
           host = "Cem-Ryzen";
-          home = "/home/cem";
         };
       };
     };

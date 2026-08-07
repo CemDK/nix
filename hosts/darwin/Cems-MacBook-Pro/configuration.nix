@@ -6,6 +6,15 @@
     ./brew.nix
   ];
 
+  # ============================================================================
+  # HOST IDENTITY
+  # ============================================================================
+  common = {
+    user = "cemdk";
+    home = "/Users/cemdk";
+  };
+  nixpkgs.hostPlatform = "aarch64-darwin";
+
   system.stateVersion = 6;
 
   services.openssh = {

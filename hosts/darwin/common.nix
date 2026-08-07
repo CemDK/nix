@@ -3,7 +3,6 @@
   pkgs,
   lib,
   self,
-  system,
   ...
 }:
 let
@@ -23,8 +22,6 @@ in
   # NIX CONFIGURATION
   # ============================================================================
   nix.enable = true;
-
-  nixpkgs.hostPlatform = system;
 
   # ============================================================================
   # USER MANAGEMENT

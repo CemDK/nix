@@ -26,7 +26,11 @@
   news.display = "show";
 
   home = {
+    username = "cem";
+    homeDirectory = "/home/cem";
     stateVersion = "25.11";
     file = { };
   };
+
+  targets.genericLinux.enable = true;
 }

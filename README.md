@@ -36,7 +36,7 @@ rsync -avz --delete \
     cemdk@192.168.178.66:/home/cemdk/.config/nix/
 
 nix shell nixpkgs#nixos-rebuild --command nixos-rebuild switch \
-    --flake .#wyse-5070 \
+    --flake .#lab-phy-01 \
     --target-host cemdk@192.168.178.66 \
     --sudo
 ```
