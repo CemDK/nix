@@ -1,16 +1,14 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
 #
-# Declarative package set for the Windows side of Cem-Ryzen.
-# Apply from WSL with `make windows` (runs `winget configure` via interop).
+# Apply from WSL with `make windows`
 #
-# NOTE: winget configure is additive-only — it installs what is listed here
-# but never removes anything. Uninstalls stay manual (`winget uninstall <id>`).
-# Find IDs with `winget search <name>`; snapshot reality with `winget export`.
+# Get RobotoMono Nerd Font: https://www.nerdfonts.com/font-downloads
+
 properties:
   configurationVersion: 0.2.0
   resources:
     # ------------------------------------------------------------------
-    # WSL — bootstrap for the Nix side of this repo
+    # WSL
     # ------------------------------------------------------------------
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: wsl
@@ -125,6 +123,60 @@ properties:
       id: unity-hub
       settings:
         id: Unity.UnityHub
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: claude-code
+      settings:
+        id: Anthropic.ClaudeCode
+        source: winget
+
+    # ------------------------------------------------------------------
+    # Shell / CLI tools
+    # ------------------------------------------------------------------
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: starship
+      settings:
+        id: Starship.Starship
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: zoxide
+      settings:
+        id: ajeetdsouza.zoxide
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: fzf
+      settings:
+        id: junegunn.fzf
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: fd
+      settings:
+        id: sharkdp.fd
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: ripgrep
+      settings:
+        id: BurntSushi.ripgrep.MSVC
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: bat
+      settings:
+        id: sharkdp.bat
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: eza
+      settings:
+        id: eza-community.eza
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: lazygit
+      settings:
+        id: JesseDuffield.lazygit
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: jq # claude statusline.sh dependency
+      settings:
+        id: jqlang.jq
         source: winget
 
     # ------------------------------------------------------------------
@@ -306,11 +358,6 @@ properties:
       settings:
         id: Bambulab.Bambustudio
         source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: orca-slicer
-      settings:
-        id: SoftFever.OrcaSlicer
-        source: winget
 
     # ------------------------------------------------------------------
     # Gaming
@@ -320,31 +367,31 @@ properties:
       settings:
         id: Valve.Steam
         source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: gog-galaxy
-      settings:
-        id: GOG.Galaxy
-        source: winget
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: gog-galaxy
+    #   settings:
+    #     id: GOG.Galaxy
+    #     source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: epic-games
       settings:
         id: EpicGames.EpicGamesLauncher
         source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: ea-app
-      settings:
-        id: ElectronicArts.EADesktop
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: rockstar-launcher
-      settings:
-        id: RockstarGames.Launcher
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: retroarch
-      settings:
-        id: Libretro.RetroArch
-        source: winget
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: ea-app
+    #   settings:
+    #     id: ElectronicArts.EADesktop
+    #     source: winget
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: rockstar-launcher
+    #   settings:
+    #     id: RockstarGames.Launcher
+    #     source: winget
+    # - resource: Microsoft.WinGet.DSC/WinGetPackage
+    #   id: retroarch
+    #   settings:
+    #     id: Libretro.RetroArch
+    #     source: winget
 
     # ------------------------------------------------------------------
     # Hardware / monitoring
@@ -379,11 +426,3 @@ properties:
       settings:
         id: ObinsKit.ObinsKit
         source: winget
-
-    # Installed today but questionable — uncomment to keep on a fresh machine:
-    #   equalsraf.neovim-qt        (redundant next to Neovide)
-    #   Anaconda.Miniconda3        (old py312 install; prefer WSL/nix python)
-    #   Oracle.JDK.17              (stale JDK 20)
-    #   Microsoft.DotNet.SDK.7     (EOL)
-    #   Microsoft.msodbcsql.17     (SQL Server dev leftovers?)
-    #   Microsoft.WebDeploy        (SQL Server dev leftovers?)
