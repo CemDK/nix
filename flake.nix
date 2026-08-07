@@ -37,8 +37,6 @@
       inherit (helpers)
         assertHostDir
         mapHosts
-        mapModules
-        format
         ;
 
       # Exposes the unstable channel as `pkgs.unstable.<pkg>`
@@ -160,38 +158,8 @@
           ];
         };
 
-      # ========================================================================
-      # Auto-discovers and wraps all devShells from ./devShells/*.nix
-      # ========================================================================
-      mkDevShells =
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          shellDefs = mapModules ./devShells (path: import path { inherit pkgs system format; });
-        in
-        lib.mapAttrs (
-          name: shellArgs:
-          pkgs.mkShell (
-            shellArgs
-            // {
-              shellHook = ''
-                echo -e "Entering ${format.inline.yellow name} dev shell"
-                ${format.header "Packages:"}
-                ${pkgs.lib.concatMapStringsSep "\n" (pkg: format.green pkg.name) (shellArgs.packages or [ ])}
-                ${shellArgs.shellHook or ""}
-                exec zsh
-              '';
-            }
-          )
-        ) shellDefs;
-
     in
     {
-      # ========================================================================
-      # DEVSHELLS
-      # ========================================================================
-      # Run 'nix develop ~/.config/nix#<devShell>' to load a dev shell
-      devShells = forAllSystems mkDevShells;
 
       # ========================================================================
       # FORMATTER
