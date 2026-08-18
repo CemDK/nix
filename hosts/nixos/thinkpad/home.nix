@@ -48,6 +48,7 @@
 
       prismlauncher
       claude-code
+      python3
       supabase-cli
     ];
 
