@@ -59,12 +59,12 @@
     if [[ $(uname -r) == *WSL* ]]; then
       (neovide.exe --frame=none --wsl &)
     else
-      (neovide --frame=none &)
+      neovide --fork --frame=none
     fi
   }
 ''
 + lib.optionalString pkgs.stdenv.isDarwin ''
   nv() {
-    open -a "$HOME/Applications/Home Manager Apps/Neovide.app" --args --frame=none -- "$(pwd)"
+    neovide --fork --frame=none
   }
 ''
