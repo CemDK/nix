@@ -29,6 +29,7 @@
     pnpm
     rustup # includes rust-analyzer
     typescript-go
+    php # runtime for php-cs-fixer
 
     # ---------------------------------
     # LSP servers and tools
@@ -40,6 +41,7 @@
     biome
     eslint
     nixfmt
+    php84Packages.php-cs-fixer
     prettierd # markdown/js/ts/json/yaml/css formatter (daemonized prettier)
     statix # nix linter
     treefmt
@@ -50,6 +52,7 @@
     dockerfile-language-server
     lua-language-server
     nixd
+    intelephense
     omnisharp-roslyn
     roslyn-ls
     tailwindcss-language-server

@@ -119,5 +119,5 @@ Set-Alias -Name lg -Value lazygit
 
 # nv is a built-in alias for New-Variable, and aliases outrank functions.
 Remove-Item Alias:nv -Force -ErrorAction SilentlyContinue
-function nv { neovide --frame=none @args }
+function nv { start-process powershell -ArgumentList "neovide.exe --frame none @args" }
 
