@@ -43,11 +43,13 @@
     nixfmt
     php84Packages.php-cs-fixer
     prettierd # markdown/js/ts/json/yaml/css formatter (daemonized prettier)
+    ruff # python linter/formatter (also an LSP server)
     statix # nix linter
     treefmt
 
     # LSP servers
     bash-language-server
+    basedpyright
     docker-language-server
     dockerfile-language-server
     lua-language-server
