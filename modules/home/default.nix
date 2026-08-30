@@ -101,12 +101,6 @@ in
       '';
     };
 
-  # Scripts are store-managed: they're stable, and being in the store gives atomic
-  # deploys and rollback, which is worth the nixswitch per change. The whole
-  # dotfiles/scripts dir is mapped recursively, so dropping a new executable in
-  # there deploys it to ~/.local/scripts (on PATH via zsh) on the next rebuild —
-  # no per-script wiring. In-store source (not mkOutOfStoreSymlink), so the
-  # deployed files are read-only.
   home.file = {
     ".local/scripts" = {
       source = ../../dotfiles/scripts;

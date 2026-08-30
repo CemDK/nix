@@ -1,6 +1,8 @@
 {
   config,
   inputs,
+  lib,
+  pkgs,
   self,
   ...
 }:
@@ -59,6 +61,38 @@ in
     gvfs.enable = true;
     udisks2.enable = true;
     dbus.enable = true;
+
+    # set the kernel trigger for the mic LED to none
+    # and make it user-writable, so micmute-led below can control the LED
+    udev.extraRules = lib.concatStringsSep ", " [
+      ''ACTION=="add", SUBSYSTEM=="leds", KERNEL=="platform::micmute"''
+      ''ATTR{trigger}="none"''
+      ''RUN+="${pkgs.coreutils}/bin/chmod 666 /sys/class/leds/platform::micmute/brightness"''
+    ];
+  };
+
+  # LED on = mic listening, LED off = mic off
+  systemd.user.services.micmute-led = {
+    description = "Sync thinkpad mic LED state with actual mic state";
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+    script = ''
+      led=/sys/class/leds/platform::micmute/brightness
+      sync_led() {
+        if ${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q MUTED; then
+          echo 0 > "$led"
+        else
+          echo 1 > "$led"
+        fi
+      }
+      sync_led
+      ${pkgs.pulseaudio}/bin/pactl subscribe | ${pkgs.gnugrep}/bin/grep --line-buffered -E "on (source|server)" | while read -r _; do
+        sync_led
+      done
+    '';
   };
 
   # ============================================================================
