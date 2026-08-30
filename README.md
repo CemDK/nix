@@ -279,11 +279,3 @@ Then reference the secret in the machine's `configuration.nix` `sops.secrets` at
 
 </details>
 
-## TODOs
-
-- [ ] Add Mission Center to pkgs
-- [ ] refactor steam stuff
-- [ ] Auto-login + passwordless sudo on a server with exposed services (physical access = root)
-- [ ] TLS without cert resolver — all services get self-signed certs (likely fine for .nixos.local)
-- [ ] credential.helper = "store" saves git tokens in plaintext on disk
-- [ ] backup.nix hardcodes paths instead of using flake self or a module argument
