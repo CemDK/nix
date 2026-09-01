@@ -20,7 +20,6 @@
       # libva-utils
       # vulkan-loader
       # xdg-desktop-portal-gtk
-      claude-code
     ];
 
     file = { };

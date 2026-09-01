@@ -11,6 +11,8 @@
 
   programs.firefox.enable = true;
 
+  programs.nix-ld.enable = true;
+
   fonts.packages = [ pkgs.nerd-fonts.meslo-lg ];
 
   # enable zsh and set it as default user shell
