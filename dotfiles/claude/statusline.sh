@@ -60,6 +60,8 @@ DAILY_GOAL="${CLAUDE_DAILY_GOAL:-100}"
 # Where daily cost tallies live: $COST_STATE/<YYYY-MM-DD>/<session_id>, one
 # file per session holding what that session spent on that day.
 COST_STATE="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline/cost"
+# Latest 5h rate-limit reading, read by claude-budget.
+USAGE_STATE="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
 COST_KEEP_DAYS=7
 
 # Drop day buckets older than $COST_KEEP_DAYS, plus anything not shaped like a
@@ -232,6 +234,21 @@ branch=$(git -C "$cwd" branch --show-current 2>/dev/null)
 ctx_col=$(zone "$ctx_int" "$ZONE_CTX")
 head_post+="${SEP}${ctx_col}${tok_fmt}${RESET} (${ctx_col}${ctx_int}%${RESET})"
 
+# BURN — how fast the 5h window is being spent, in %/h, from claude-budget
+# (which reads the sample the previous render banked). Colored against the
+# brake thresholds: under 0.8x target green, under 1.15x yellow, braking red.
+BUDGET="${CLAUDE_BUDGET:-$HOME/.local/scripts/claude-budget}"
+if [[ -x "$BUDGET" ]]; then
+  read -r burn burn_x burn_v <<<"$("$BUDGET" --json 2>/dev/null \
+    | jq -r '[(.velocity_pct_h // 0), (.excess // 0), (.verdict // "unknown")] | join(" ")' 2>/dev/null)"
+  # No sample yet reports a velocity of 0 too; only a judged window is drawn.
+  if [[ -n "$burn" && "$burn_v" != unknown ]]; then
+    burn_col=$(awk -v x="$burn_x" -v g="$GREEN" -v y="$YELLOW" -v r="$RED" \
+      'BEGIN{printf "%s", (x < 0.8 ? g : x < 1.15 ? y : r)}')
+    head_post+="${SEP}${burn_col}$(printf '%.0f' "$burn")%/h${RESET}"
+  fi
+fi
+
 # LINES changed
 read -r added removed <<<"$(jq -r '[
   (.cost.total_lines_added // 0),
@@ -285,6 +302,35 @@ if [[ -n "$usage" ]]; then
   fi
   lab[0]=5h; pct[0]=$(printf '%.0f' "$usage"); val[0]="$reset_fmt"
   col[0]=$(pace_color "${pct[0]}" "$resets_at" $((5 * 3600)))
+  # Bank the raw reading so agents can pace themselves (see claude-budget).
+  # This is the only place Claude Code hands out the 5h numbers.
+  # Every session renders with the reading from its own last API response, so
+  # an idle session would overwrite a fresher one: only write when this
+  # reading is newer (a later window) or higher within the same window.
+  now_s=$(date +%s); ra=${resets_at%%.*}; ra=${ra:-0}
+  mkdir -p "$USAGE_STATE"
+  read -r prev_used prev_ra <<<"$(jq -r '[.used_pct, .resets_at // 0] | join(" ")' "$USAGE_STATE/usage.json" 2>/dev/null)"
+  if awk -v u="$usage" -v r="$ra" -v pu="${prev_used:-0}" -v pr="${prev_ra:-0}" 'BEGIN{exit !(r > pr || (r == pr && u >= pu))}'; then
+    tmp=$(mktemp -p "$USAGE_STATE" .usage.XXXXXX) \
+      && printf '{"used_pct":%s,"resets_at":%s,"sampled_at":%s}\n' "$usage" "$ra" "$now_s" >"$tmp" \
+      && mv -f "$tmp" "$USAGE_STATE/usage.json"
+    # ...and a history for the burn rate, one line per >=10s: "ts used resets_at".
+    # Kept to the last two hours; claude-budget only looks back minutes.
+    # Append and prune under one lock: an unlocked rewrite would drop lines
+    # another session appended meanwhile. Never block the render for it.
+    log="$USAGE_STATE/usage.log"
+    exec 7>>"$log.lock"
+    if flock -w 1 7; then
+      last_ts=$(tail -n1 "$log" 2>/dev/null | cut -d' ' -f1)
+      if (( now_s - ${last_ts:-0} >= 10 )); then
+        printf '%s %s %s\n' "$now_s" "$usage" "$ra" >>"$log"
+        if (( $(wc -l <"$log") > 1000 )); then
+          awk -v c=$((now_s - 7200)) '$1 >= c' "$log" >"$log.tmp" && mv -f "$log.tmp" "$log"
+        fi
+      fi
+    fi
+    exec 7>&-
+  fi
 fi
 
 # CONTEXT window — value is the token count. Always drawn: a session that has

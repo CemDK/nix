@@ -5,7 +5,7 @@
 # a mid-session /model switch isn't left showing a stale name.
 # Usage: claude-tmux-hook <busy|waiting|idle|clear>
 
-input=$(cat)   # hook JSON on stdin; carries .transcript_path
+input=$([[ -t 0 ]] || cat)   # hook JSON on stdin; carries .transcript_path
 
 [[ -z "$TMUX_PANE" ]] && exit 0   # only act inside tmux
 

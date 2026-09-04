@@ -42,7 +42,7 @@
         ],
         "defaultMode": "auto"
     },
-    "model": "claude-fable-5[1m]",
+    "model": "opus[1m]",
     "skillOverrides": {
         "vercel-composition-patterns": "off",
         "vercel-react-best-practices": "off",
@@ -65,6 +65,10 @@
                     {
                         "type": "command",
                         "command": "~/.local/scripts/claude-tmux-hook busy"
+                    },
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-budget --hint"
                     }
                 ]
             }
@@ -96,6 +100,25 @@
                         "command": "~/.local/scripts/claude-sound question"
                     }
                 ]
+            },
+            {
+                "matcher": "Agent",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-budget --gate",
+                        "timeout": 21600
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-budget --throttle",
+                        "timeout": 21600
+                    }
+                ]
             }
         ],
         "Stop": [
@@ -125,11 +148,12 @@
     },
     "statusLine": {
         "type": "command",
-        "command": "~/.claude/statusline.sh"
+        "command": "~/.claude/statusline.sh",
+        "refreshInterval": 10
     },
     "enabledPlugins": {
         "frontend-design@claude-plugins-official": true,
-        "feature-dev@claude-plugins-official": true,
+        "feature-dev@claude-plugins-official": false,
         "code-review@claude-plugins-official": false,
         "security-guidance@claude-plugins-official": true,
         "agent-sdk-dev@claude-plugins-official": false,
@@ -139,7 +163,7 @@
         "lua-lsp@claude-plugins-official": false,
         "plugin-dev@claude-plugins-official": false,
         "learning-output-style@claude-plugins-official": false,
-        "pr-review-toolkit@claude-plugins-official": true,
+        "pr-review-toolkit@claude-plugins-official": false,
         "code-review@claude-code-plugins": false,
         "claude-code-wakatime@wakatime": true,
         "figma@claude-plugins-official": false,
@@ -159,8 +183,14 @@
             }
         }
     },
+    "outputStyle": "clarity",
     "alwaysThinkingEnabled": true,
     "effortLevel": "high",
+    "modelSettings": {
+        "claude-fable-5-1": {
+            "effortLevel": "medium"
+        }
+    },
     "promptSuggestionEnabled": false,
     "awaySummaryEnabled": false,
     "showClearContextOnPlanAccept": true,

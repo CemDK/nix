@@ -1,0 +1,396 @@
+#!/usr/bin/env bash
+# claude-budget — pace Claude Code (and its sub-agents) against the 5h
+# rate-limit window, without stopping anyone's work.
+#
+# Data: statusline.sh writes ~/.cache/claude-statusline/usage.json (latest
+# 5h reading) and usage.log ("ts used resets_at", one line per >=10s). Claude
+# Code only exposes the 5h figures to the status line, so that is the source.
+#
+# Signals
+#   used      %% of the window spent
+#   elapsed   %% of the window's time gone
+#   headroom  elapsed - used; negative means over the even 20%%/h line
+#   velocity  %%/h burned over the last LOOKBACK seconds (slope of usage.log);
+#             falls back to the window's cumulative average when too few samples
+#   target    %%/h that lands exactly on the cap at reset: remaining%% / hours
+#             left. Over pace this is automatically below 20 and so encodes
+#             the catch-up; under pace it grows so leftover budget gets used.
+#   x         velocity / target, the excess ratio the brake works on
+#
+# Modes
+#   (none)      human summary          --json      the same as JSON
+#   --throttle  PreToolUse on all tools: pull velocity down to target by
+#               charging each call a delay, banked per agent and paid in
+#               sleeps of DELAY_CHUNK..DELAY_MAX so a 30-call turn feels a
+#               few pauses instead of 30; above PAUSE_AT every call is charged
+#               DELAY_MAX. Also tells an agent whose context has grown past
+#               CTX_SOFT/CTX_HARD to wrap up, once per threshold per agent.
+#   --gate      PreToolUse on the Agent tool, which --throttle skips: applies
+#               the same per-call delay, holds spawns past the per-family load
+#               ceiling or while the brake is saturated, and near target
+#               spaces spawns SPAWN_GAP apart so the velocity measurement can
+#               catch up. Time already held counts toward the delay.
+#   --hint      UserPromptSubmit: one pacing line when over pace, repeated
+#               only when the verdict changes or HINT_REPEAT has passed.
+#
+# Overrides: ~/.config/claude-budget.conf is sourced if present (plain
+# VAR=value lines). DEBUG_LOG=/path traces every hook decision.
+export LC_ALL=C.UTF-8
+
+STATE="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
+CONF="${XDG_CONFIG_HOME:-$HOME/.config}/claude-budget.conf"
+
+WINDOW=$((5 * 3600))
+STALE_AFTER=120     # s; the status line only renders in a live session
+MIN_ELAPSED=10      # % of window before cumulative pace is trusted
+LOOKBACK=600        # s of history the velocity slope is fitted over
+MIN_SPAN=300        # s the samples must cover before the slope is trusted
+SLACK=1.15          # x above which the brake engages, when on the 20%/h line;
+SLACK_PER_PT=0.05   # widened by this per point of positive headroom, so a burst
+                    # while ahead of schedule is allowed and the brake only bites
+                    # once the burst has eaten the lead (+8pt -> 1.55x)
+DELAY_PER_X=60      # s of per-call delay per 1.0 of x above slack; measured from
+                    # slack, not from 1, or a session with headroom would be hit
+                    # hardest the moment its wider tolerance is finally crossed
+DELAY_MAX=200       # s per sleep; the 5-minute prompt cache must stay warm, and the
+                    # TTL also covers the previous turn, so not the full 300
+DELAY_CHUNK=60      # s of banked delay before a sleep is taken
+HINT_REPEAT=1800    # s before the same pacing hint is repeated to a session
+PAUSE_AT=98         # used% above which every call takes the full DELAY_MAX
+GATE_MAX_WAIT=200   # s a spawn may be held for saturation; same cache reasoning
+PAUSE_POLL=30       # s between re-checks while a spawn is held
+SPAWN_NEAR=0.8      # x above which spawns are spaced out
+SPAWN_GAP=90        # s between spawns when spaced
+SPAWN_BURST=3       # spawns within SPAWN_RECENT that also trigger spacing, so a
+SPAWN_RECENT=600    # fan-out is paced even while the velocity has not caught up
+CTX_SOFT=250000     # tokens: main session "resolve soon"
+CTX_HARD=300000     # tokens: main session "finish now"
+CTX_SOFT_AGENT=150000 # sub-agents earlier: every call re-reads the context
+CTX_HARD_AGENT=200000
+CTX_BYTES_PER_TOKEN=3 # lower bound; measured 3.9 (sub-agents) to 7.0 (main). Transcripts
+                      # smaller than CTX_SOFT*this cannot be near the threshold, so
+                      # the 400KB parse is skipped for them.
+# Live load ceilings per model family, in tokens of context across the
+# family's running sub-agents: every call re-sends an agent's whole context,
+# so a fat agent costs many small ones. A wide fan-out of fat agents burns
+# more per call than any delay can absorb (see docs), so beyond these the
+# gate holds the spawn until one finishes. A live agent counts its actual
+# context or CTX_ASSUMED, whichever is larger, since a fresh one grows into
+# that; 300k therefore admits two 150k agents or four fresh ones.
+CAP_FABLE=300000; CAP_OPUS=600000; CAP_SONNET=1200000; CAP_HAIKU=2400000
+CTX_ASSUMED=75000   # tokens a young or unreadable agent is assumed to reach
+CAP_MAX_WAIT=300    # s a spawn may wait for room; it spawns anyway after that
+                    # (the throttle carries the burn), so longer is only dead time
+LIVE_WINDOW=480     # s since a sub-agent transcript last changed to count it as live
+                    # (covers DELAY_MAX plus a long thinking turn) unless the parent
+                    # transcript already records the agent's completion
+RESV_TTL=30         # s a fresh spawn is counted before its transcript exists;
+                    # the transcript appears within seconds, longer double-counts
+DEBUG_LOG="${DEBUG_LOG:-}"
+
+# shellcheck disable=SC1090
+[[ -r "$CONF" ]] && source "$CONF"
+
+mode=${1:-}
+log() { [[ -n "$DEBUG_LOG" ]] && printf '%s %s[%s] %s\n' "$(date +%T)" "$mode" "$$" "$*" >>"$DEBUG_LOG"; return 0; }
+
+# ── read the window state into globals ────────────────────────────────────
+read_state() {
+  now=$(date +%s)
+  used=0 used_raw=0 resets_at=0 sampled_at=0 age=0 stale=true reset_pending=false
+  remaining=0 elapsed=0 headroom=0 hours_left=0 velocity=0 vsrc=none target=20 x=0 delay=0
+  [[ -r "$STATE/usage.json" ]] || { verdict=unknown; reason="no usage sample yet (status line has not rendered)"; return; }
+  read -r used_raw resets_at sampled_at <<<"$(jq -r '[.used_pct, ((.resets_at // 0) | floor), .sampled_at] | join(" ")' "$STATE/usage.json")"
+  [[ "$used_raw" =~ ^[0-9.]+$ && "$resets_at" =~ ^[0-9]+$ ]] || { verdict=unknown; reason="usage sample unreadable"; return; }
+  used=$(printf '%.0f' "$used_raw")
+  age=$(( now - sampled_at )); stale=false; (( age > STALE_AFTER )) && stale=true
+  remaining=$(( resets_at - now ))
+  if (( resets_at == 0 || remaining <= 0 )); then
+    reset_pending=true; verdict=normal; reason="window reset since last sample; treat as fresh window"
+    used=0; used_raw=0; return
+  fi
+  (( remaining > WINDOW )) && remaining=$WINDOW
+  elapsed=$(( 100 - 100 * remaining / WINDOW ))
+  headroom=$(( elapsed - used ))
+  hours_left=$(awk -v r="$remaining" 'BEGIN{printf "%.1f", r/3600}')
+  target=$(awk -v u="$used_raw" -v r="$remaining" \
+    'BEGIN{t=(100-u)/(r/3600); if(t<1)t=1; printf "%.1f", t}')
+
+  # Velocity: least-squares slope of used over the last LOOKBACK seconds,
+  # samples from this window only. Fallback: cumulative average. Either is
+  # then bounded by the flat time: the API reports whole percents, so if the
+  # value has not ticked for F seconds less than 1% was spent in F, and the
+  # rate is below 3600/F %/h. That makes velocity drop within a minute of the
+  # burn stopping instead of trailing the slope window.
+  read -r velocity vsrc <<<"$(awk -v now="$now" -v lb="$LOOKBACK" -v ms="$MIN_SPAN" -v ra="$resets_at" \
+      -v u="$used_raw" -v el="$(( WINDOW - remaining ))" '
+    $3 == ra { if ($2 != prev) since=$1; prev=$2 }
+    $3 == ra && $1 >= now - lb { t=$1-now; n++; sx+=t; sy+=$2; sxx+=t*t; sxy+=t*$2; if(!lo||$1<lo)lo=$1; if($1>hi)hi=$1 }
+    END {
+      if (n >= 3 && hi - lo >= ms) {
+        d = n*sxx - sx*sx
+        v = d ? (n*sxy - sx*sy)/d : 0
+        if (v < 0) v = 0
+        v *= 3600; src = "slope"
+      } else if (el > 0) {
+        v = u/(el/3600); src = "cumulative"
+      } else { v = 0; src = "none" }
+      flat = since ? now - since : 0
+      if (flat > 0 && v > 3600/flat) { v = 3600/flat; src = src "+flat" }
+      printf "%.1f %s\n", v, src
+    }' "$STATE/usage.log" 2>/dev/null)"
+  velocity=${velocity:-0}; vsrc=${vsrc:-none}
+  x=$(awk -v v="$velocity" -v t="$target" 'BEGIN{printf "%.2f", (t>0 ? v/t : 0)}')
+  slack=$(awk -v s="$SLACK" -v p="$SLACK_PER_PT" -v h="$headroom" 'BEGIN{printf "%.2f", s + (h>0 ? h*p : 0)}')
+  delay=$(awk -v x="$x" -v s="$slack" -v k="$DELAY_PER_X" -v m="$DELAY_MAX" \
+    'BEGIN{d=(x>s ? k*(x-s) : 0); if(d>m)d=m; printf "%d", d}')
+
+  if   (( used >= PAUSE_AT ));        then delay=$DELAY_MAX; verdict=pause; reason="5h window ${used}% used, every call waits ${DELAY_MAX}s"
+  elif [[ "$stale" == true ]];        then delay=0; verdict=normal; reason="last sample ${age}s old, no live pace to judge"
+  elif [[ "$vsrc" != slope* ]] && (( elapsed < MIN_ELAPSED )); then delay=0; verdict=normal; reason="only ${elapsed}% of window elapsed, pace not meaningful yet"
+  elif (( delay > 0 ));               then verdict=conserve; reason="burning ${velocity}%/h against a ${target}%/h target, ${slack}x allowed (${used}% used, ${hours_left}h left)"
+  elif (( headroom > 15 ));           then verdict=burst;    reason="${used}% used at ${elapsed}% of window, ${headroom}pt under the 20%/h line"
+  else                                     verdict=normal;   reason="${velocity}%/h against a ${target}%/h target, on pace"
+  fi
+}
+
+
+# ── context-size wrap-up hints, from the hook's transcript_path ───────────
+ctx_hint() {
+  local tp=$1 key ctx marks="$STATE/ctx"
+  [[ -n "$tp" && -r "$tp" ]] || { log "ctx: no readable transcript ($tp)"; return 0; }
+  local soft=$CTX_SOFT hard=$CTX_HARD
+  [[ -n "$agent_id" ]] && { soft=$CTX_SOFT_AGENT; hard=$CTX_HARD_AGENT; }
+  # Parsing costs a 400KB read; skip transcripts too small to be near soft.
+  (( $(stat -c %s "$tp" 2>/dev/null || echo 0) >= soft * CTX_BYTES_PER_TOKEN )) || return 0
+  # Byte-based tail may cut the first line; fromjson? skips it.
+  ctx=$(tail -c 400000 "$tp" | jq -rR '
+      fromjson? | select(.type=="assistant") | .message.usage
+      | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -n1)
+  [[ "$ctx" =~ ^[0-9]+$ ]] || { log "ctx: unparsable ($ctx) tp=$tp"; return 0; }
+  key=$(printf '%s' "$tp" | md5sum | cut -c1-16)
+  mkdir -p "$marks"
+  log "ctx=$ctx tp=$tp"
+  local k=$((ctx/1000))
+  # A compaction drops the context back down. Clear each threshold's mark once
+  # the context is under it again, or a session that refills is never warned a
+  # second time. Context only falls on a compaction, so this cannot flap.
+  (( ctx < soft )) && rm -f "$marks/$key.soft"
+  (( ctx < hard )) && rm -f "$marks/$key.hard"
+  if (( ctx >= hard )) && [[ ! -e "$marks/$key.hard" ]]; then
+    : >"$marks/$key.hard"
+    if [[ -n "$agent_id" ]]; then
+      hint="Context check: this agent's context is now ${k}k tokens and every further call re-sends all of it against the shared rate limit. Stop now: write any results to disk, then return what is finished and an explicit list of what is not, so the orchestrator can hand the rest to a fresh agent. Do not start anything new."
+    else
+      hint="Context check: this session's context is now ${k}k tokens and every further call re-sends all of it against the shared rate limit. Finish the current item only. Write a progress file to the scratchpad (done, open, output paths) so a fresh session can resume from it, then tell the user it is time to start one. Do not start anything new."
+    fi
+  elif (( ctx >= soft )) && [[ ! -e "$marks/$key.soft" ]]; then
+    : >"$marks/$key.soft"
+    if [[ -n "$agent_id" ]]; then
+      hint="Context check: this agent's context is now ${k}k tokens, which makes every further call expensive against the shared rate limit. Finish the item you are on, do not start new explorations, write results to disk as you go, and prepare to return with a list of anything left over."
+    else
+      hint="Context check: this session's context is now ${k}k tokens, which makes every further call expensive against the shared rate limit. Finish the item you are on, avoid new explorations, delegate remaining work to sub-agents rather than doing it here, and keep a progress file in the scratchpad so a fresh session could resume."
+    fi
+  fi
+  # Occasional cleanup of stale markers.
+  (( RANDOM % 50 == 0 )) && find "$marks" -type f -mtime +2 -delete 2>/dev/null
+  return 0
+}
+
+# ── live sub-agent accounting for the concurrency caps ────────────────────
+# An unreadable model (fresh transcript, jq failure) is "unknown" and gets the
+# loosest cap rather than the tightest.
+family() { case "$1" in *fable*|*mythos*) echo fable;; *opus*) echo opus;; *sonnet*) echo sonnet;; *haiku*) echo haiku;; *) echo unknown;; esac; }
+cap_for() { case "$1" in fable) echo "$CAP_FABLE";; opus) echo "$CAP_OPUS";; sonnet) echo "$CAP_SONNET";; *) echo "$CAP_HAIKU";; esac; }
+last_model() {   # transcript -> model id of its last assistant message
+  tail -c 200000 "$1" 2>/dev/null | jq -rR 'fromjson? | select(.type=="assistant") | .message.model // empty' 2>/dev/null | tail -n1
+}
+last_model_ctx() {   # transcript -> "model<TAB>context tokens" of its last assistant message
+  tail -c 200000 "$1" 2>/dev/null | jq -rR 'fromjson? | select(.type=="assistant")
+    | [(.message.model // ""), ((.message.usage.input_tokens // 0) + (.message.usage.cache_creation_input_tokens // 0) + (.message.usage.cache_read_input_tokens // 0))]
+    | @tsv' 2>/dev/null | tail -n1
+}
+# finished AGENT_TRANSCRIPT -> true when the parent transcript holds a
+# task-notification for this agent dated after the transcript last changed. A
+# transcript stops changing the moment the agent returns, so mtime alone would
+# hold its slot for LIVE_WINDOW more seconds; a resumed agent touches the
+# transcript again and so counts as live until its next notification.
+finished() {
+  local f=$1 id p ts
+  id=${f##*/agent-}; id=${id%.jsonl}; p="${f%/subagents/*}.jsonl"
+  ts=$(grep -F "<task-id>$id</task-id>" "$p" 2>/dev/null | tail -n1 | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p')
+  [[ -n "$ts" ]] && (( $(date -d "$ts" +%s 2>/dev/null || echo 0) >= $(stat -c %Y "$f" 2>/dev/null || echo 0) ))
+}
+# live_load FAMILY -> tokens of context held by that family's sub-agents across
+# all sessions: transcripts touched within LIVE_WINDOW and not finished, plus
+# reservations younger than RESV_TTL at CTX_ASSUMED each.
+live_load() {
+  local fam=$1 sum=0 f m c
+  while IFS= read -r f; do
+    IFS=$'\t' read -r m c <<<"$(last_model_ctx "$f")"
+    [[ "$(family "$m")" == "$fam" ]] || continue
+    finished "$f" && continue
+    [[ "$c" =~ ^[0-9]+$ ]] || c=0
+    (( c < CTX_ASSUMED )) && c=$CTX_ASSUMED
+    sum=$(( sum + c ))
+  done < <(find "$HOME/.claude/projects" -path '*/subagents/agent-*.jsonl' -newermt "-${LIVE_WINDOW} seconds" 2>/dev/null)
+  sum=$(( sum + CTX_ASSUMED * $(find "$STATE/live" -name "resv-*-$fam" -newermt "-${RESV_TTL} seconds" 2>/dev/null | wc -l) ))
+  echo "$sum"
+}
+# snooze SECS: sleep while keeping this spawn's reservation younger than RESV_TTL,
+# so the slot stays visible to other spawns through the brake and spacing waits.
+snooze() {
+  local left=$1 step=$(( RESV_TTL / 2 ))
+  while (( left > 0 )); do
+    [[ -n "$resv" ]] && touch "$resv"
+    sleep $(( left < step ? left : step )); left=$(( left - step ))
+  done
+}
+
+emit_context() {   # $1 text -> PreToolUse JSON with additionalContext
+  jq -n --arg c "$1" '{hookSpecificOutput:{hookEventName:"PreToolUse", additionalContext:$c}}'
+}
+
+read_state
+case "$mode" in
+  --json)
+    jq -n --arg v "$verdict" --arg r "$reason" --argjson u "$used" --argjson e "$elapsed" \
+      --argjson h "$headroom" --argjson rh "$hours_left" --argjson vel "$velocity" --arg vs "$vsrc" \
+      --argjson t "$target" --argjson x "$x" --argjson sl "${slack:-$SLACK}" --argjson d "$delay" --argjson a "$age" --argjson s "$stale" \
+      '{verdict:$v, reason:$r, used_pct:$u, elapsed_pct:$e, headroom_pt:$h, hours_left:$rh,
+        velocity_pct_h:$vel, velocity_source:$vs, target_pct_h:$t, excess:$x, slack:$sl, delay_s:$d,
+        sample_age_s:$a, stale:$s}'
+    ;;
+  --throttle)
+    input=$(cat)
+    # Inside a sub-agent transcript_path is still the parent's; the agent's
+    # own file sits beside it at <session>/subagents/agent-<agent_id>.jsonl.
+    # Unit separator, not tab: tab is IFS whitespace and empty fields vanish.
+    IFS=$'\x1f' read -r tp atp agent_id tool sid <<<"$(jq -r '[.transcript_path // "", .agent_transcript_path // "", .agent_id // "", .tool_name // "", .session_id // ""] | join("\u001f")' <<<"$input" 2>/dev/null)"
+    if [[ -n "$atp" ]]; then tp="$atp"
+    elif [[ -n "$agent_id" && -n "$tp" ]]; then tp="${tp%.jsonl}/subagents/agent-${agent_id}.jsonl"
+    fi
+    hint=""
+    case "$tool" in AskUserQuestion|Agent) verdict=skip ;; esac
+    if [[ "$verdict" != skip ]]; then
+      # Delay bucket: each call is charged its delay, but the sleep is taken
+      # only once DELAY_CHUNK has banked, and never more than DELAY_MAX at a
+      # time. Same calls per hour, far fewer felt pauses and cache gaps. The
+      # bank is forgiven the moment the pace is back on target.
+      mkdir -p "$STATE/debt"; bank="$STATE/debt/$(printf '%s' "${sid:-$tp}:$agent_id" | md5sum | cut -c1-16)"
+      debt=$(cat "$bank" 2>/dev/null); [[ "$debt" =~ ^[0-9]+$ ]] || debt=0
+      if (( delay == 0 )); then debt=0
+      else
+        debt=$(( debt + delay )); (( debt > DELAY_MAX )) && debt=$DELAY_MAX
+        if (( debt >= DELAY_CHUNK )); then log "sleep ${debt}s (delay=$delay x=$x v=$velocity t=$target tool=$tool)"; sleep "$debt"; debt=0; fi
+      fi
+      printf '%s\n' "$debt" >"$bank"
+      (( RANDOM % 50 == 0 )) && find "$STATE/debt" -type f -mtime +2 -delete 2>/dev/null
+    fi
+    ctx_hint "$tp"
+    [[ -n "$hint" ]] && emit_context "$hint"
+    ;;
+  --gate)
+    input=$(cat); mkdir -p "$STATE/live"
+    model=$(jq -r '.tool_input.model // empty' <<<"$input" 2>/dev/null)
+    if [[ -z "$model" || "$model" == inherit ]]; then
+      model=$(last_model "$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)")
+    fi
+    fam=$(family "$model"); cap=$(cap_for "$fam")
+    [[ "$fam" == unknown ]] && log "model unreadable (${model:-empty}); cap $cap"
+    # Load ceiling: wait for room, then reserve it. Measure and reserve under
+    # a lock so N spawns from one message do not all see the same load. A
+    # spawn that gives up waiting still reserves, so the next one sees it.
+    held=0 resv="" exhausted=false
+    while :; do
+      exec 8>"$STATE/live/.lock"; flock 8
+      live=$(live_load "$fam")
+      if (( live + CTX_ASSUMED <= cap || held >= CAP_MAX_WAIT )); then
+        (( live + CTX_ASSUMED > cap )) && { exhausted=true; log "cap wait exhausted ($fam: $((live/1000))k live)"; }
+        resv="$STATE/live/resv-$(date +%s)-$$-$fam"; : >"$resv"; flock -u 8; exec 8>&-; break
+      fi
+      flock -u 8; exec 8>&-
+      log "hold spawn ($fam): $((live/1000))k live + $((CTX_ASSUMED/1000))k > cap $((cap/1000))k"
+      sleep "$PAUSE_POLL"; held=$(( held + PAUSE_POLL ))
+    done
+    find "$STATE/live" -name 'resv-*' ! -newermt "-${RESV_TTL} seconds" -delete 2>/dev/null
+    read_state
+    waited=0
+    # In pause the delay is pinned to DELAY_MAX by fiat, so waiting for it to
+    # drop would be pure dead time; the brake below still charges the spawn.
+    while [[ "$verdict" != pause ]] && (( held == 0 && delay >= DELAY_MAX && waited < GATE_MAX_WAIT )); do
+      log "hold spawn ($model): brake saturated x=$x v=$velocity t=$target"
+      snooze "$PAUSE_POLL"; waited=$(( waited + PAUSE_POLL )); read_state
+    done
+    # Take a spawn slot under a lock, so N spawns issued in one message are
+    # spaced rather than all seeing the same "last". spawn.log keeps every
+    # slot taken (reservations live only RESV_TTL, too short for "recent").
+    exec 9>"$STATE/spawn.lock"; flock 9
+    t=$(date +%s); slot=$t
+    recent=$(awk -v c=$(( t - SPAWN_RECENT )) '$1 >= c' "$STATE/spawn.log" 2>/dev/null | wc -l)
+    if (( held == 0 )) && awk -v x="$x" -v n="$SPAWN_NEAR" -v r="$recent" -v b="$SPAWN_BURST" 'BEGIN{exit !(x >= n || r >= b)}'; then
+      last=$(cat "$STATE/spawn.last" 2>/dev/null || echo 0)
+      slot=$(( last + SPAWN_GAP > t ? last + SPAWN_GAP : t ))
+    fi
+    printf '%s\n' "$slot" >"$STATE/spawn.last"
+    printf '%s\n' "$slot" >>"$STATE/spawn.log"
+    (( RANDOM % 20 == 0 )) && { awk -v c=$(( t - SPAWN_RECENT )) '$1 >= c' "$STATE/spawn.log" >"$STATE/spawn.log.tmp" 2>/dev/null && mv -f "$STATE/spawn.log.tmp" "$STATE/spawn.log"; }
+    flock -u 9; exec 9>&-
+    gap=$(( slot - t ))
+    if (( gap > 0 )); then log "space spawn ($model): ${gap}s x=$x recent=$recent"; snooze "$gap"; fi
+    # The graduated brake. --throttle skips the Agent tool so this hook owns
+    # it; without this the most expensive call in the system is the only one
+    # that never waits, for every x between SLACK and DELAY_MAX/DELAY_PER_X.
+    # Time already spent held, saturated or spaced counts toward the delay.
+    brake=$(( delay - held - waited - gap ))
+    if (( brake > 0 )); then log "brake ${brake}s (delay=$delay held=$held waited=$waited gap=$gap)"; snooze "$brake"; fi
+    touch "$resv"   # the agent's transcript appears within RESV_TTL from here
+    log "spawn ($model) x=$x v=$velocity t=$target used=$used waited=${waited}s"
+    # Hand the pace line straight to the sub-agent, and tell the orchestrator
+    # when a spawn was held so the wait is not a mystery.
+    pace_line=""
+    case "$verdict" in
+      conserve|pause) pace_line="Rate-limit pace: $reason. Tool calls are being delayed to slow the burn. Keep thinking between low and medium, skip exploratory reads, write results to disk as you go, and return promptly with what is done and what is not." ;;
+    esac
+    note=""
+    if [[ "$exhausted" == true ]]; then note="Rate-limit gate: this spawn was held ${held}s and then allowed through with live $fam agents still above the $((cap/1000))k-token context ceiling ($((live/1000))k live). Every call from each of them re-sends its context, so do not spawn more until some return."
+    elif (( held > 0 )); then note="Rate-limit gate: this spawn was held ${held}s until live $fam agents dropped below $((cap/1000))k tokens of combined context (each agent counts its context, at least $((CTX_ASSUMED/1000))k). Prefer fewer, longer-lived agents with bounded scope."
+    elif (( waited > 0 )); then note="Rate-limit gate: this spawn was held ${waited}s because the burn is saturated ($reason). Prefer fewer agents at a time."
+    fi
+    if [[ -n "$pace_line" ]]; then
+      jq -n --arg p "$pace_line" --arg n "$note" --argjson ti "$(jq '.tool_input' <<<"$input")" '
+        {hookSpecificOutput: ({hookEventName:"PreToolUse",
+          updatedInput: ($ti + {prompt: ($p + "\n\n" + ($ti.prompt // ""))})}
+          + (if $n != "" then {additionalContext:$n} else {} end))}'
+    elif [[ -n "$note" ]]; then
+      emit_context "$note"
+    fi
+    ;;
+  --hint)
+    sid=$(jq -r '.session_id // empty' 2>/dev/null); sid=${sid:-nosession}
+    # Once per verdict per session, again after HINT_REPEAT; the line is the
+    # same paragraph every turn otherwise. A return to normal clears it.
+    mkdir -p "$STATE/hint"; mark="$STATE/hint/$sid"
+    read -r seen_v seen_t <<<"$(cat "$mark" 2>/dev/null)"
+    case "$verdict" in
+      pause|conserve)
+        if [[ "$seen_v" == "$verdict" ]] && (( now - ${seen_t:-0} < HINT_REPEAT )); then exit 0; fi
+        printf '%s %s\n' "$verdict" "$now" >"$mark"
+        (( RANDOM % 50 == 0 )) && find "$STATE/hint" -type f -mtime +2 -delete 2>/dev/null
+        ;;
+      *) rm -f "$mark" ;;
+    esac
+    case "$verdict" in
+      pause)    printf 'Rate-limit pace: %s. Keep this turn to what is essential and write progress to disk.\n' "$reason" ;;
+      conserve) printf 'Rate-limit pace: %s. Tool calls are being delayed to slow the burn (%ss banked per call, paid in pauses of %s-%ss). Keep thinking between low and medium, skip exploratory reads and speculative sub-agents, and pass this line to any sub-agent you spawn, until the pace is back on target.\n' "$reason" "$delay" "$DELAY_CHUNK" "$DELAY_MAX" ;;
+    esac
+    ;;
+  *)
+    printf 'verdict:   %s\n' "$verdict"
+    printf 'reason:    %s\n' "$reason"
+    printf 'used:      %s%%   elapsed: %s%%   headroom: %+dpt   hours left: %s\n' "$used" "$elapsed" "$headroom" "$hours_left"
+    printf 'velocity:  %s%%/h (%s)   target: %s%%/h   excess: %sx   delay/call: %ss\n' "$velocity" "$vsrc" "$target" "$x" "$delay"
+    [[ "$stale" == true ]] && printf 'note:      sample is %ss old; status line may not be rendering\n' "$age"
+    ;;
+esac
+exit 0
