@@ -36,6 +36,17 @@
 
     # Stuff
     # miktex
+    (texliveMedium.withPackages (
+      ps: with ps; [
+        latexmk
+        llncs
+        tocbibind
+        datetime
+        fmtcount
+        enumitem
+      ]
+    ))
+    texlab
     conda
     fastfetch
     google-cloud-sdk
@@ -55,6 +66,8 @@
     esphome
 
     google-chrome
+    unstable.pmbootstrap
+
   ];
 
 }

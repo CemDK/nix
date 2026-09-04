@@ -40,6 +40,7 @@ in
       "wheel"
     ];
   };
+  security.sudo.wheelNeedsPassword = false;
 
   # ============================================================================
   # ENVIRONMENT

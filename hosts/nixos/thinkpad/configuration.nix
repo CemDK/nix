@@ -52,6 +52,7 @@ in
       "wheel"
     ];
   };
+  security.sudo.wheelNeedsPassword = false;
 
   # ============================================================================
   # SERVICES
