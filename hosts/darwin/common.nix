@@ -37,11 +37,6 @@ in
   networking.hostName = lib.mkDefault host;
 
   # ============================================================================
-  # SECURITY
-  # ============================================================================
-  security.pam.services.sudo_local.touchIdAuth = true;
-
-  # ============================================================================
   # SERVICES
   # ============================================================================
   # nix-darwin's openssh module has no typed `settings` option like NixOS, so

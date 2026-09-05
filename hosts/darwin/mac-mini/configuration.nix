@@ -24,7 +24,6 @@ in
   system.stateVersion = 6;
   system.defaults.CustomUserPreferences.NSGlobalDomain."com.apple.swipescrolldirection" = false;
   system.defaults.loginwindow.autoLoginUser = user;
-  system.defaults.loginwindow.GuestEnabled = false;
 
   power = {
     restartAfterPowerFailure = true;
