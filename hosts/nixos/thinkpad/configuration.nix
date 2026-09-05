@@ -44,14 +44,6 @@ in
   # USER
   # ============================================================================
   users.motd = "There is no motd ;)";
-  users.users.${user} = {
-    isNormalUser = true;
-    description = "CemDK";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-  };
   security.sudo.wheelNeedsPassword = false;
 
   # ============================================================================

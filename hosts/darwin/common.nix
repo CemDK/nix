@@ -42,6 +42,27 @@ in
   security.pam.services.sudo_local.touchIdAuth = true;
 
   # ============================================================================
+  # SERVICES
+  # ============================================================================
+  # nix-darwin's openssh module has no typed `settings` option like NixOS, so
+  # the directives are rendered into extraConfig from an attrset here.
+  services.openssh = {
+    enable = true;
+    extraConfig =
+      let
+        sshdSettings = {
+          AllowUsers = user;
+          KbdInteractiveAuthentication = "no";
+          LogLevel = "VERBOSE";
+          MaxAuthTries = 5;
+          PasswordAuthentication = "no";
+          PermitRootLogin = "no";
+        };
+      in
+      lib.concatLines (lib.mapAttrsToList (k: v: "${k} ${toString v}") sshdSettings);
+  };
+
+  # ============================================================================
   # ENVIRONMENT
   # ============================================================================
   environment.shells = [

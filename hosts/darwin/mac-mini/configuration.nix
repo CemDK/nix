@@ -38,18 +38,6 @@ in
   # ============================================================================
   services = {
     tailscale.enable = true;
-
-    openssh = {
-      enable = true;
-      extraConfig = ''
-        PasswordAuthentication no
-        PermitRootLogin no
-        KbdInteractiveAuthentication no
-        AllowUsers cemdk
-        MaxAuthTries 5
-        LogLevel VERBOSE
-      '';
-    };
   };
 
   # --- Screen Sharing (video + your keyboard/mouse) -------------------------
