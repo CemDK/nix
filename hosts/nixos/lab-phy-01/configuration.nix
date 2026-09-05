@@ -183,8 +183,6 @@ in
     defaultSopsFile = "${self}/secrets/global.yaml";
     age = {
       sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-      keyFile = "~/.config/sops/age/keys.txt";
-      generateKey = true;
     };
     secrets = {
       "example/token" = {

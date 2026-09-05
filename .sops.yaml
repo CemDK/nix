@@ -23,11 +23,6 @@ creation_rules:
           - *cem_ryzen
           - *lab_phy_01
 
-  - path_regex: secrets/linux/cem-ryzen/.*\.(yaml|json|env|ini)$
-    key_groups:
-      - age:
-          - *cem_ryzen
-
   # Global secrets
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:

@@ -1,4 +1,5 @@
 {
+  config,
   self,
   ...
 }:
@@ -11,6 +12,14 @@
     ./packages.nix
     "${self}/modules/home"
   ];
+
+  # ============================================================================
+  # HOST IDENTITY
+  # ============================================================================
+  common = {
+    user = "cem";
+    home = "/home/cem";
+  };
 
   # ============================================================================
   # SERVICES
@@ -26,8 +35,8 @@
   news.display = "show";
 
   home = {
-    username = "cem";
-    homeDirectory = "/home/cem";
+    username = config.common.user;
+    homeDirectory = config.common.home;
     stateVersion = "25.11";
     file = { };
   };

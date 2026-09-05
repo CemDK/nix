@@ -1,4 +1,5 @@
 SHELL := /usr/bin/env bash
+.SHELLFLAGS := -o pipefail -c
 
 HOSTNAME      := $(shell hostname -s)
 UNAME         := $(shell uname)
@@ -81,7 +82,7 @@ iso:
 				]; \
 			})]; \
 		}).config.system.build.isoImage" \
-		-o result-iso 2>&1 | tee $(LOG); \
+		-o result-iso 2>&1 | tee $(LOG) || exit $$?; \
 	echo "ISO written to result-iso/iso/"
 
 # ============================================================================
@@ -119,4 +120,4 @@ deploy: sync
 		--target-host $(HOMELAB_HOST) \
 		--build-host $(HOMELAB_HOST) \
 		--sudo --ask-sudo-password \
-		2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
+		2>&1 | tee $(LOG)

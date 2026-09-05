@@ -153,6 +153,7 @@
           };
           extraSpecialArgs = args;
           modules = [
+            { common.host = host; }
             (hostDir + "/home.nix")
             stylix.homeModules.stylix
           ];
