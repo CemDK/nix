@@ -98,12 +98,14 @@ in
         dependsOn = [ "wireguard" ];
         extraOptions = [
           "--network=container:wireguard"
+          "--stop-timeout=30"
           "--cap-drop=ALL"
           "--cap-add=CHOWN"
           "--cap-add=DAC_OVERRIDE"
           "--cap-add=FOWNER"
           "--cap-add=SETUID"
           "--cap-add=SETGID"
+          "--cap-add=KILL"
           "--security-opt=no-new-privileges"
         ];
       };
@@ -156,41 +158,37 @@ in
         "--sysctl=net.ipv4.conf.all.src_valid_mark=1"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
         "--dns=8.8.8.8"
+        # Health = tunnel is up.
+        "--health-cmd=ip link show wg0 && wg show wg0"
+        "--health-interval=30s"
+        "--health-retries=3"
+        "--health-on-failure=kill"
       ];
+      podman.sdnotify = "healthy";
 
       labels = labels;
     };
 
-    # Each arr service waits for the wireguard tunnel to be up before starting
-    systemd.services = builtins.listToAttrs (
+    # podman-wireguard is gated on its tunnel healthcheck (sdnotify=healthy),
+    # so dependsOn already guarantees the VPN is up before an arr container starts.
+    # bindsTo/partOf additionally stop and restart the arr containers together with wireguard,
+    # and the start limit keeps a broken stack from retrying forever and blocking nixos-rebuild switch.
+    systemd.services = {
+      podman-wireguard = {
+        serviceConfig.TimeoutStartSec = lib.mkForce 120;
+        startLimitIntervalSec = 600;
+        startLimitBurst = 3;
+      };
+    }
+    // builtins.listToAttrs (
       map (name: {
         name = "podman-${name}";
         value = {
-          after = [
-            "podman-wireguard.service"
-            "ensure-container-dirs.service"
-          ];
-          requires = [ "podman-wireguard.service" ];
+          after = [ "ensure-container-dirs.service" ];
           bindsTo = [ "podman-wireguard.service" ];
           partOf = [ "podman-wireguard.service" ];
-          serviceConfig = {
-            ExecStartPre = [
-              (pkgs.writeShellScript "wait-for-wireguard-tunnel" ''
-                set -eu
-                for _ in $(seq 1 30); do
-                  if ${pkgs.podman}/bin/podman exec wireguard /bin/sh -c \
-                    'ip link show wg0 >/dev/null 2>&1 && wg show wg0 >/dev/null 2>&1' \
-                    2>/dev/null; then
-                    exit 0
-                  fi
-                  sleep 5
-                done
-                echo "wireguard tunnel did not become ready in time" >&2
-                exit 1
-              '')
-            ];
-            TimeoutStartSec = lib.mkForce "180";
-          };
+          startLimitIntervalSec = 600;
+          startLimitBurst = 3;
         };
       }) (lib.attrNames cfg.services)
     );

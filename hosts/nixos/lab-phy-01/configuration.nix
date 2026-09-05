@@ -113,7 +113,9 @@ in
           "workgroup" = "WORKGROUP";
           "server string" = "lab-phy-01";
           "security" = "user";
-          "map to guest" = "Bad User";
+          "map to guest" = "Never";
+          "hosts allow" = "127. 192.168.178.";
+          "hosts deny" = "ALL";
         };
         data = {
           path = "${cfg.storagePath}";

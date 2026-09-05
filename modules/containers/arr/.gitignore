@@ -1,6 +1,7 @@
 sonarr/*
 radarr/*
 sabnzbd/*
+seerr/*
 qbittorrent/*
 wireguard/*
 !/.gitignore
