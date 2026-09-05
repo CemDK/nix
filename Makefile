@@ -6,7 +6,7 @@ UNAME         := $(shell uname)
 LOG           := /tmp/nixos-build.log
 SECRETS_DIR   := secrets
 HOMELAB_USER  := cemdk
-HOMELAB_HOST  := $(HOMELAB_USER)@nixos.local
+HOMELAB_HOST  := $(HOMELAB_USER)@lab-phy-01.local
 HOMELAB_FLAKE := lab-phy-01
 NH            := $(shell command -v nh 2>/dev/null || echo "nix run nixpkgs\#nh --")
 

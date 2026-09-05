@@ -61,7 +61,10 @@ in
       configPath = "/home/${user}/.config/nix/modules/containers";
       storagePath = "/mnt/storage/data";
 
-      arr-stack.enable = true;
+      arr-stack = {
+        enable = true;
+        configDir = "/home/${user}/.config/nix/modules/containers/arr";
+      };
       audiobookshelf.enable = true;
       calibre-web.enable = true;
       homer.enable = true;
@@ -175,6 +178,16 @@ in
     443
     53317 # localsend
   ];
+
+  services.avahi = {
+    enable = true;
+    openFirewall = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
 
   # ============================================================================
   # SECRETS (sops-nix)

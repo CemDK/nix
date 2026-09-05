@@ -28,7 +28,7 @@ in
     };
     configDir = lib.mkOption {
       type = lib.types.str;
-      default = "${shared.configPath}/${stack}/${container}";
+      default = "${shared.${stack}.configDir}/${container}";
     };
   };
 
