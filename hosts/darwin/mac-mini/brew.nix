@@ -3,7 +3,7 @@
     enable = true;
     # caskArgs.no_quarantine = true;
     onActivation = {
-      autoUpdate = false;
+      autoUpdate = true;
       upgrade = true;
       # brew 6.0.9 deprecated the `--cleanup` switch: it now runs as a dry-run
       # that prints "Would uninstall ..." and EXITS 1 whenever cleanup is
