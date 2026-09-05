@@ -42,7 +42,7 @@
         ],
         "defaultMode": "auto"
     },
-    "model": "opus[1m]",
+    "model": "claude-fable-5-1[1m]",
     "skillOverrides": {
         "vercel-composition-patterns": "off",
         "vercel-react-best-practices": "off",
