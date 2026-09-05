@@ -118,5 +118,5 @@ deploy: sync
 		--flake .#$(HOMELAB_FLAKE) \
 		--target-host $(HOMELAB_HOST) \
 		--build-host $(HOMELAB_HOST) \
-		--sudo \
+		--sudo --ask-sudo-password \
 		2>&1 | tee $(LOG); EXIT_CODE=$${PIPESTATUS[0]}; \
