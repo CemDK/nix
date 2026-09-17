@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Play a short notification sound for Claude Code events, from inside WSL.
-# Plays event-named WAVs (Kenney UI sounds) through Windows' Media.SoundPlayer
-# via powershell.exe. Fired from Claude Code hooks; runs detached so the hook
-# returns immediately and never blocks Claude on the sound.
+# Play a short notification sound for Claude Code events.
+# Plays event-named WAVs (Kenney UI sounds). Fired from Claude Code hooks; runs
+# detached so the hook returns immediately and never blocks Claude on the sound.
 # Usage: claude-sound <question|done|attention>
+#
+# Cross-platform: picks a player by host —
+#   macOS        -> afplay
+#   Linux        -> pw-play / paplay / aplay / ffplay / play (first found)
+#   WSL/Windows  -> powershell.exe Media.SoundPlayer
 #
 # Sounds live in ~/.local/share/claude-sounds/<event>.wav (deployed by nix from
 # dotfiles/assets/sounds). To change a mapping, swap the file there.
@@ -19,16 +23,33 @@ esac
 sound="$HOME/.local/share/claude-sounds/${event}.wav"
 [[ -r "$sound" ]] || exit 0
 
-# Need Windows interop (powershell.exe) and wslpath to hand Windows a path it
-# understands; bail quietly if either is missing (e.g. non-WSL host).
-ps=$(command -v powershell.exe 2>/dev/null) || exit 0
-win=$(wslpath -w "$sound" 2>/dev/null) || exit 0
+# Detach and fire-and-forget so the hook never waits on playback. setsid keeps
+# the player alive after the hook returns; we redirect all fds off the pipe.
+play() { setsid "$@" >/dev/null 2>&1 < /dev/null & }
 
-# Fire and forget: detach so the hook doesn't wait on playback. PlaySync (not
-# Play) keeps the detached process alive until the sound finishes — Play() would
-# return instantly and the process could exit mid-sound.
-setsid "$ps" -NoProfile -NonInteractive \
-  -Command "(New-Object Media.SoundPlayer '${win}').PlaySync()" \
-  >/dev/null 2>&1 < /dev/null &
+if command -v afplay >/dev/null 2>&1; then
+  # macOS
+  play afplay "$sound"
+
+elif command -v powershell.exe >/dev/null 2>&1 && command -v wslpath >/dev/null 2>&1; then
+  # WSL: hand Windows a path it understands. PlaySync (not Play) keeps the
+  # detached process alive until the sound finishes — Play() returns instantly
+  # and the process could exit mid-sound.
+  win=$(wslpath -w "$sound" 2>/dev/null) || exit 0
+  play powershell.exe -NoProfile -NonInteractive \
+    -Command "(New-Object Media.SoundPlayer '${win}').PlaySync()"
+
+else
+  # Linux: try players in order of preference (PipeWire, PulseAudio, ALSA, then
+  # generic fallbacks). Stop at the first one present.
+  for p in pw-play paplay aplay ffplay play; do
+    command -v "$p" >/dev/null 2>&1 || continue
+    case "$p" in
+      ffplay) play ffplay -nodisp -autoexit -loglevel quiet "$sound" ;;
+      *)      play "$p" "$sound" ;;
+    esac
+    break
+  done
+fi
 
 exit 0
