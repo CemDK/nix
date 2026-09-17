@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   # ============================================================================
   # MY NVIM DEPENDENCIES
@@ -27,7 +27,8 @@
     luajitPackages.luarocks
     nodejs
     pnpm
-    rustup # includes rust-analyzer
+    rustup
+    (lib.hiPrio rust-analyzer)
     typescript-go
     php # runtime for php-cs-fixer
 

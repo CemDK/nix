@@ -1,7 +1,4 @@
-{ config, self, ... }:
-let
-  inherit (config.common) user;
-in
+{ self, ... }:
 {
   imports = [
     "${self}/hosts/darwin/common.nix"
@@ -23,7 +20,6 @@ in
   # ============================================================================
   system.stateVersion = 6;
   system.defaults.CustomUserPreferences.NSGlobalDomain."com.apple.swipescrolldirection" = false;
-  system.defaults.loginwindow.autoLoginUser = user;
 
   power = {
     restartAfterPowerFailure = true;
@@ -37,6 +33,14 @@ in
   # ============================================================================
   services = {
     tailscale.enable = true;
+  };
+
+  # ============================================================================
+  # SECRETS (sops-nix)
+  # ============================================================================
+  sops = {
+    defaultSopsFile = "${self}/secrets/global.yaml";
+    age.sshKeyPaths = [ "/Users/cemdk/.ssh/id_ed25519" ];
   };
 
   # --- Screen Sharing (video + your keyboard/mouse) -------------------------

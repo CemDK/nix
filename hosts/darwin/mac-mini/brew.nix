@@ -51,7 +51,6 @@
       # "bentobox"
       "betterdisplay"
       "claude"
-      "claude-code"
       # "cleanshot"
       # "clop"
       # "discord"
