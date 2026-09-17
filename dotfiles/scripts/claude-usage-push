@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# claude-usage-push — publish the Claude subscription's 5h and 7d rate-limit
+# readings to Home Assistant helpers, so an always-on automation can gate
+# unattended work on the mac-mini (home-assistant repo: mini-jobs/README.md).
+#
+# Source of the reading:
+#   --stdin     a status line payload on stdin (rate_limits.five_hour/seven_day);
+#               the status line calls this after every render, so an interactive
+#               session on any machine keeps HA current through a supported path.
+#   (default)   GET api.anthropic.com/api/oauth/usage with the CLI's OAuth token:
+#               CLAUDE_CODE_OAUTH_TOKEN, else ~/.claude/.credentials.json, else the
+#               macOS keychain item "Claude Code-credentials". Undocumented
+#               endpoint; the headless (-p) runner on the mini has no other source.
+#
+# Side effect: refreshes ~/.cache/claude-statusline/usage.json (the file
+# claude-budget paces on) when the reading is newer or higher, so headless
+# sessions get a live 5h figure too.
+#
+# HA_URL and HA_TOKEN come from the environment, else from
+# ${CLAUDE_USAGE_ENV:-~/.config/claude/secrets.env}. Pushes at most once per
+# MIN_INTERVAL seconds unless --force. --quiet prints nothing on success.
+set -u
+export LC_ALL=C.UTF-8
+
+STATE="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
+ENV_FILE="${CLAUDE_USAGE_ENV:-$HOME/.config/claude/secrets.env}"
+MIN_INTERVAL=${MIN_INTERVAL:-60}
+ENDPOINT="https://api.anthropic.com/api/oauth/usage"
+
+from_stdin=0 force=0 quiet=0
+for a in "$@"; do
+  case $a in
+    --stdin) from_stdin=1 ;;
+    --force) force=1 ;;
+    --quiet) quiet=1 ;;
+    *) echo "usage: claude-usage-push [--stdin] [--force] [--quiet]" >&2; exit 2 ;;
+  esac
+done
+
+say() { (( quiet )) || echo "$*"; }
+die() { echo "claude-usage-push: $*" >&2; exit 1; }
+
+mkdir -p "$STATE"
+now=$(date +%s)
+if (( ! force )) && [[ -f "$STATE/push.last" ]]; then
+  last=$(<"$STATE/push.last")
+  (( now - ${last:-0} < MIN_INTERVAL )) && { say "skipped: pushed $((now - last))s ago"; exit 0; }
+fi
+
+# ── the reading: used5 reset5 used7 reset7 (percent, epoch seconds) ─────────
+if (( from_stdin )); then
+  read -r used5 reset5 used7 reset7 <<<"$(jq -r '
+    [ .rate_limits.five_hour.used_percentage // "",
+      (.rate_limits.five_hour.resets_at // 0 | floor),
+      .rate_limits.seven_day.used_percentage // "",
+      (.rate_limits.seven_day.resets_at // 0 | floor) ] | join(" ")')"
+  [[ -z "$used5" ]] && { say "no rate_limits in payload"; exit 0; }
+else
+  token=${CLAUDE_CODE_OAUTH_TOKEN:-}
+  if [[ -z "$token" && -r "$HOME/.claude/.credentials.json" ]]; then
+    token=$(jq -r '.claudeAiOauth.accessToken // empty' "$HOME/.claude/.credentials.json")
+  fi
+  if [[ -z "$token" ]] && command -v security >/dev/null; then
+    token=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
+      | jq -r '.claudeAiOauth.accessToken // empty')
+  fi
+  [[ -n "$token" ]] || die "no Claude OAuth token found"
+  body=$(curl -sS -m 15 -H "Authorization: Bearer $token" -H "anthropic-beta: oauth-2025-04-20" \
+    -w '\n%{http_code}' "$ENDPOINT") || die "usage endpoint unreachable"
+  code=${body##*$'\n'}; body=${body%$'\n'*}
+  [[ "$code" == 200 ]] || die "usage endpoint returned HTTP $code"
+  read -r used5 reset5 used7 reset7 <<<"$(jq -r '
+    def epoch: if . then (sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | fromdateiso8601) else 0 end;
+    [ .five_hour.utilization // "", (.five_hour.resets_at | epoch),
+      .seven_day.utilization // "", (.seven_day.resets_at | epoch) ] | join(" ")' <<<"$body")"
+  [[ -n "$used5" ]] || die "unexpected endpoint payload"
+fi
+
+# ── local usage.json for claude-budget, same newer-or-higher rule as statusline
+read -r prev_used prev_ra <<<"$(jq -r '[.used_pct, .resets_at // 0] | join(" ")' "$STATE/usage.json" 2>/dev/null)"
+if awk -v u="$used5" -v r="$reset5" -v pu="${prev_used:-0}" -v pr="${prev_ra:-0}" 'BEGIN{exit !(r > pr || (r == pr && u >= pu))}'; then
+  tmp=$(mktemp -p "$STATE" .usage.XXXXXX) \
+    && printf '{"used_pct":%s,"resets_at":%s,"sampled_at":%s}\n' "$used5" "$reset5" "$now" >"$tmp" \
+    && mv -f "$tmp" "$STATE/usage.json"
+fi
+
+# ── Home Assistant ───────────────────────────────────────────────────────────
+if [[ -z "${HA_URL:-}" || -z "${HA_TOKEN:-}" ]]; then
+  [[ -r "$ENV_FILE" ]] && source "$ENV_FILE"
+fi
+[[ -n "${HA_URL:-}" && -n "${HA_TOKEN:-}" ]] || die "HA_URL/HA_TOKEN not set (looked in $ENV_FILE)"
+
+call() { # call <domain>/<service> <json>
+  local out
+  out=$(curl -sS -m 10 -o /dev/null -w '%{http_code}' -X POST \
+    -H "Authorization: Bearer $HA_TOKEN" -H "Content-Type: application/json" \
+    -d "$2" "$HA_URL/api/services/$1") || return 1
+  [[ "$out" == 200 ]] || { echo "claude-usage-push: $1 -> HTTP $out" >&2; return 1; }
+}
+ok=1
+call input_number/set_value "{\"entity_id\":\"input_number.claude_used_5h\",\"value\":$used5}" || ok=0
+[[ -n "$used7" ]] && { call input_number/set_value "{\"entity_id\":\"input_number.claude_used_7d\",\"value\":$used7}" || ok=0; }
+(( reset5 > 0 )) && { call input_datetime/set_datetime "{\"entity_id\":\"input_datetime.claude_reset_5h\",\"timestamp\":$reset5}" || ok=0; }
+(( reset7 > 0 )) && { call input_datetime/set_datetime "{\"entity_id\":\"input_datetime.claude_reset_7d\",\"timestamp\":$reset7}" || ok=0; }
+(( ok )) || exit 1
+echo "$now" >"$STATE/push.last"
+say "pushed 5h ${used5}% (resets $(date -r "$reset5" +%H:%M 2>/dev/null || date -d "@$reset5" +%H:%M)) 7d ${used7:-?}% (resets $(date -r "$reset7" +'%a %H:%M' 2>/dev/null || date -d "@$reset7" +'%a %H:%M'))"

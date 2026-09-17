@@ -331,6 +331,13 @@ if [[ -n "$usage" ]]; then
     fi
     exec 7>&-
   fi
+  # Mirror both windows to Home Assistant, which gates the mac-mini's unattended
+  # jobs on the 7d figure (claude-usage-push rate-limits itself). Never block
+  # the render on the network.
+  if [[ -x "$HOME/.local/scripts/claude-usage-push" ]]; then
+    "$HOME/.local/scripts/claude-usage-push" --stdin --quiet <<<"$input" >/dev/null 2>&1 &
+    disown
+  fi
 fi
 
 # CONTEXT window — value is the token count. Always drawn: a session that has

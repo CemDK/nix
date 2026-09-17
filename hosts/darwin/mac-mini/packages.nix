@@ -29,6 +29,7 @@ in
   # Add user packages here
   # This installs into $HOME/.nix-profile
   users.users.${user}.packages = with pkgs; [
+    flock
     wakatime-cli
     nix-search-tv
     fastfetch

@@ -184,11 +184,12 @@
         }
     },
     "outputStyle": "clarity",
+    "spinnerTipsEnabled": false,
     "alwaysThinkingEnabled": true,
     "effortLevel": "high",
     "modelSettings": {
         "claude-fable-5-1": {
-            "effortLevel": "medium"
+            "effortLevel": "high"
         }
     },
     "promptSuggestionEnabled": false,

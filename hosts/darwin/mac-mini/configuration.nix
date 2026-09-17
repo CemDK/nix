@@ -36,12 +36,20 @@
   };
 
   # ============================================================================
-  # SECRETS (sops-nix)
+  # JOB RUNNER (home-assistant repo: mini-jobs/README.md)
   # ============================================================================
-  sops = {
-    defaultSopsFile = "${self}/secrets/global.yaml";
-    age.sshKeyPaths = [ "/Users/cemdk/.ssh/id_ed25519" ];
+  launchd.daemons.mini-jobs.serviceConfig = {
+    Label = "org.cemdk.mini-jobs";
+    ProgramArguments = [ "/Users/cemdk/dev/personal/home-assistant/mini-jobs/run.sh" ];
+    UserName = "cemdk";
+    RunAtLoad = true;
+    WorkingDirectory = "/Users/cemdk";
+    EnvironmentVariables.HOME = "/Users/cemdk";
+    StandardOutPath = "/Users/cemdk/Library/Logs/mini-jobs.log";
+    StandardErrorPath = "/Users/cemdk/Library/Logs/mini-jobs.log";
   };
+
+  security.sudo.extraConfig = "cemdk ALL=(root) NOPASSWD: /sbin/shutdown -h now";
 
   # --- Screen Sharing (video + your keyboard/mouse) -------------------------
   system.activationScripts.postActivation.text = ''
