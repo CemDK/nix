@@ -24,8 +24,6 @@
   power = {
     restartAfterPowerFailure = true;
     restartAfterFreeze = true;
-    sleep.computer = "never";
-    sleep.harddisk = "never";
   };
 
   # ============================================================================
@@ -38,21 +36,16 @@
   # ============================================================================
   # JOB RUNNER (home-assistant repo: mini-jobs/README.md)
   # ============================================================================
-  launchd.daemons.mini-jobs.serviceConfig = {
-    Label = "org.cemdk.mini-jobs";
-    ProgramArguments = [ "/Users/cemdk/dev/personal/home-assistant/mini-jobs/run.sh" ];
-    UserName = "cemdk";
-    RunAtLoad = true;
-    WorkingDirectory = "/Users/cemdk";
-    EnvironmentVariables.HOME = "/Users/cemdk";
-    StandardOutPath = "/Users/cemdk/Library/Logs/mini-jobs.log";
-    StandardErrorPath = "/Users/cemdk/Library/Logs/mini-jobs.log";
-  };
+  common.sshKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcdDBJwN+t+e9LecOeBaBAl5t2yBlBPXMOd+9vT3mml cem-server@omv mini-jobs starter"
+  ];
 
-  security.sudo.extraConfig = "cemdk ALL=(root) NOPASSWD: /sbin/shutdown -h now";
-
+  # --- Sleep/wake (pmset; systemsetup does not stick on Apple silicon) ------
   # --- Screen Sharing (video + your keyboard/mouse) -------------------------
   system.activationScripts.postActivation.text = ''
+    echo "configuring sleep..." >&2
+    pmset -a sleep 10 displaysleep 10 disksleep 0 womp 1 autorestart 1 powernap 0
+
     echo "enabling Screen Sharing..." >&2
     launchctl enable system/com.apple.screensharing
     launchctl bootstrap system \
