@@ -340,6 +340,15 @@ if [[ -n "$usage" ]]; then
   fi
 fi
 
+# Cost and token statistics for Home Assistant (claude-cost-push, every 10 min).
+# The age check lives here so a render does not start node just to be told no.
+cost_stamp="$USAGE_STATE/cost-push.last"
+if [[ -x "$HOME/.local/scripts/claude-cost-push" ]] \
+  && (( $(date +%s) - $(cat "$cost_stamp" 2>/dev/null || echo 0) >= 600 )); then
+  "$HOME/.local/scripts/claude-cost-push" --quiet >/dev/null 2>&1 &
+  disown
+fi
+
 # CONTEXT window — value is the token count. Always drawn: a session that has
 # not had its first turn yet reports no context, and an empty meter reads
 # better than a hole in the grid.

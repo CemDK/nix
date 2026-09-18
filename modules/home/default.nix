@@ -49,6 +49,7 @@ in
         alacritty
         bat
         btop
+        unstable.ccusage
         curl
         fd
         git
