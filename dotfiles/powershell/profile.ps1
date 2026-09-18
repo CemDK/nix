@@ -121,3 +121,30 @@ Set-Alias -Name lg -Value lazygit
 Remove-Item Alias:nv -Force -ErrorAction SilentlyContinue
 function nv { start-process powershell -ArgumentList "neovide.exe --frame none @args" }
 
+
+# ============================================================================
+# MAC-MINI SCREEN SHARING
+# ============================================================================
+function minivnc {
+    $viewer = Join-Path $env:ProgramFiles 'TigerVNC\vncviewer.exe'
+    if (-not (Test-Path $viewer)) { Write-Error "TigerVNC viewer not found at $viewer (winget install TigerVNC.TigerVNC)"; return }
+    $port = 5901
+    $ssh = Start-Process ssh -PassThru -NoNewWindow -ArgumentList @(
+        '-N', '-o', 'ExitOnForwardFailure=yes', '-L', "${port}:localhost:5900", 'cemdk@mac-mini.local')
+    try {
+        $open = $false
+        foreach ($i in 1..120) {
+            if ($ssh.HasExited) { Write-Error "ssh exited with code $($ssh.ExitCode) before the tunnel came up"; return }
+            $c = [System.Net.Sockets.TcpClient]::new()
+            try { $c.Connect('127.0.0.1', $port); $open = $true } catch { } finally { $c.Dispose() }
+            if ($open) { break }
+            Start-Sleep -Milliseconds 500
+        }
+        if (-not $open) { Write-Error "tunnel on localhost:$port did not come up within 60 s"; return }
+        Start-Process $viewer -Wait -ArgumentList @(
+            '-FullScreen', '-AutoSelect=0', '-PreferredEncoding=Hextile', "localhost::$port")
+    }
+    finally {
+        if (-not $ssh.HasExited) { Stop-Process -Id $ssh.Id -Force }
+    }
+}
