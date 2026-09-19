@@ -30,6 +30,7 @@ in
   # This installs into $HOME/.nix-profile
   users.users.${user}.packages = with pkgs; [
     flock
+    pnpm
     wakatime-cli
     nix-search-tv
     fastfetch
