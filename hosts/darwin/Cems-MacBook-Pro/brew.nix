@@ -4,11 +4,6 @@
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      # brew 6.0.9 deprecated the `--cleanup` switch: it now runs as a dry-run
-      # that prints "Would uninstall ..." and EXITS 1 whenever cleanup is
-      # pending, which aborts nix-darwin activation. And `cleanup = "uninstall"`
-      # emits the `--force-cleanup` flag that brew 6.0 removed. Neither works,
-      # so disable auto-cleanup. To prune manually: `brew bundle cleanup --force`.
       cleanup = "none";
     };
     global.autoUpdate = true;
