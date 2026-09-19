@@ -12,13 +12,13 @@ NH            := $(shell command -v nh 2>/dev/null || echo "nix run nixpkgs\#nh 
 
 # DARWIN:
 ifeq ($(UNAME),Darwin)
-  SWITCH_CMD := $(NH) darwin switch .
+  SWITCH_CMD := $(NH) darwin switch --show-activation-logs .
 # NIXOS:
 else ifneq ($(wildcard /etc/NIXOS),)
-  SWITCH_CMD := $(NH) os switch .
+  SWITCH_CMD := $(NH) os switch --show-activation-logs .
 # GENERIC LINUX (home-manager):
 else
-  SWITCH_CMD := $(NH) home switch .
+  SWITCH_CMD := $(NH) home switch --show-activation-logs .
 endif
 
 .PHONY: bootstrap check lint switch update clean iso secrets secrets-homelab rekey sync deploy windows
