@@ -4,6 +4,8 @@
     "${self}/modules/home"
   ];
 
+  dev.enable = true;
+
   home.stateVersion = "25.05";
 
   programs.desktoppr = {

@@ -22,6 +22,7 @@ let
 in
 {
   imports = [
+    ./options.nix
     ./fzf
     ./nvim
     ./zsh
