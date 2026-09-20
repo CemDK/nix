@@ -38,6 +38,7 @@
   # ============================================================================
   common.sshKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcdDBJwN+t+e9LecOeBaBAl5t2yBlBPXMOd+9vT3mml cem-server@omv mini-jobs starter"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJMZ5JQyNp/x0HdUFnUhK8dW/9MNZFrKFLGVuUTTlbe2 cemdk@thinkpad"
   ];
 
   # --- Sleep/wake (pmset; systemsetup does not stick on Apple silicon) ------

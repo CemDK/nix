@@ -47,6 +47,7 @@
       ]
     ))
     texlab
+    zathura
     conda
     fastfetch
     google-cloud-sdk
