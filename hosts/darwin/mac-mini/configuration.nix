@@ -34,7 +34,7 @@
   };
 
   # ============================================================================
-  # JOB RUNNER (home-assistant repo: mini-jobs/README.md)
+  # JOB RUNNER (home-assistant repo: agent-jobs/README.md)
   # ============================================================================
   common.sshKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGcdDBJwN+t+e9LecOeBaBAl5t2yBlBPXMOd+9vT3mml cem-server@omv mini-jobs starter"
