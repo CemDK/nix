@@ -17,6 +17,13 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
+  # ============================================================================
+  # SERVICES
+  # ============================================================================
+  services = {
+    tailscale.enable = true;
+  };
+
   system.stateVersion = 6;
 
 }

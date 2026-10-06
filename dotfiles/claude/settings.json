@@ -42,7 +42,7 @@
         ],
         "defaultMode": "auto"
     },
-    "model": "claude-fable-5-1[1m]",
+    "model": "opus",
     "skillOverrides": {
         "vercel-composition-patterns": "off",
         "vercel-react-best-practices": "off",
@@ -189,6 +189,9 @@
     "effortLevel": "high",
     "modelSettings": {
         "claude-fable-5-1": {
+            "effortLevel": "high"
+        },
+        "claude-opus-5-5": {
             "effortLevel": "high"
         }
     },

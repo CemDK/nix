@@ -162,7 +162,7 @@ ctx_hint() {
   local soft=$CTX_SOFT hard=$CTX_HARD
   [[ -n "$agent_id" ]] && { soft=$CTX_SOFT_AGENT; hard=$CTX_HARD_AGENT; }
   # Parsing costs a 400KB read; skip transcripts too small to be near soft.
-  (( $(stat -c %s "$tp" 2>/dev/null || echo 0) >= soft * CTX_BYTES_PER_TOKEN )) || return 0
+  (( $(stat -c %s "$tp" 2>/dev/null || stat -f %z "$tp" 2>/dev/null || echo 0) >= soft * CTX_BYTES_PER_TOKEN )) || return 0
   # Byte-based tail may cut the first line; fromjson? skips it.
   ctx=$(tail -c 400000 "$tp" | jq -rR '
       fromjson? | select(.type=="assistant") | .message.usage
@@ -219,7 +219,10 @@ finished() {
   local f=$1 id p ts
   id=${f##*/agent-}; id=${id%.jsonl}; p="${f%/subagents/*}.jsonl"
   ts=$(grep -F "<task-id>$id</task-id>" "$p" 2>/dev/null | tail -n1 | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p')
-  [[ -n "$ts" ]] && (( $(date -d "$ts" +%s 2>/dev/null || echo 0) >= $(stat -c %Y "$f" 2>/dev/null || echo 0) ))
+  [[ -n "$ts" ]] || return 1
+  local t=${ts%Z}; t=${t%%.*} # BSD date: no fraction, no zone suffix
+  (( $(date -d "$ts" +%s 2>/dev/null || date -j -u -f %Y-%m-%dT%H:%M:%S "$t" +%s 2>/dev/null || echo 0) \
+     >= $(stat -c %Y "$f" 2>/dev/null || stat -f %m "$f" 2>/dev/null || echo 0) ))
 }
 # live_load FAMILY -> tokens of context held by that family's sub-agents across
 # all sessions: transcripts touched within LIVE_WINDOW and not finished, plus

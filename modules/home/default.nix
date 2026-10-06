@@ -77,6 +77,9 @@ in
       ++ lib.optionals pkgs.stdenv.isLinux [
         # Linux-only packages
         # anki # using brew for macos
+      ]
+      ++ lib.optionals pkgs.stdenv.isDarwin [
+        flock
       ];
 
     sessionVariables = {

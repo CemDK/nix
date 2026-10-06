@@ -68,7 +68,7 @@ COST_KEEP_DAYS=7
 # date (e.g. buckets written by an older layout of this script).
 prune_cost_state() {
   local cutoff d name
-  cutoff=$(date -d "$COST_KEEP_DAYS days ago" +%F) || return 0
+  cutoff=$(date -d "$COST_KEEP_DAYS days ago" +%F 2>/dev/null || date -v-"${COST_KEEP_DAYS}"d +%F) || return 0
   for d in "$COST_STATE"/*; do
     [[ -d "$d" ]] || continue
     name=${d##*/}
@@ -297,7 +297,7 @@ if [[ -n "$usage" ]]; then
   resets_at=$(jq -r '.rate_limits.five_hour.resets_at // empty' <<<"$input")
   reset_fmt=""
   if [[ -n "$resets_at" ]]; then
-    reset_fmt=$(date -d "@${resets_at}" +%H:%M 2>/dev/null)
+    reset_fmt=$(date -d "@${resets_at%%.*}" +%H:%M 2>/dev/null || date -r "${resets_at%%.*}" +%H:%M 2>/dev/null)
     [[ -n "$reset_fmt" ]] && reset_fmt="(${reset_fmt})"
   fi
   lab[0]=5h; pct[0]=$(printf '%.0f' "$usage"); val[0]="$reset_fmt"
@@ -361,7 +361,7 @@ if [[ -n "$usage7" ]]; then
   resets7_at=$(jq -r '.rate_limits.seven_day.resets_at // empty' <<<"$input")
   reset7_fmt=""
   if [[ -n "$resets7_at" ]]; then
-    reset7_fmt=$(date -d "@${resets7_at}" +'%a %H:%M' 2>/dev/null)
+    reset7_fmt=$(date -d "@${resets7_at%%.*}" +'%a %H:%M' 2>/dev/null || date -r "${resets7_at%%.*}" +'%a %H:%M' 2>/dev/null)
     # Trim the locale's 3-letter abbreviation to 2 chars: "Mon" -> "Mo".
     [[ -n "$reset7_fmt" ]] && reset7_fmt="(${reset7_fmt/#???/${reset7_fmt:0:2}})"
   fi
