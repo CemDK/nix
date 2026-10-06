@@ -22,6 +22,7 @@
     bun
     pastel
     opencode
+    unstable.codex
     sops
     # Git related
     lazygit

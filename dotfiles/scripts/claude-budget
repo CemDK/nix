@@ -32,6 +32,10 @@
 #               catch up. Time already held counts toward the delay.
 #   --hint      UserPromptSubmit: one pacing line when over pace, repeated
 #               only when the verdict changes or HINT_REPEAT has passed.
+#   --pacing [on|off]
+#               switch pacing; no argument toggles. Off lasts until the current
+#               window resets: --throttle charges no delay (context warnings
+#               still fire), --gate and --hint do nothing.
 #
 # Overrides: ~/.config/claude-budget.conf is sourced if present (plain
 # VAR=value lines). DEBUG_LOG=/path traces every hook decision.
@@ -63,10 +67,8 @@ SPAWN_NEAR=0.8      # x above which spawns are spaced out
 SPAWN_GAP=90        # s between spawns when spaced
 SPAWN_BURST=3       # spawns within SPAWN_RECENT that also trigger spacing, so a
 SPAWN_RECENT=600    # fan-out is paced even while the velocity has not caught up
-CTX_SOFT=250000     # tokens: main session "resolve soon"
-CTX_HARD=300000     # tokens: main session "finish now"
-CTX_SOFT_AGENT=150000 # sub-agents earlier: every call re-reads the context
-CTX_HARD_AGENT=200000
+CTX_SOFT=250000     # tokens: "resolve soon", main session and sub-agents alike
+CTX_HARD=300000     # tokens: "finish now"
 CTX_BYTES_PER_TOKEN=3 # lower bound; measured 3.9 (sub-agents) to 7.0 (main). Transcripts
                       # smaller than CTX_SOFT*this cannot be near the threshold, so
                       # the 400KB parse is skipped for them.
@@ -92,6 +94,7 @@ DEBUG_LOG="${DEBUG_LOG:-}"
 [[ -r "$CONF" ]] && source "$CONF"
 
 mode=${1:-}
+PACE_OFF="$STATE/pace-off"
 log() { [[ -n "$DEBUG_LOG" ]] && printf '%s %s[%s] %s\n' "$(date +%T)" "$mode" "$$" "$*" >>"$DEBUG_LOG"; return 0; }
 
 # ── read the window state into globals ────────────────────────────────────
@@ -160,7 +163,6 @@ ctx_hint() {
   local tp=$1 key ctx marks="$STATE/ctx"
   [[ -n "$tp" && -r "$tp" ]] || { log "ctx: no readable transcript ($tp)"; return 0; }
   local soft=$CTX_SOFT hard=$CTX_HARD
-  [[ -n "$agent_id" ]] && { soft=$CTX_SOFT_AGENT; hard=$CTX_HARD_AGENT; }
   # Parsing costs a 400KB read; skip transcripts too small to be near soft.
   (( $(stat -c %s "$tp" 2>/dev/null || stat -f %z "$tp" 2>/dev/null || echo 0) >= soft * CTX_BYTES_PER_TOKEN )) || return 0
   # Byte-based tail may cut the first line; fromjson? skips it.
@@ -250,19 +252,43 @@ snooze() {
   done
 }
 
+pace_off_until() {   # -> epoch pacing stays off until, or 0 when pacing is on
+  local u; u=$(cat "$PACE_OFF" 2>/dev/null)
+  if [[ "$u" =~ ^[0-9]+$ ]] && (( u > $(date +%s) )); then echo "$u"; else echo 0; fi
+}
+
 emit_context() {   # $1 text -> PreToolUse JSON with additionalContext
   jq -n --arg c "$1" '{hookSpecificOutput:{hookEventName:"PreToolUse", additionalContext:$c}}'
 }
 
+off_until=$(pace_off_until)
+if (( off_until > 0 )); then
+  case "$mode" in --gate|--hint) exit 0 ;; esac
+fi
+
 read_state
 case "$mode" in
+  --pacing)
+    want=${2:-}
+    [[ -z "$want" ]] && { (( off_until > 0 )) && want=on || want=off; }
+    case "$want" in
+      on)  rm -f "$PACE_OFF"; echo "pacing on" ;;
+      off)
+        until=$resets_at
+        [[ "$reset_pending" == true || "$until" == 0 ]] && until=$(( now + WINDOW ))
+        mkdir -p "$STATE"; printf '%s\n' "$until" >"$PACE_OFF"
+        echo "pacing off until $(date -d "@$until" +%H:%M) (window reset)" ;;
+      *) echo "usage: claude-budget --pacing [on|off]" >&2; exit 2 ;;
+    esac
+    ;;
   --json)
     jq -n --arg v "$verdict" --arg r "$reason" --argjson u "$used" --argjson e "$elapsed" \
       --argjson h "$headroom" --argjson rh "$hours_left" --argjson vel "$velocity" --arg vs "$vsrc" \
       --argjson t "$target" --argjson x "$x" --argjson sl "${slack:-$SLACK}" --argjson d "$delay" --argjson a "$age" --argjson s "$stale" \
+      --argjson po "$off_until" \
       '{verdict:$v, reason:$r, used_pct:$u, elapsed_pct:$e, headroom_pt:$h, hours_left:$rh,
         velocity_pct_h:$vel, velocity_source:$vs, target_pct_h:$t, excess:$x, slack:$sl, delay_s:$d,
-        sample_age_s:$a, stale:$s}'
+        sample_age_s:$a, stale:$s, pacing_off_until:$po}'
     ;;
   --throttle)
     input=$(cat)
@@ -275,6 +301,7 @@ case "$mode" in
     fi
     hint=""
     case "$tool" in AskUserQuestion|Agent) verdict=skip ;; esac
+    (( off_until > 0 )) && verdict=skip
     if [[ "$verdict" != skip ]]; then
       # Delay bucket: each call is charged its delay, but the sleep is taken
       # only once DELAY_CHUNK has banked, and never more than DELAY_MAX at a
@@ -389,6 +416,8 @@ case "$mode" in
     esac
     ;;
   *)
+    if (( off_until > 0 )); then printf 'pacing:    off until %s\n' "$(date -d "@$off_until" +%H:%M)"
+    else printf 'pacing:    on\n'; fi
     printf 'verdict:   %s\n' "$verdict"
     printf 'reason:    %s\n' "$reason"
     printf 'used:      %s%%   elapsed: %s%%   headroom: %+dpt   hours left: %s\n' "$used" "$elapsed" "$headroom" "$hours_left"

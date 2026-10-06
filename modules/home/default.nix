@@ -121,6 +121,7 @@ in
   home.file.".claude/statusline.sh".source = link "${localFiles}/claude/statusline.sh";
   home.file.".claude/output-styles".source = link "${localFiles}/claude/output-styles";
   home.file.".claude/skills/pace".source = link "${localFiles}/claude/skills/pace";
+  home.file.".claude/skills/pacing".source = link "${localFiles}/claude/skills/pacing";
 
   home.activation.generateSshKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -f "$HOME/.ssh/id_ed25519" ]; then

@@ -235,17 +235,23 @@ ctx_col=$(zone "$ctx_int" "$ZONE_CTX")
 head_post+="${SEP}${ctx_col}${tok_fmt}${RESET} (${ctx_col}${ctx_int}%${RESET})"
 
 # BURN — how fast the 5h window is being spent, in %/h, from claude-budget
-# (which reads the sample the previous render banked). Colored against the
-# brake thresholds: under 0.8x target green, under 1.15x yellow, braking red.
+# (which reads the sample the previous render banked). Labelled "pace" and
+# colored against the brake thresholds (under 0.8x target green, under 1.15x
+# yellow, braking red), or "burn" in magenta while pacing is switched off.
 BUDGET="${CLAUDE_BUDGET:-$HOME/.local/scripts/claude-budget}"
 if [[ -x "$BUDGET" ]]; then
-  read -r burn burn_x burn_v <<<"$("$BUDGET" --json 2>/dev/null \
-    | jq -r '[(.velocity_pct_h // 0), (.excess // 0), (.verdict // "unknown")] | join(" ")' 2>/dev/null)"
+  read -r burn burn_x burn_v burn_off <<<"$("$BUDGET" --json 2>/dev/null \
+    | jq -r '[(.velocity_pct_h // 0), (.excess // 0), (.verdict // "unknown"), (.pacing_off_until // 0)] | join(" ")' 2>/dev/null)"
   # No sample yet reports a velocity of 0 too; only a judged window is drawn.
   if [[ -n "$burn" && "$burn_v" != unknown ]]; then
-    burn_col=$(awk -v x="$burn_x" -v g="$GREEN" -v y="$YELLOW" -v r="$RED" \
-      'BEGIN{printf "%s", (x < 0.8 ? g : x < 1.15 ? y : r)}')
-    head_post+="${SEP}${burn_col}$(printf '%.0f' "$burn")%/h${RESET}"
+    if (( ${burn_off:-0} > 0 )); then
+      burn_lab=burn; burn_col="$MAGENTA"
+    else
+      burn_lab=pace
+      burn_col=$(awk -v x="$burn_x" -v g="$GREEN" -v y="$YELLOW" -v r="$RED" \
+        'BEGIN{printf "%s", (x < 0.8 ? g : x < 1.15 ? y : r)}')
+    fi
+    head_post+="${SEP}${DIM}${burn_lab}${RESET} ${burn_col}$(printf '%.0f' "$burn")%/h${RESET}"
   fi
 fi
 
