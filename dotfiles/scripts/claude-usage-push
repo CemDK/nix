@@ -39,6 +39,7 @@ done
 
 say() { (( quiet )) || echo "$*"; }
 die() { echo "claude-usage-push: $*" >&2; exit 1; }
+clock() { date -d "@$1" "+$2" 2>/dev/null || date -r "$1" "+$2"; }  # epoch, format; GNU, else BSD
 
 mkdir -p "$STATE"
 now=$(date +%s)
@@ -104,4 +105,4 @@ call input_number/set_value "{\"entity_id\":\"input_number.claude_used_5h\",\"va
 (( reset7 > 0 )) && { call input_datetime/set_datetime "{\"entity_id\":\"input_datetime.claude_reset_7d\",\"timestamp\":$reset7}" || ok=0; }
 (( ok )) || exit 1
 echo "$now" >"$STATE/push.last"
-say "pushed 5h ${used5}% (resets $(date -r "$reset5" +%H:%M 2>/dev/null || date -d "@$reset5" +%H:%M)) 7d ${used7:-?}% (resets $(date -r "$reset7" +'%a %H:%M' 2>/dev/null || date -d "@$reset7" +'%a %H:%M'))"
+say "pushed 5h ${used5}% (resets $(clock "$reset5" %H:%M)) 7d ${used7:-?}% (resets $(clock "$reset7" '%a %H:%M'))"

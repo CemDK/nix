@@ -95,6 +95,12 @@ DEBUG_LOG="${DEBUG_LOG:-}"
 
 mode=${1:-}
 PACE_OFF="$STATE/pace-off"
+# GNU and BSD (macOS) spell these differently; each falls back to the BSD form.
+clock() { date -d "@$1" "+$2" 2>/dev/null || date -r "$1" "+$2"; }   # epoch, format
+iso_epoch() { local t=${1%Z}; t=${t%%.*}                               # 2026-10-06T19:21:31.539Z
+  date -d "$1" +%s 2>/dev/null || date -j -u -f %Y-%m-%dT%H:%M:%S "$t" +%s 2>/dev/null || echo 0; }
+fsize() { stat -c %s "$1" 2>/dev/null || stat -f %z "$1" 2>/dev/null || echo 0; }
+mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }
 log() { [[ -n "$DEBUG_LOG" ]] && printf '%s %s[%s] %s\n' "$(date +%T)" "$mode" "$$" "$*" >>"$DEBUG_LOG"; return 0; }
 
 # ── read the window state into globals ────────────────────────────────────
@@ -164,7 +170,7 @@ ctx_hint() {
   [[ -n "$tp" && -r "$tp" ]] || { log "ctx: no readable transcript ($tp)"; return 0; }
   local soft=$CTX_SOFT hard=$CTX_HARD
   # Parsing costs a 400KB read; skip transcripts too small to be near soft.
-  (( $(stat -c %s "$tp" 2>/dev/null || stat -f %z "$tp" 2>/dev/null || echo 0) >= soft * CTX_BYTES_PER_TOKEN )) || return 0
+  (( $(fsize "$tp") >= soft * CTX_BYTES_PER_TOKEN )) || return 0
   # Byte-based tail may cut the first line; fromjson? skips it.
   ctx=$(tail -c 400000 "$tp" | jq -rR '
       fromjson? | select(.type=="assistant") | .message.usage
@@ -221,10 +227,7 @@ finished() {
   local f=$1 id p ts
   id=${f##*/agent-}; id=${id%.jsonl}; p="${f%/subagents/*}.jsonl"
   ts=$(grep -F "<task-id>$id</task-id>" "$p" 2>/dev/null | tail -n1 | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p')
-  [[ -n "$ts" ]] || return 1
-  local t=${ts%Z}; t=${t%%.*} # BSD date: no fraction, no zone suffix
-  (( $(date -d "$ts" +%s 2>/dev/null || date -j -u -f %Y-%m-%dT%H:%M:%S "$t" +%s 2>/dev/null || echo 0) \
-     >= $(stat -c %Y "$f" 2>/dev/null || stat -f %m "$f" 2>/dev/null || echo 0) ))
+  [[ -n "$ts" ]] && (( $(iso_epoch "$ts") >= $(mtime "$f") ))
 }
 # live_load FAMILY -> tokens of context held by that family's sub-agents across
 # all sessions: transcripts touched within LIVE_WINDOW and not finished, plus
@@ -277,7 +280,7 @@ case "$mode" in
         until=$resets_at
         [[ "$reset_pending" == true || "$until" == 0 ]] && until=$(( now + WINDOW ))
         mkdir -p "$STATE"; printf '%s\n' "$until" >"$PACE_OFF"
-        echo "pacing off until $(date -d "@$until" +%H:%M) (window reset)" ;;
+        echo "pacing off until $(clock "$until" %H:%M) (window reset)" ;;
       *) echo "usage: claude-budget --pacing [on|off]" >&2; exit 2 ;;
     esac
     ;;
@@ -416,7 +419,7 @@ case "$mode" in
     esac
     ;;
   *)
-    if (( off_until > 0 )); then printf 'pacing:    off until %s\n' "$(date -d "@$off_until" +%H:%M)"
+    if (( off_until > 0 )); then printf 'pacing:    off until %s\n' "$(clock "$off_until" %H:%M)"
     else printf 'pacing:    on\n'; fi
     printf 'verdict:   %s\n' "$verdict"
     printf 'reason:    %s\n' "$reason"
