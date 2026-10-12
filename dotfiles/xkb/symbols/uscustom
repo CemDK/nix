@@ -1,0 +1,24 @@
+// Same layout as dotfiles/hypr/us-custom.xkb, as an XKB symbols file so
+// compositors without a keymap-file option (mango) can load it by name:
+//   xkb_rules_layout=uscustom
+// libxkbcommon finds it in ~/.config/xkb/symbols/.
+default partial alphanumeric_keys
+xkb_symbols "basic" {
+    include "us(basic)"
+
+    // Swap Y and Z (German-style)
+    key <AD06> { [ z, Z ] };  // top row: was y, now z
+    key <AB01> { [ y, Y ] };  // bottom row: was z, now y
+
+    // Umlauts on AltGr
+    key <AC01> { [ a, A, adiaeresis, Adiaeresis ] };  // AltGr+A -> ae/Ae
+    key <AD09> { [ o, O, odiaeresis, Odiaeresis ] };  // AltGr+O -> oe/Oe
+    key <AD07> { [ u, U, udiaeresis, Udiaeresis ] };  // AltGr+U -> ue/Ue
+    key <AC02> { [ s, S, ssharp,     U1E9E     ] };  // AltGr+S -> ss/SS
+    key <AC03> { [ d, D, odiaeresis, Odiaeresis ] };  // AltGr+D -> oe/Oe (alias)
+    key <AC04> { [ f, F, udiaeresis, Udiaeresis ] };  // AltGr+F -> ue/Ue (alias)
+
+    include "level3(ralt_switch)"
+
+    key <CAPS> { [ Escape ] };
+};

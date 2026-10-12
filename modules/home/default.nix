@@ -13,11 +13,13 @@ let
     alacritty = "${localFiles}/alacritty";
     hypr = "${localFiles}/hypr";
     lazygit = "${localFiles}/lazygit";
+    mango = "${localFiles}/mango";
     neovide = "${localFiles}/neovide";
     rofi = "${localFiles}/rofi";
     tmux = "${localFiles}/tmux";
     waybar = "${localFiles}/waybar";
     wallpapers = "${localFiles}/wallpapers";
+    xkb = "${localFiles}/xkb";
   };
 in
 {

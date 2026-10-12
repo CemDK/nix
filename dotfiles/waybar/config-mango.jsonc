@@ -1,0 +1,17 @@
+// -*- mode: jsonc -*-
+// mango variant of config.jsonc: same bar, ext-workspace tags instead of hyprland/workspaces
+{
+    "include": ["~/.config/waybar/config.jsonc"],
+    "modules-left": [
+        "custom/menu",
+        "ext/workspaces",
+        "tray"
+    ],
+
+    "ext/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "ignore-hidden": true,
+        "sort-by-id": true
+    }
+}

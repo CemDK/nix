@@ -20,6 +20,8 @@ in
     ./hardware-configuration.nix
     "${self}/modules/features/stylix"
     "${self}/modules/features/hyprland"
+    "${self}/modules/features/mango"
+    "${self}/modules/features/sddm"
     "${self}/modules/features/steam"
     "${self}/modules/profiles/laptop/power-management.nix"
 

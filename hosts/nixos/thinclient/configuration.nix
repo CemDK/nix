@@ -17,6 +17,7 @@ in
     ./hardware-configuration.nix
     "${self}/modules/features/stylix"
     "${self}/modules/features/hyprland"
+    "${self}/modules/features/greetd"
     "${self}/modules/features/steam"
   ];
 
