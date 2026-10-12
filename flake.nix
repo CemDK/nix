@@ -17,6 +17,7 @@
     stylix.inputs.nixpkgs.follows = "nixpkgs";
     nix-keylayout.url = "github:CemDK/nix-keylayout";
     nix-keylayout.flake = true;
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
   };
 
   outputs =

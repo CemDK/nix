@@ -1,4 +1,9 @@
-{ self, pkgs, ... }:
+{
+  self,
+  inputs,
+  pkgs,
+  ...
+}:
 {
 
   # ============================================================================
@@ -6,6 +11,7 @@
   # ============================================================================
   imports = [
     "${self}/modules/home"
+    inputs.nix-flatpak.homeManagerModules.nix-flatpak
   ];
 
   dev.enable = true;
@@ -13,6 +19,14 @@
   # ============================================================================
   # SERVICES
   # ============================================================================
+  services.flatpak = {
+    packages = [ "app.zen_browser.zen" ];
+    update.auto = {
+      enable = true;
+      onCalendar = "weekly";
+    };
+  };
+
   services.udiskie = {
     enable = true;
     settings = {
