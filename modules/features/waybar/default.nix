@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  imports = [ ./system-menu.nix ];
+
   environment.systemPackages = with pkgs; [
     # waybar dependencies
     blueman # bluetooth gui

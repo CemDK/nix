@@ -6,6 +6,7 @@
     "height": 38,
     "spacing": 4,
     "modules-left": [
+        "custom/menu",
         "hyprland/workspaces",
         "tray"
     ],
@@ -23,6 +24,25 @@
         "battery",
         "custom/power"
     ],
+
+    // ===== SYSTEM MENU =====
+    "custom/menu": {
+        "format": " ",
+        "tooltip": false,
+        "menu": "on-click",
+        "menu-file": "~/.config/waybar/system-menu.xml",
+        "menu-actions": {
+            "about": "system-action about",
+            "wifi": "nm-connection-editor",
+            "bluetooth": "blueman-manager",
+            "sound": "pavucontrol",
+            "suspend": "system-action suspend",
+            "reboot": "system-action reboot",
+            "poweroff": "system-action poweroff",
+            "lock": "system-action lock",
+            "logout": "system-action logout"
+        }
+    },
 
     // ===== WORKSPACE CONFIGURATION =====
     "hyprland/workspaces": {

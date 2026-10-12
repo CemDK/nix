@@ -54,6 +54,7 @@ window#waybar {
 #bluetooth,
 #cpu,
 #clock,
+#custom-menu,
 #custom-power,
 #custom-sep,
 #disk,
@@ -79,4 +80,47 @@ window#waybar {
   font-size: 12px;
   font-weight: normal;
   color: @secondary;
+}
+
+/* System menu button and its dropdown */
+#custom-menu {
+  /* Official NixOS snowflake, pkgs.nixos-icons (modules/features/waybar/system-menu.nix) */
+  background-image: url("/run/current-system/sw/share/icons/hicolor/scalable/apps/nix-snowflake-white.svg");
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-width: 20px;
+  padding: 0 8px;
+  /* 8px margin + 8px padding = 16px to the bar edge, same as
+     8px padding + 4px spacing + 4px button margin to workspace 1 */
+  margin-left: 8px;
+  border-radius: 8px;
+}
+
+#custom-menu:hover {
+  /* background-color only: the "background" shorthand would drop the icon */
+  background-color: @subtle-bright;
+}
+
+menu {
+  background: @bg-end;
+  color: @fg;
+  border: 1px solid @accent;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+menuitem {
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+menuitem:hover {
+  background: @accent;
+}
+
+menu separator {
+  background: @subtle-bright;
+  margin: 4px 0;
+  min-height: 1px;
 }

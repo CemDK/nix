@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dropdown for the snowflake button (custom/menu), like the Apple menu on macOS.
+     Item ids map to commands in "menu-actions" in config.jsonc. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="about">
+        <property name="label">About This Computer</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep1"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="wifi">
+        <property name="label">Wi-Fi Settings…</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="bluetooth">
+        <property name="label">Bluetooth…</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="sound">
+        <property name="label">Sound…</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep2"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="suspend">
+        <property name="label">Sleep</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="reboot">
+        <property name="label">Restart</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="poweroff">
+        <property name="label">Shut Down</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep3"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="lock">
+        <property name="label">Lock Screen</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="logout">
+        <property name="label">Log Out</property>
+      </object>
+    </child>
+  </object>
+</interface>

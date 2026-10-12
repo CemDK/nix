@@ -11,6 +11,9 @@ blur = true
 option_as_alt = "Both"
 padding = { x = 10, y = 10 }
 
+[scrolling]
+multiplier = 11
+
 [font]
 size = 11
 offset.x = 0
