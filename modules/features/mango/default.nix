@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  imports = [ ../wayland-desktop ];
+
   # use newer mangowc from unstable nixpkgs
   programs.mangowc = {
     enable = true;
