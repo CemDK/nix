@@ -9,7 +9,7 @@ let
         CropBackground = "true";
         DimBackground = "0.0";
 
-        Font = "Open Sans";
+        Font = "DejaVu Sans";
 
         PartialBlur = "true";
         HaveFormBackground = "false";
@@ -18,40 +18,18 @@ let
 
         BackgroundColor = "#062027";
         DimBackgroundColor = "#062027";
-        FormBackgroundColor = "#062027";
 
-        TimeTextColor = "#ffffff";
-        DateTextColor = "#ffffff";
-        HeaderTextColor = "#ffffff";
-
-        LoginFieldBackgroundColor = "#062027";
-        PasswordFieldBackgroundColor = "#062027";
-        LoginFieldTextColor = "#ffffff";
-        PasswordFieldTextColor = "#ffffff";
-        UserIconColor = "#ffffff";
-        PasswordIconColor = "#ffffff";
-        PlaceholderTextColor = "#93a1a1";
-        WarningColor = "#f78104";
-
-        LoginButtonTextColor = "#ffffff";
-        LoginButtonBackgroundColor = "#005f60";
-        SystemButtonsIconsColor = "#ffffff";
+        # Session picker and its dropdown
         SessionButtonTextColor = "#ffffff";
-        VirtualKeyboardButtonTextColor = "#ffffff";
-
+        HoverSessionButtonTextColor = "#f78104";
         DropdownTextColor = "#ffffff";
         DropdownBackgroundColor = "#062027";
         DropdownSelectedBackgroundColor = "#005f60";
 
+        # Qt palette for the whole greeter
         HighlightTextColor = "#ffffff";
         HighlightBackgroundColor = "#005f60";
-        HighlightBorderColor = "#005f60";
-
-        HoverUserIconColor = "#f78104";
-        HoverPasswordIconColor = "#f78104";
         HoverSystemButtonsIconsColor = "#f78104";
-        HoverSessionButtonTextColor = "#f78104";
-        HoverVirtualKeyboardButtonTextColor = "#f78104";
       };
     }).overrideAttrs
       (old: {
