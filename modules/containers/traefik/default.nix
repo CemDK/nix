@@ -11,7 +11,7 @@ let
   shared = config.homelab.containers;
   cfg = config.homelab.containers.${container};
 
-  image = "traefik:v3.3";
+  image = "traefik:v3";
 in
 {
 

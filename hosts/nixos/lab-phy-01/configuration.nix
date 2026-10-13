@@ -26,6 +26,7 @@ in
 
     # Container options and modules
     "${self}/modules/containers/options.nix"
+    (container "adguardhome")
     (container "arr")
     (container "audiobookshelf")
     (container "calibre-web")
@@ -65,6 +66,7 @@ in
         enable = true;
         configDir = "/home/${user}/.config/nix/modules/containers/arr";
       };
+      adguardhome.enable = true;
       audiobookshelf.enable = true;
       calibre-web.enable = true;
       homer.enable = true;
