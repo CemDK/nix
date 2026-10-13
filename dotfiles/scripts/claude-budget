@@ -44,6 +44,7 @@ export LC_ALL=C.UTF-8
 STATE="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
 CONF="${XDG_CONFIG_HOME:-$HOME/.config}/claude-budget.conf"
 
+HINTS=false         # true: context wrap-up warnings (--throttle) and --hint lines
 WINDOW=$((5 * 3600))
 STALE_AFTER=120     # s; the status line only renders in a live session
 MIN_ELAPSED=10      # % of window before cumulative pace is trusted
@@ -320,7 +321,7 @@ case "$mode" in
       printf '%s\n' "$debt" >"$bank"
       (( RANDOM % 50 == 0 )) && find "$STATE/debt" -type f -mtime +2 -delete 2>/dev/null
     fi
-    ctx_hint "$tp"
+    [[ "$HINTS" == true ]] && ctx_hint "$tp"
     [[ -n "$hint" ]] && emit_context "$hint"
     ;;
   --gate)
@@ -400,6 +401,7 @@ case "$mode" in
     fi
     ;;
   --hint)
+    [[ "$HINTS" == true ]] || exit 0
     sid=$(jq -r '.session_id // empty' 2>/dev/null); sid=${sid:-nosession}
     # Once per verdict per session, again after HINT_REPEAT; the line is the
     # same paragraph every turn otherwise. A return to normal clears it.

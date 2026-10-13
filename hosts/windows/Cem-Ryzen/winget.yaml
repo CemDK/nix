@@ -349,6 +349,11 @@ properties:
         id: BlenderFoundation.Blender
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: uv
+      settings:
+        id: astral-sh.uv
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: freecad
       settings:
         id: FreeCAD.FreeCAD

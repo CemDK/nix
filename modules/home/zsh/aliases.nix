@@ -71,4 +71,6 @@
   ts = "tmux-sessionizer";
 
   lg = "lazygit";
+
+  qwen = ''pwsh.exe -NoProfile -ExecutionPolicy Bypass -File 'F:\Tools\llama\serve-qwen.ps1' '';
 }
