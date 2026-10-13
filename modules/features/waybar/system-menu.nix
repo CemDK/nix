@@ -9,8 +9,7 @@ let
           --hold -e ${pkgs.fastfetch}/bin/fastfetch
         ;;
       lock)
-        exec ${pkgs.swaylock}/bin/swaylock --daemonize --color 062027 \
-          --inside-color 002f30 --ring-color 005f60 --key-hl-color f78104
+        exec lock-screen # modules/features/lock-screen
         ;;
       logout)
         case "$XDG_CURRENT_DESKTOP" in
@@ -36,10 +35,6 @@ in
   environment.systemPackages = [
     system-action
     pkgs.fastfetch
-    pkgs.swaylock
     pkgs.nixos-icons # snowflake on the menu button (dotfiles/waybar/style.css)
   ];
-
-  # swaylock needs a PAM service to check the password
-  security.pam.services.swaylock = { };
 }

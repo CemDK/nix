@@ -1,0 +1,22 @@
+/* Oat background colors from dotfiles/waybar/style.css, light teal highlight */
+:root {
+  --oat-bg-start: #062027;
+  --oat-bg-end: #002f30;
+  --oat-highlight: #5fcfc0;
+
+  /* Zen derives its tab, border and input tints from these two */
+  --zen-branding-dark: var(--oat-bg-start) !important;
+  --zen-primary-color: var(--oat-highlight) !important;
+}
+
+/* Zen sets these inline from the workspace gradient picker; !important here wins */
+#zen-browser-background,
+#zen-toolbar-background {
+  --zen-main-browser-background: linear-gradient(to bottom, var(--oat-bg-start), var(--oat-bg-end)) !important;
+  --zen-main-browser-background-toolbar: linear-gradient(to bottom, var(--oat-bg-start), var(--oat-bg-end)) !important;
+}
+
+/* Workspaces set their own accent */
+zen-workspace {
+  --zen-primary-color: var(--oat-highlight) !important;
+}

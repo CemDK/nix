@@ -1,6 +1,7 @@
 {
   self,
   inputs,
+  lib,
   pkgs,
   ...
 }:
@@ -26,6 +27,17 @@
       onCalendar = "weekly";
     };
   };
+
+  # Zen theme: copied, instead of symlinked (flatpak)
+  home.activation.zenUserChrome = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    for profile in "$HOME"/.var/app/app.zen_browser.zen/.zen/*.Default\ \(release\); do
+      [ -d "$profile" ] || continue
+      run install -Dm644 ${self}/dotfiles/zen/userChrome.css "$profile/chrome/userChrome.css"
+      run install -Dm644 ${pkgs.writeText "zen-user.js" ''
+        user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+      ''} "$profile/user.js"
+    done
+  '';
 
   services.udiskie = {
     enable = true;

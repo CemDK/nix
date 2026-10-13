@@ -46,13 +46,19 @@ in
   # USER
   # ============================================================================
   users.motd = "There is no motd ;)";
-  security.sudo.wheelNeedsPassword = false;
+
+  # Synaptics 06cb:00bd reader. Enroll with `fprintd-enroll`.
+  # fprintd turns on fingerprint auth for every PAM service (sudo, sddm, polkit, ...)
+  services.fprintd.enable = true;
 
   # ============================================================================
   # SERVICES
   # ============================================================================
   services = {
-    getty.autologinUser = user;
+    displayManager.autoLogin = {
+      enable = true;
+      inherit user;
+    };
     flatpak.enable = true;
     gvfs.enable = true;
     udisks2.enable = true;

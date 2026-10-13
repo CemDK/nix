@@ -103,7 +103,6 @@ in
   # SERVICES
   # ============================================================================
   services = {
-    getty.autologinUser = user;
     samba-wsdd.enable = true;
     samba = {
       enable = true;

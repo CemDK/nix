@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  # sddm-astronaut layout (centered blurred panel, big clock) with my wallpaper
-  # and the oat colors from dotfiles/waybar/style.css
+  # sddm-astronaut background (blurred center column) with my wallpaper and the
+  # oat colors from dotfiles/waybar/style.css. The layout comes from LoginForm.qml.
   theme =
     (pkgs.sddm-astronaut.override {
       themeConfig = {
@@ -10,8 +10,6 @@ let
         DimBackground = "0.0";
 
         Font = "Open Sans";
-        HourFormat = "HH:mm";
-        DateFormat = "dddd d MMMM";
 
         PartialBlur = "true";
         HaveFormBackground = "false";
@@ -61,6 +59,11 @@ let
           dir=$out/share/sddm/themes/sddm-astronaut-theme/Backgrounds
           chmod u+w $dir
           cp ${../../../dotfiles/wallpapers/oat/autumn-season-leafs-plant-scene-generative-ai.jpg} $dir/oat.jpg
+
+          # Same layout as the hyprlock lock screen
+          components=$out/share/sddm/themes/sddm-astronaut-theme/Components
+          chmod u+w $components
+          install -m644 ${./LoginForm.qml} $components/LoginForm.qml
         '';
       });
 in
@@ -81,7 +84,7 @@ in
         CursorSize = 36;
       };
     };
-    defaultSession = "hyprland-uwsm";
+    defaultSession = "mango";
   };
 
   environment.systemPackages = [
