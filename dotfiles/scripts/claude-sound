@@ -25,7 +25,12 @@ sound="$HOME/.local/share/claude-sounds/${event}.wav"
 
 # Detach and fire-and-forget so the hook never waits on playback. setsid keeps
 # the player alive after the hook returns; we redirect all fds off the pipe.
-play() { setsid "$@" >/dev/null 2>&1 < /dev/null & }
+# macOS has no setsid (util-linux), so fall back to nohup there.
+if command -v setsid >/dev/null 2>&1; then
+  play() { setsid "$@" >/dev/null 2>&1 < /dev/null & }
+else
+  play() { nohup "$@" >/dev/null 2>&1 < /dev/null & }
+fi
 
 if command -v afplay >/dev/null 2>&1; then
   # macOS

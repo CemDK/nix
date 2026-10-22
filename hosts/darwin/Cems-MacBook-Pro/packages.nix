@@ -51,6 +51,7 @@ in
     nix-search-tv
     fastfetch
     opencode
+    uv # blender-mcp server runs via uvx
 
     redis
   ];

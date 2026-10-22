@@ -44,6 +44,12 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
     if.window-title-regex-substring = 'Picture-in-Picture'
     run = ['layout floating']
 
+# Bitwarden extension popouts (unlock, passkey selection)
+[[on-window-detected]]
+    if.app-id = 'app.zen-browser.zen'
+    if.window-title-regex-substring = 'Bitwarden Password Manager'
+    run = ['layout floating']
+
 [[on-window-detected]]
     if.app-id = 'com.apple.calculator'
     run = ['layout floating']
@@ -251,6 +257,9 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
     # Service mode for advanced operations
     cmd-shift-semicolon = 'mode service'
+
+    # Screenshot: drag an area, copy to clipboard (space toggles window mode, esc cancels)
+    alt-shift-s = 'exec-and-forget screencapture -ic'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     # cmd-tab reserved for macOS app switcher

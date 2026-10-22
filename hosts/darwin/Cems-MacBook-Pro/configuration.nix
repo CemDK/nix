@@ -24,6 +24,12 @@
     tailscale.enable = true;
   };
 
+  # --- Sleep: on AC the display may sleep, the system never idle-sleeps ------
+  system.activationScripts.postActivation.text = ''
+    echo "configuring sleep..." >&2
+    pmset -c sleep 0 displaysleep 10
+  '';
+
   system.stateVersion = 6;
 
 }

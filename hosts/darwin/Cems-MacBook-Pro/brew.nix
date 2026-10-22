@@ -26,6 +26,7 @@
     # GUI APPLICATIONS
     casks = [
       "anki"
+      "blender"
       # "playonmac"
       # "plex"
       # "visual-studio-code"
