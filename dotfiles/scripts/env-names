@@ -1,0 +1,165 @@
+#!/usr/bin/env bash
+# env-names — list the variable names in an env file, never the values, so an
+# agent can see which keys exist without the file reaching its context.
+#
+# Usage
+#   env-names            ./.env
+#   env-names DIR        DIR/.env
+#   env-names FILE       FILE
+#   env-names secrets    ~/.config/claude/secrets.env
+#   env-names -          stdin (e.g. ssh omv 'cat ~/cron/.env' | env-names -)
+#
+# Output: full-line comments (token-like strings redacted), then one line per
+# variable: NAME and its state (set, empty, replace-me, set (multi-line)).
+# A line that is not a comment or NAME=value is reported by line number only;
+# so is a name that looks like a value (mixed case, many digits, too long,
+# long without an underscore).
+# Lines inside a multi-line quoted value are never printed.
+#
+# Limit: comments are free text. Long tokens, "key: x" / "token=x" pairs and
+# "Bearer x" are redacted, but a plain-word password in a comment would print.
+
+set -euo pipefail
+
+die() { echo "env-names: $*" >&2; exit 1; }
+
+arg=${1:-.}
+case $arg in
+  -h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  secrets)   file=$HOME/.config/claude/secrets.env ;;
+  -)         file=/dev/stdin ;;
+  *)         if [[ -d $arg ]]; then file=${arg%/}/.env; else file=$arg; fi ;;
+esac
+[[ $file == /dev/stdin || -f $file ]] || die "no env file at $file"
+[[ $file == /dev/stdin ]] && label=stdin || label=$file
+
+read -r -d '' prog <<'AWK' || true
+# Does s contain the closing quote q? Double quotes may be escaped with \.
+function closes(s, q,    i, c, esc) {
+  if (q != "\"") return index(s, q) > 0
+  esc = 0
+  for (i = 1; i <= length(s); i++) {
+    c = substr(s, i, 1)
+    if (esc) { esc = 0; continue }
+    if (c == "\\") { esc = 1; continue }
+    if (c == q) return 1
+  }
+  return 0
+}
+# Text of a quoted value up to its closing quote.
+function inner(s, q,    i, c, esc, out) {
+  esc = 0; out = ""
+  for (i = 1; i <= length(s); i++) {
+    c = substr(s, i, 1)
+    if (q == "\"" && esc) { esc = 0; out = out c; continue }
+    if (q == "\"" && c == "\\") { esc = 1; continue }
+    if (c == q) return out
+    out = out c
+  }
+  return out
+}
+function has_digit(s) { return s ~ /[0-9]/ }
+function has_alpha(s) { return s ~ /[A-Za-z]/ }
+function secretish(t) {
+  return (length(t) >= 20 && has_digit(t) && has_alpha(t)) || length(t) >= 40
+}
+# A name must be upper or lower snake case, short, not digit-heavy, and a long
+# one needs an underscore (a random string before "=" is not a name).
+function plausible(n,    d) {
+  if (length(n) > 64) return 0
+  if (length(n) > 16 && n !~ /_/) return 0
+  if (n !~ /^[A-Z_][A-Z0-9_]*$/ && n !~ /^[a-z_][a-z0-9_]*$/) return 0
+  d = n; gsub(/[^0-9]/, "", d)
+  return length(d) <= 3
+}
+function redact(s,    out, st, ln, m, sep, tok) {
+  # "password: x", "token=x", "api_key = x" -> value redacted
+  out = ""
+  while (match(tolower(s), /(password|passwd|pwd|token|secret|api[_-]?key|key)[ \t]*[:=][ \t]*[^ \t,;]+/)) {
+    st = RSTART; ln = RLENGTH
+    m = substr(s, st, ln)
+    match(m, /[:=][ \t]*/); sep = RSTART + RLENGTH - 1
+    out = out substr(s, 1, st - 1) substr(m, 1, sep) "[redacted]"
+    s = substr(s, st + ln)
+  }
+  s = out s
+  # "Bearer x" -> token redacted
+  out = ""
+  while (match(s, /[Bb][Ee][Aa][Rr][Ee][Rr][ \t]+[^ \t]+/)) {
+    out = out substr(s, 1, RSTART - 1) "Bearer [redacted]"
+    s = substr(s, RSTART + RLENGTH)
+  }
+  s = out s
+  # long token-like runs -> redacted
+  out = ""
+  while (match(s, "[-A-Za-z0-9_+/=.]+")) {
+    tok = substr(s, RSTART, RLENGTH)
+    out = out substr(s, 1, RSTART - 1)
+    s = substr(s, RSTART + RLENGTH)
+    if (secretish(tok)) {
+      # keep dotted hostnames readable: only redact pieces that look secret
+      if (tok ~ /\./ && !secretish_part(tok)) out = out tok
+      else out = out "[redacted]"
+    } else out = out tok
+  }
+  return out s
+}
+# For a dotted run (host names, file names), is any dot-separated piece secret?
+function secretish_part(t,    n, parts, i) {
+  n = split(t, parts, ".")
+  for (i = 1; i <= n; i++) if (secretish(parts[i])) return 1
+  return 0
+}
+function hidden(why) { hid = hid sprintf("line %d hidden (%s)\n", NR, why); nh++ }
+
+BEGIN { inq = ""; blank = 0; nv = 0; nh = 0; hid = "" }
+{
+  sub(/\r$/, "")
+  line = $0
+  if (inq != "") {
+    if (closes(line, inq)) inq = ""
+    next
+  }
+  if (line ~ /^[ \t]*$/) { if (!blank && NR > 1) print ""; blank = 1; next }
+  blank = 0
+  if (line ~ /^[ \t]*#/) { sub(/^[ \t]+/, "", line); print redact(line); next }
+
+  l = line
+  sub(/^[ \t]+/, "", l)
+  sub(/^export[ \t]+/, "", l)
+  if (!match(l, /^[A-Za-z_][A-Za-z0-9_]*[ \t]*=/)) { hidden("not NAME=value"); next }
+  name = substr(l, 1, RLENGTH - 1); sub(/[ \t]+$/, "", name)
+  val = substr(l, RLENGTH + 1); sub(/^[ \t]+/, "", val)
+
+  q = substr(val, 1, 1)
+  multi = 0
+  if (q == "\"" || q == "'" || q == "`") {
+    rest = substr(val, 2)
+    if (closes(rest, q)) v = inner(rest, q)
+    else { inq = q; inq_from = NR; multi = 1 }
+  } else {
+    v = val
+    sub(/[ \t]+#.*$/, "", v)
+    sub(/[ \t]+$/, "", v)
+  }
+
+  if (!plausible(name)) { hidden("name looks like a value"); next }
+  if (multi) state = "set (multi-line)"
+  else if (v == "") state = "empty"
+  else if (v == "replace-me") state = "replace-me"
+  else state = "set"
+  if (name in seen) state = state ", duplicate of line " seen[name]
+  else seen[name] = NR
+  printf "%-40s %s\n", name, state
+  nv++
+}
+END {
+  if (inq != "") hidden_end = sprintf("lines %d-%d hidden (unterminated quote)\n", inq_from, NR)
+  printf "%s%d variables", (blank ? "" : "\n"), nv
+  if (nh || hidden_end != "") printf ", %d hidden lines", nh
+  printf "\n%s%s", hid, hidden_end
+}
+AWK
+
+echo "== $label"
+LC_ALL=C awk "$prog" "$file"

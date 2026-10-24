@@ -62,7 +62,7 @@ update:
 	@$(SWITCH_CMD)
 
 clean:
-	@$(NH) clean all --keep 5 --keep-since 7d
+	@$(NH) clean all --keep 3 --keep-since 7d
 
 iso:
 	@HOST=$${HOST:-thinkpad}; \

@@ -18,6 +18,7 @@
             "Bash(cat:*)",
             "Bash(date:*)",
             "Bash(echo:*)",
+            "Bash(env-names:*)",
             "Bash(file:*)",
             "Bash(find:*)",
             "Bash(grep:*)",
@@ -204,7 +205,7 @@
     "skipWorkflowUsageWarning": true,
     "editorMode": "vim",
     "verbose": true,
-    "remoteControlAtStartup": false,
+    "remoteControlAtStartup": true,
     "agentPushNotifEnabled": true,
     "voiceEnabled": true
 }
