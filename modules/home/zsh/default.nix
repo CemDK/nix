@@ -87,6 +87,10 @@
         PATH=$PATH:${config.home.homeDirectory}/.cargo/bin
         PATH=$PATH:${config.home.homeDirectory}/.local/scripts
         PATH=$PATH:${config.home.homeDirectory}/.local/bin
+
+        if [[ ! -o interactive ]]; then
+          setopt nonomatch
+        fi
       '';
 
       initContent = ''
