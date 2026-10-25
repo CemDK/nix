@@ -206,6 +206,7 @@
     "editorMode": "vim",
     "verbose": true,
     "remoteControlAtStartup": true,
+    "switchModelsOnFlag": false,
     "agentPushNotifEnabled": true,
     "voiceEnabled": true
 }

@@ -4,6 +4,7 @@
     "${self}/hosts/darwin/common.nix"
     ./packages.nix
     ./brew.nix
+    ./sandbox.nix
   ];
 
   # ============================================================================
