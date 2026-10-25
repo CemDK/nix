@@ -12,9 +12,9 @@ let
   anchor = "com.apple/${name}"; # evaluated by the stock `anchor "com.apple/*"` in /etc/pf.conf
   flag = "/var/db/${name}-online"; # holds the epoch until which online mode lasts
 
-  # LAN, tailnet and link-local stay blocked even in online mode.
+  # Loopback, LAN, tailnet and link-local stay blocked even in online mode.
   lanRules = pkgs.writeText "${name}-lan.pf" ''
-    block drop out quick proto { tcp udp } to { 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16 fc00::/7 fe80::/10 } user ${toString uid}
+    block drop out quick proto { tcp udp } to { 127.0.0.0/8 ::1 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16 fc00::/7 fe80::/10 } user ${toString uid}
   '';
   offlineRules = pkgs.writeText "${name}-offline.pf" ''
     block drop out quick proto { tcp udp } user ${toString uid}
@@ -68,6 +68,7 @@ in
       dotnet-sdk_10
       (python3.withPackages (
         ps: with ps; [
+          backports-zstd # stdlib compression.zstd only from Python 3.14
           capstone
           fonttools
           lz4
@@ -84,6 +85,9 @@ in
 
   environment.systemPackages = [ sandbox-net ];
 
+  # Built .NET apps (apphost) look for the runtime here; nix's dotnet wrapper only covers `dotnet` itself.
+  environment.etc."dotnet/install_location".text = "${pkgs.dotnet-sdk_10}/share/dotnet\n";
+
   # Re-applied every minute: pf.conf reloads and macOS updates can drop the anchor.
   launchd.daemons."${name}-net".serviceConfig = {
     ProgramArguments = [
@@ -95,7 +99,9 @@ in
   };
 
   # Every local account is in `staff`; the default 750 home would be readable by the sandbox user.
+  # Screen Sharing is limited to admins; cembox needs it for GUI/Metal sessions.
   system.activationScripts.postActivation.text = ''
     chmod 700 ${home}
+    dseditgroup -o edit -a ${account} -t user com.apple.access_screensharing
   '';
 }
