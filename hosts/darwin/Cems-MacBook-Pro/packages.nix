@@ -50,7 +50,7 @@ in
     # terragrunt
     nix-search-tv
     fastfetch
-    opencode
+    # opencode
     uv # blender-mcp server runs via uvx
 
     redis

@@ -21,6 +21,8 @@
   # ============================================================================
   system.stateVersion = 6;
   system.defaults.CustomUserPreferences.NSGlobalDomain."com.apple.swipescrolldirection" = false;
+  # Chrome policy: don't download the on-device AI model (Gemini Nano, ~4 GB)
+  system.defaults.CustomUserPreferences."com.google.Chrome".GenAILocalFoundationalModelSettings = 1;
 
   power = {
     restartAfterPowerFailure = true;

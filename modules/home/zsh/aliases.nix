@@ -17,6 +17,7 @@
   l = "ll";
   la = "lla";
   lt = "ll --tree --git-ignore";
+  ltd = "ll --tree --git-ignore --only-dirs";
 
   cd = "z";
   cdr = ''

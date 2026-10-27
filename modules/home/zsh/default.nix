@@ -38,6 +38,7 @@
           "ll"
           "lla"
           "lt"
+          "ltd"
           "exit"
           "vi"
           "vif"
@@ -87,6 +88,7 @@
         PATH=$PATH:${config.home.homeDirectory}/.cargo/bin
         PATH=$PATH:${config.home.homeDirectory}/.local/scripts
         PATH=$PATH:${config.home.homeDirectory}/.local/bin
+        PATH=$PATH:${config.home.homeDirectory}/.opencode/bin
 
         if [[ ! -o interactive ]]; then
           setopt nonomatch
