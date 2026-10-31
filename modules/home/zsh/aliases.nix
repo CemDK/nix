@@ -34,7 +34,7 @@
 
   # neovide = "(neovide.exe --frame=none --wsl &)";
 
-  cfile = ''\cat "$(fzf)" | pbcopy'';
+  cfile = ''\cat -- "$(fzf)" | pbcopy'';
 
   tadev = "ENV=dev terragrunt apply";
   tddev = "ENV=dev terragrunt destroy";

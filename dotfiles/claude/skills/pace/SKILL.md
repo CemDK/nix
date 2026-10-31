@@ -23,7 +23,7 @@ Read `verdict` and `delay/call`:
 Rules for every sub-agent you spawn:
 
 - Give it a bounded scope: what to touch, what to produce, when it is done. Open-ended tasks are what grow contexts to 300k tokens.
-- Tell it to write results to disk as it goes and to return a file path or commit, not a long message. If the window runs out, work on disk survives, work in context does not.
+- Tell it to write results to disk as it goes and to return a file path or commit, not a long message. If the window runs out, work on disk survives, work in context does not. Agent types without Write/Edit (Explore, Plan) and agents you made read-only cannot do this: keep their scope small enough that the returned message is the result, or use a general-purpose agent when the output must persist.
 - Tell it what it may run. "Read-only" means read files only and run no commands, say so explicitly.
 - A returning agent may report unfinished items because its context grew large (sub-agents are told to wrap up at 250k and stop at 300k tokens). Dispatch the remainder to a fresh agent. Do not ask the same agent to continue.
 
