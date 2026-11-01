@@ -2,7 +2,8 @@
 # Mark the tmux pane running this Claude instance, so the prefix-a switcher
 # (tmux-claude-switch) can find and label it. Called from Claude Code hooks.
 # Also renames the window to "CLAUDE <model>", refreshed from the transcript so
-# a mid-session /model switch isn't left showing a stale name.
+# a mid-session /model switch isn't left showing a stale name, and flags the
+# window with @claude_attn so its tab is highlighted while Claude waits.
 # Usage: claude-tmux-hook <busy|waiting|idle|clear>
 
 input=$([[ -t 0 ]] || cat)   # hook JSON on stdin; carries .transcript_path
@@ -17,6 +18,19 @@ case "$1" in
   *)
     tmux set -p -t "$TMUX_PANE" @claude_status "$1"            2>/dev/null
     tmux set -p -t "$TMUX_PANE" @claude_since  "$(date +%s)"   2>/dev/null
+    ;;
+esac
+
+# Flag the WINDOW (not the pane) so its status-bar tab turns yellow while Claude
+# waits on me. Skip when the window is already on screen in an attached session;
+# tmux.conf clears the flag again when I select the window.
+case "$1" in
+  idle|waiting)
+    seen=$(tmux display -p -t "$TMUX_PANE" '#{&&:#{window_active},#{session_attached}}' 2>/dev/null)
+    [[ "$seen" == 1 ]] || tmux set -w -t "$TMUX_PANE" @claude_attn 1 2>/dev/null
+    ;;
+  busy|clear)
+    tmux set -w -t "$TMUX_PANE" -u @claude_attn 2>/dev/null
     ;;
 esac
 
