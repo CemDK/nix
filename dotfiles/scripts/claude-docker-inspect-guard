@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# PreToolUse hook (Bash): block docker/podman inspect calls that would print container
+# env into the transcript. Env holds secrets (API tokens, DB passwords), and an agent
+# printed a Cloudflare token this way on 2026-11-03.
+#
+# Allowed:
+#   - inspect with a --format/-f that does not touch Env or a whole parent object
+#   - Env formats whose output is captured in $(...), only tested (grep -q/-c,
+#     sha256sum, wc), reduced to key names (cut -d= -f1, s/=.*//, %%=*), or narrowed
+#     to one named variable whose name does not look secret
+# Denied: everything else that matches, with a reason telling the model how to retry.
+set -euo pipefail
+
+cmd=$(jq -r '.tool_input.command // empty')
+[ -n "$cmd" ] || exit 0
+
+grep -qE '\b(docker|podman)\b[^|;&]*\binspect\b' <<<"$cmd" || exit 0
+
+deny() {
+	jq -n --arg r "$1" '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $r}}'
+	exit 0
+}
+
+if ! grep -qE '\binspect\b.*(--format|(^|[[:space:]])-f[[:space:]=])' <<<"$cmd"; then
+	deny "docker inspect without --format prints the full config, env secrets included. Use --format with only the fields you need, e.g. --format '{{.Config.Image}} {{.State.Status}}'."
+fi
+
+# Formats that print env: anything naming Env, or a whole object that contains it.
+env_fmt='Env\b|\{\{-?[[:space:]]*(json[[:space:]]+)?\.(Config|Spec|Spec\.TaskTemplate|Spec\.TaskTemplate\.ContainerSpec)?[[:space:]]*-?\}\}'
+# {{len .Config.Env}} only counts entries.
+sed -E 's/len[[:space:]]+\.[A-Za-z.]*Env//g' <<<"$cmd" | grep -qE "$env_fmt" || exit 0
+
+# Captured in a variable: nothing reaches stdout unless printed later.
+grep -qE '\$\([^)]*\binspect\b' <<<"$cmd" && exit 0
+# Only tested or fingerprinted.
+grep -qE '\|[[:space:]]*(grep[[:space:]]+(-[a-zA-Z]*[qc][a-zA-Z]*)|sha256sum|wc[[:space:]])' <<<"$cmd" && exit 0
+# Reduced to key names.
+grep -qE "cut[[:space:]]+-d[[:space:]]*['\"]?=['\"]?[[:space:]]+-f[[:space:]]*1\b|s/=\.\*/|%%=\*" <<<"$cmd" && exit 0
+
+# Narrowed to one named variable: allow unless the name looks like a secret.
+name=$(grep -oE "(grep[^|]*['\"]\^|s/\^)[A-Za-z_][A-Za-z0-9_]*=" <<<"$cmd" | head -1 | grep -oE '[A-Za-z_][A-Za-z0-9_]*=$' | tr -d '=' || true)
+if [ -n "$name" ]; then
+	if grep -qiE 'TOKEN|KEY|SECRET|PASS|PWD|AUTH|CRED|PRIVATE|DSN|SALT|COOKIE|SESSION|URL|URI' <<<"$name"; then
+		deny "This prints $name, which looks like a secret. Capture it in a variable inside the remote shell (T=\$(docker inspect ... | sed -n 's/^$name=//p')) and use it there, or compare fingerprints with sha256sum."
+	fi
+	exit 0
+fi
+
+deny "This docker inspect format prints container env, which holds secrets. Print key names only (| cut -d= -f1), test with grep -q, extract one non-secret variable (| sed -n 's/^NAME=//p'), or capture the value in \$(...) without printing it."

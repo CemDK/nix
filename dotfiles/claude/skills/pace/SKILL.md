@@ -5,7 +5,7 @@ description: Check the 5h rate-limit budget and burn rate before fanning out sub
 
 # Pace work against the 5h rate-limit window
 
-The window is wall-clock. The target burn is the rate that lands on the cap exactly at reset, about 20% per hour. Hooks already enforce this mechanically: every tool call is delayed when the burn is over target, spawns are spaced out, and above 98% used every call takes the maximum delay. Per-call holds stay under the prompt-cache lifetime. The one longer wait is a spawn beyond the concurrency cap, which queues for up to 30 minutes until a running agent finishes. Nothing is stopped or denied. Your job is to not fight the brake and to make the work durable.
+The window is wall-clock. The target burn is the rate that lands on the cap exactly at reset, about 20% per hour. Hooks already enforce this mechanically: every tool call is delayed when the burn is over target, and above 98% used every call takes the maximum delay. Per-call holds stay under the prompt-cache lifetime. Spawning an agent is not delayed for pace. The one wait on a spawn is at the concurrency cap, which is held for up to 5 minutes until a running agent finishes. The only thing denied is a spawn at the hard maximum. Your job is to not fight the brake and to make the work durable.
 
 Before a fan-out, run:
 
@@ -15,7 +15,7 @@ claude-budget
 
 Read `verdict` and `delay/call`:
 
-- `burst` or `normal` with 0s delay: fan out up to the caps. The gate holds any spawn beyond 2 fable, 4 opus, 8 sonnet running at once until one finishes, so more than that only queues.
+- `burst` or `normal` with 0s delay: fan out up to the caps: 2 fable, 4 opus, 8 sonnet, 16 haiku running at once, counted across all sessions. A spawn at the cap is held until one finishes; after 5 minutes it goes through anyway, up to a hard maximum of 3 fable, 6 opus, 12 sonnet, 24 haiku, where the gate denies it. Plan for the cap, not the maximum.
 - `conserve`: the brake is on. Run 1 to 2 agents at a time instead of many, prefer sonnet or opus over fable, and keep thinking between low and medium. More agents here only queue behind the brake.
 - `pause`: the window is nearly spent, every call waits the maximum. Finish the turn with what you have. Spawn nothing.
 - `unknown`: no sample yet, treat as normal.

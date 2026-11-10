@@ -41,7 +41,10 @@
             "Read(~/.config/claude/secrets.env*)",
             "Read(**/*credential*)",
             "Read(**/*.pem)",
-            "Read(**/*.key)"
+            "Read(**/*.key)",
+            "Bash(rm -rf:*)",
+            "Bash(rm -fr:*)",
+            "Bash(rm -r -f:*)"
         ],
         "defaultMode": "auto"
     },
@@ -101,6 +104,15 @@
                     {
                         "type": "command",
                         "command": "~/.local/scripts/claude-sound question"
+                    }
+                ]
+            },
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.local/scripts/claude-docker-inspect-guard"
                     }
                 ]
             },

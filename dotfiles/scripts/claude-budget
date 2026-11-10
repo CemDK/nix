@@ -25,11 +25,11 @@
 #               few pauses instead of 30; above PAUSE_AT every call is charged
 #               DELAY_MAX. Also tells an agent whose context has grown past
 #               CTX_SOFT/CTX_HARD to wrap up, once per threshold per agent.
-#   --gate      PreToolUse on the Agent tool, which --throttle skips: applies
-#               the same per-call delay, holds spawns past the per-family load
-#               ceiling or while the brake is saturated, and near target
-#               spaces spawns SPAWN_GAP apart so the velocity measurement can
-#               catch up. Time already held counts toward the delay.
+#   --gate      PreToolUse on the Agent tool: enforces the per-family
+#               concurrency caps only. A spawn at the cap is held until a
+#               running agent finishes, and denied at the hard maximum. It
+#               adds no pace delay (--throttle slows the sub-agent's own
+#               calls) and never rewrites the tool input.
 #   --hint      UserPromptSubmit: one pacing line when over pace, repeated
 #               only when the verdict changes or HINT_REPEAT has passed.
 #   --pacing [on|off]
@@ -62,28 +62,19 @@ DELAY_MAX=200       # s per sleep; the 5-minute prompt cache must stay warm, and
 DELAY_CHUNK=60      # s of banked delay before a sleep is taken
 HINT_REPEAT=1800    # s before the same pacing hint is repeated to a session
 PAUSE_AT=98         # used% above which every call takes the full DELAY_MAX
-GATE_MAX_WAIT=200   # s a spawn may be held for saturation; same cache reasoning
-PAUSE_POLL=30       # s between re-checks while a spawn is held
-SPAWN_NEAR=0.8      # x above which spawns are spaced out
-SPAWN_GAP=90        # s between spawns when spaced
-SPAWN_BURST=3       # spawns within SPAWN_RECENT that also trigger spacing, so a
-SPAWN_RECENT=600    # fan-out is paced even while the velocity has not caught up
+PAUSE_POLL=30       # s between re-checks while a spawn is held at the cap
 CTX_SOFT=250000     # tokens: "resolve soon", main session and sub-agents alike
 CTX_HARD=300000     # tokens: "finish now"
 CTX_BYTES_PER_TOKEN=3 # lower bound; measured 3.9 (sub-agents) to 7.0 (main). Transcripts
                       # smaller than CTX_SOFT*this cannot be near the threshold, so
                       # the 400KB parse is skipped for them.
-# Live load ceilings per model family, in tokens of context across the
-# family's running sub-agents: every call re-sends an agent's whole context,
-# so a fat agent costs many small ones. A wide fan-out of fat agents burns
-# more per call than any delay can absorb (see docs), so beyond these the
-# gate holds the spawn until one finishes. A live agent counts its actual
-# context or CTX_ASSUMED, whichever is larger, since a fresh one grows into
-# that; 300k therefore admits two 150k agents or four fresh ones.
-CAP_FABLE=300000; CAP_OPUS=600000; CAP_SONNET=1200000; CAP_HAIKU=2400000
-CTX_ASSUMED=75000   # tokens a young or unreadable agent is assumed to reach
-CAP_MAX_WAIT=300    # s a spawn may wait for room; it spawns anyway after that
-                    # (the throttle carries the burn), so longer is only dead time
+# Concurrency caps per model family, in running sub-agents across all
+# sessions. At CAP the gate holds a spawn until one finishes; a spawn that
+# has waited CAP_MAX_WAIT goes through anyway, but never at MAX or above:
+# there the gate denies it.
+CAP_FABLE=2; CAP_OPUS=4; CAP_SONNET=8; CAP_HAIKU=16
+MAX_FABLE=3; MAX_OPUS=6; MAX_SONNET=12; MAX_HAIKU=24
+CAP_MAX_WAIT=300    # s a spawn may wait for a slot below CAP
 LIVE_WINDOW=480     # s since a sub-agent transcript last changed to count it as live
                     # (covers DELAY_MAX plus a long thinking turn) unless the parent
                     # transcript already records the agent's completion
@@ -166,16 +157,47 @@ read_state() {
 
 
 # ── context-size wrap-up hints, from the hook's transcript_path ───────────
+# ctx_tokens TRANSCRIPT -> context tokens of its last assistant message.
+# Byte-based tail may cut the first line; fromjson? skips it.
+ctx_tokens() {
+  tail -c 400000 "$1" | jq -rR '
+      fromjson? | select(.type=="assistant") | .message.usage
+      | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -n1
+}
+# ctx_cap TRANSCRIPT TOOL: opt-in hard context cap for one sub-agent. A spawn
+# prompt containing "[ctx-cap:N]" caps that agent at N tokens: one wrap-up hint
+# at CAP_HINT_PCT, and from CAP_DENY_PCT every tool but Write/Edit is denied so
+# the agent can only save its results and return. The measure is the last
+# call's context, so the margin below N must cover one more tool result.
+# Agents without the marker are untouched. Independent of HINTS and pacing.
+CAP_HINT_PCT=70; CAP_DENY_PCT=85
+ctx_cap() {
+  local tp=$1 tool=$2 cap ctx key marks="$STATE/ctx"
+  [[ -n "$agent_id" && -r "$tp" ]] || return 0
+  cap=$(head -c 65536 "$tp" | grep -o -m1 '\[ctx-cap:[0-9]\+\]' | tr -dc '0-9')
+  [[ -n "$cap" ]] || return 0
+  (( $(fsize "$tp") >= cap * CAP_HINT_PCT / 100 * CTX_BYTES_PER_TOKEN )) || return 0
+  ctx=$(ctx_tokens "$tp"); [[ "$ctx" =~ ^[0-9]+$ ]] || return 0
+  if (( ctx >= cap * CAP_DENY_PCT / 100 )); then
+    case "$tool" in Write|Edit) return 0 ;; esac
+    log "ctx-cap deny: ctx=$ctx cap=$cap tool=$tool tp=$tp"
+    jq -n --arg r "Context cap: this agent is at $((ctx/1000))k of its $((cap/1000))k-token cap. Only Write and Edit are allowed now. Save your results to your output file, then return your final message." \
+      '{hookSpecificOutput: {hookEventName:"PreToolUse", permissionDecision:"deny", permissionDecisionReason:$r}}'
+    exit 0
+  fi
+  key=$(printf '%s' "$tp" | md5sum | cut -c1-16); mkdir -p "$marks"
+  if (( ctx >= cap * CAP_HINT_PCT / 100 )) && [[ ! -e "$marks/$key.cap" ]]; then
+    : >"$marks/$key.cap"
+    hint="Context cap: this agent is at $((ctx/1000))k of its $((cap/1000))k-token cap. Make sure your results are on disk now, finish the check you are on, and return. Reads will be denied shortly."
+  fi
+}
 ctx_hint() {
   local tp=$1 key ctx marks="$STATE/ctx"
   [[ -n "$tp" && -r "$tp" ]] || { log "ctx: no readable transcript ($tp)"; return 0; }
   local soft=$CTX_SOFT hard=$CTX_HARD
   # Parsing costs a 400KB read; skip transcripts too small to be near soft.
   (( $(fsize "$tp") >= soft * CTX_BYTES_PER_TOKEN )) || return 0
-  # Byte-based tail may cut the first line; fromjson? skips it.
-  ctx=$(tail -c 400000 "$tp" | jq -rR '
-      fromjson? | select(.type=="assistant") | .message.usage
-      | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -n1)
+  ctx=$(ctx_tokens "$tp")
   [[ "$ctx" =~ ^[0-9]+$ ]] || { log "ctx: unparsable ($ctx) tp=$tp"; return 0; }
   key=$(printf '%s' "$tp" | md5sum | cut -c1-16)
   mkdir -p "$marks"
@@ -211,13 +233,9 @@ ctx_hint() {
 # loosest cap rather than the tightest.
 family() { case "$1" in *fable*|*mythos*) echo fable;; *opus*) echo opus;; *sonnet*) echo sonnet;; *haiku*) echo haiku;; *) echo unknown;; esac; }
 cap_for() { case "$1" in fable) echo "$CAP_FABLE";; opus) echo "$CAP_OPUS";; sonnet) echo "$CAP_SONNET";; *) echo "$CAP_HAIKU";; esac; }
+max_for() { case "$1" in fable) echo "$MAX_FABLE";; opus) echo "$MAX_OPUS";; sonnet) echo "$MAX_SONNET";; *) echo "$MAX_HAIKU";; esac; }
 last_model() {   # transcript -> model id of its last assistant message
   tail -c 200000 "$1" 2>/dev/null | jq -rR 'fromjson? | select(.type=="assistant") | .message.model // empty' 2>/dev/null | tail -n1
-}
-last_model_ctx() {   # transcript -> "model<TAB>context tokens" of its last assistant message
-  tail -c 200000 "$1" 2>/dev/null | jq -rR 'fromjson? | select(.type=="assistant")
-    | [(.message.model // ""), ((.message.usage.input_tokens // 0) + (.message.usage.cache_creation_input_tokens // 0) + (.message.usage.cache_read_input_tokens // 0))]
-    | @tsv' 2>/dev/null | tail -n1
 }
 # finished AGENT_TRANSCRIPT -> true when the parent transcript holds a
 # task-notification for this agent dated after the transcript last changed. A
@@ -230,32 +248,18 @@ finished() {
   ts=$(grep -F "<task-id>$id</task-id>" "$p" 2>/dev/null | tail -n1 | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p')
   [[ -n "$ts" ]] && (( $(iso_epoch "$ts") >= $(mtime "$f") ))
 }
-# live_load FAMILY -> tokens of context held by that family's sub-agents across
-# all sessions: transcripts touched within LIVE_WINDOW and not finished, plus
-# reservations younger than RESV_TTL at CTX_ASSUMED each.
-live_load() {
-  local fam=$1 sum=0 f m c
+# live_count FAMILY -> that family's running sub-agents across all sessions:
+# transcripts touched within LIVE_WINDOW and not finished, plus reservations
+# younger than RESV_TTL.
+live_count() {
+  local fam=$1 n=0 f
   while IFS= read -r f; do
-    IFS=$'\t' read -r m c <<<"$(last_model_ctx "$f")"
-    [[ "$(family "$m")" == "$fam" ]] || continue
+    [[ "$(family "$(last_model "$f")")" == "$fam" ]] || continue
     finished "$f" && continue
-    [[ "$c" =~ ^[0-9]+$ ]] || c=0
-    (( c < CTX_ASSUMED )) && c=$CTX_ASSUMED
-    sum=$(( sum + c ))
+    n=$(( n + 1 ))
   done < <(find "$HOME/.claude/projects" -path '*/subagents/agent-*.jsonl' -newermt "-${LIVE_WINDOW} seconds" 2>/dev/null)
-  sum=$(( sum + CTX_ASSUMED * $(find "$STATE/live" -name "resv-*-$fam" -newermt "-${RESV_TTL} seconds" 2>/dev/null | wc -l) ))
-  echo "$sum"
+  echo $(( n + $(find "$STATE/live" -name "resv-*-$fam" -newermt "-${RESV_TTL} seconds" 2>/dev/null | wc -l) ))
 }
-# snooze SECS: sleep while keeping this spawn's reservation younger than RESV_TTL,
-# so the slot stays visible to other spawns through the brake and spacing waits.
-snooze() {
-  local left=$1 step=$(( RESV_TTL / 2 ))
-  while (( left > 0 )); do
-    [[ -n "$resv" ]] && touch "$resv"
-    sleep $(( left < step ? left : step )); left=$(( left - step ))
-  done
-}
-
 pace_off_until() {   # -> epoch pacing stays off until, or 0 when pacing is on
   local u; u=$(cat "$PACE_OFF" 2>/dev/null)
   if [[ "$u" =~ ^[0-9]+$ ]] && (( u > $(date +%s) )); then echo "$u"; else echo 0; fi
@@ -304,6 +308,7 @@ case "$mode" in
     elif [[ -n "$agent_id" && -n "$tp" ]]; then tp="${tp%.jsonl}/subagents/agent-${agent_id}.jsonl"
     fi
     hint=""
+    ctx_cap "$tp" "$tool"
     case "$tool" in AskUserQuestion|Agent) verdict=skip ;; esac
     (( off_until > 0 )) && verdict=skip
     if [[ "$verdict" != skip ]]; then
@@ -330,75 +335,40 @@ case "$mode" in
     if [[ -z "$model" || "$model" == inherit ]]; then
       model=$(last_model "$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null)")
     fi
-    fam=$(family "$model"); cap=$(cap_for "$fam")
+    fam=$(family "$model"); cap=$(cap_for "$fam"); max=$(max_for "$fam")
     [[ "$fam" == unknown ]] && log "model unreadable (${model:-empty}); cap $cap"
-    # Load ceiling: wait for room, then reserve it. Measure and reserve under
-    # a lock so N spawns from one message do not all see the same load. A
-    # spawn that gives up waiting still reserves, so the next one sees it.
+    # Concurrency cap: wait for a slot, then reserve it. Count and reserve
+    # under a lock so N spawns from one message do not all see the same count.
+    # A spawn that gives up waiting still reserves, so the next one sees it.
     held=0 resv="" exhausted=false
     while :; do
       exec 8>"$STATE/live/.lock"; flock 8
-      live=$(live_load "$fam")
-      if (( live + CTX_ASSUMED <= cap || held >= CAP_MAX_WAIT )); then
-        (( live + CTX_ASSUMED > cap )) && { exhausted=true; log "cap wait exhausted ($fam: $((live/1000))k live)"; }
+      live=$(live_count "$fam")
+      if (( live < cap || (held >= CAP_MAX_WAIT && live < max) )); then
+        (( live >= cap )) && { exhausted=true; log "cap wait exhausted ($fam: $live live)"; }
         resv="$STATE/live/resv-$(date +%s)-$$-$fam"; : >"$resv"; flock -u 8; exec 8>&-; break
       fi
       flock -u 8; exec 8>&-
-      log "hold spawn ($fam): $((live/1000))k live + $((CTX_ASSUMED/1000))k > cap $((cap/1000))k"
+      if (( held >= CAP_MAX_WAIT )); then
+        log "deny spawn ($fam): $live live >= max $max"
+        jq -n --arg r "Rate-limit gate: $live $fam agents are already running and $max is the maximum. Wait for one to return before spawning another." \
+          '{hookSpecificOutput: {hookEventName:"PreToolUse", permissionDecision:"deny", permissionDecisionReason:$r}}'
+        exit 0
+      fi
+      log "hold spawn ($fam): $live live >= cap $cap"
       sleep "$PAUSE_POLL"; held=$(( held + PAUSE_POLL ))
     done
     find "$STATE/live" -name 'resv-*' ! -newermt "-${RESV_TTL} seconds" -delete 2>/dev/null
-    read_state
-    waited=0
-    # In pause the delay is pinned to DELAY_MAX by fiat, so waiting for it to
-    # drop would be pure dead time; the brake below still charges the spawn.
-    while [[ "$verdict" != pause ]] && (( held == 0 && delay >= DELAY_MAX && waited < GATE_MAX_WAIT )); do
-      log "hold spawn ($model): brake saturated x=$x v=$velocity t=$target"
-      snooze "$PAUSE_POLL"; waited=$(( waited + PAUSE_POLL )); read_state
-    done
-    # Take a spawn slot under a lock, so N spawns issued in one message are
-    # spaced rather than all seeing the same "last". spawn.log keeps every
-    # slot taken (reservations live only RESV_TTL, too short for "recent").
-    exec 9>"$STATE/spawn.lock"; flock 9
-    t=$(date +%s); slot=$t
-    recent=$(awk -v c=$(( t - SPAWN_RECENT )) '$1 >= c' "$STATE/spawn.log" 2>/dev/null | wc -l)
-    if (( held == 0 )) && awk -v x="$x" -v n="$SPAWN_NEAR" -v r="$recent" -v b="$SPAWN_BURST" 'BEGIN{exit !(x >= n || r >= b)}'; then
-      last=$(cat "$STATE/spawn.last" 2>/dev/null || echo 0)
-      slot=$(( last + SPAWN_GAP > t ? last + SPAWN_GAP : t ))
-    fi
-    printf '%s\n' "$slot" >"$STATE/spawn.last"
-    printf '%s\n' "$slot" >>"$STATE/spawn.log"
-    (( RANDOM % 20 == 0 )) && { awk -v c=$(( t - SPAWN_RECENT )) '$1 >= c' "$STATE/spawn.log" >"$STATE/spawn.log.tmp" 2>/dev/null && mv -f "$STATE/spawn.log.tmp" "$STATE/spawn.log"; }
-    flock -u 9; exec 9>&-
-    gap=$(( slot - t ))
-    if (( gap > 0 )); then log "space spawn ($model): ${gap}s x=$x recent=$recent"; snooze "$gap"; fi
-    # The graduated brake. --throttle skips the Agent tool so this hook owns
-    # it; without this the most expensive call in the system is the only one
-    # that never waits, for every x between SLACK and DELAY_MAX/DELAY_PER_X.
-    # Time already spent held, saturated or spaced counts toward the delay.
-    brake=$(( delay - held - waited - gap ))
-    if (( brake > 0 )); then log "brake ${brake}s (delay=$delay held=$held waited=$waited gap=$gap)"; snooze "$brake"; fi
-    touch "$resv"   # the agent's transcript appears within RESV_TTL from here
-    log "spawn ($model) x=$x v=$velocity t=$target used=$used waited=${waited}s"
-    # Hand the pace line straight to the sub-agent, and tell the orchestrator
-    # when a spawn was held so the wait is not a mystery.
-    pace_line=""
-    case "$verdict" in
-      conserve|pause) pace_line="Rate-limit pace: $reason. Tool calls are being delayed to slow the burn. Keep thinking between low and medium, skip exploratory reads, write results to disk as you go, and return promptly with what is done and what is not." ;;
-    esac
+    log "spawn ($model) x=$x v=$velocity t=$target used=$used held=${held}s"
+    # The spawn itself is not delayed for pace: --throttle already charges the
+    # sub-agent's own tool calls. The tool input is never rewritten either, or
+    # auto mode's review no longer covers the call and it is rejected. Only
+    # tell the orchestrator when a spawn was held, so the wait is not a mystery.
     note=""
-    if [[ "$exhausted" == true ]]; then note="Rate-limit gate: this spawn was held ${held}s and then allowed through with live $fam agents still above the $((cap/1000))k-token context ceiling ($((live/1000))k live). Every call from each of them re-sends its context, so do not spawn more until some return."
-    elif (( held > 0 )); then note="Rate-limit gate: this spawn was held ${held}s until live $fam agents dropped below $((cap/1000))k tokens of combined context (each agent counts its context, at least $((CTX_ASSUMED/1000))k). Prefer fewer, longer-lived agents with bounded scope."
-    elif (( waited > 0 )); then note="Rate-limit gate: this spawn was held ${waited}s because the burn is saturated ($reason). Prefer fewer agents at a time."
+    if [[ "$exhausted" == true ]]; then note="Rate-limit gate: this spawn was held ${held}s and then allowed through with $live $fam agents still running (cap $cap, maximum $max). Do not spawn more until some return."
+    elif (( held > 0 )); then note="Rate-limit gate: this spawn was held ${held}s until fewer than $cap $fam agents were running. Prefer fewer, longer-lived agents with bounded scope."
     fi
-    if [[ -n "$pace_line" ]]; then
-      jq -n --arg p "$pace_line" --arg n "$note" --argjson ti "$(jq '.tool_input' <<<"$input")" '
-        {hookSpecificOutput: ({hookEventName:"PreToolUse",
-          updatedInput: ($ti + {prompt: ($p + "\n\n" + ($ti.prompt // ""))})}
-          + (if $n != "" then {additionalContext:$n} else {} end))}'
-    elif [[ -n "$note" ]]; then
-      emit_context "$note"
-    fi
+    [[ -n "$note" ]] && emit_context "$note"
     ;;
   --hint)
     [[ "$HINTS" == true ]] || exit 0
