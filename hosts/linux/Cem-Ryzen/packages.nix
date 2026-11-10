@@ -21,7 +21,7 @@
     ngrok
     bun
     pastel
-    opencode
+    unstable.opencode
     unstable.codex
     sops
     # Git related
