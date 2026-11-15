@@ -49,6 +49,7 @@
         "defaultMode": "auto"
     },
     "model": "opus",
+    "cleanupPeriodDays": 36500,
     "skillOverrides": {
         "vercel-composition-patterns": "off",
         "vercel-react-best-practices": "off",
