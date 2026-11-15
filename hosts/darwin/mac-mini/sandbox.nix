@@ -65,7 +65,7 @@ in
       zstd
       lz4
       spirv-cross
-      dotnet-sdk_10
+      # dotnet-sdk_10
       (python3.withPackages (
         ps: with ps; [
           backports-zstd # stdlib compression.zstd only from Python 3.14
@@ -86,7 +86,7 @@ in
   environment.systemPackages = [ sandbox-net ];
 
   # Built .NET apps (apphost) look for the runtime here; nix's dotnet wrapper only covers `dotnet` itself.
-  environment.etc."dotnet/install_location".text = "${pkgs.dotnet-sdk_10}/share/dotnet\n";
+  # environment.etc."dotnet/install_location".text = "${pkgs.dotnet-sdk_10}/share/dotnet\n";
 
   # Re-applied every minute: pf.conf reloads and macOS updates can drop the anchor.
   launchd.daemons."${name}-net".serviceConfig = {
